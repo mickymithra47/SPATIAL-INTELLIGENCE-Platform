@@ -1,0 +1,4831 @@
+[
+  {
+    "slide_num": 1,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 914400,
+        "top": 1308947,
+        "width": 6844487,
+        "height": 307777,
+        "paragraphs": [
+          {
+            "full_text": "23MEY06 / 23CSY06 - ENTREPRENEURSHIP & BUSINESS INCUBATION",
+            "runs": [
+              {
+                "text": "23MEY06 / 23CSY06 - ENTREPRENEURSHIP & BUSINESS INCUBATION",
+                "font_name": null,
+                "size_pt": 15.5,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 914400,
+        "top": 1828800,
+        "width": 10362895,
+        "height": 1097280,
+        "paragraphs": [
+          {
+            "full_text": "College AI Assistant",
+            "runs": [
+              {
+                "text": "College AI Assistant",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "TextBox 3",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 902513,
+        "top": 3138156,
+        "width": 6762621,
+        "height": 307777,
+        "paragraphs": [
+          {
+            "full_text": "Continuous Assessment Milestone - Review I: Idea Validation & Business Modeling",
+            "runs": [
+              {
+                "text": "Continuous Assessment Milestone - ",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              },
+              {
+                "text": "Review I: Idea Validation & Business Modeling",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null,
+                "color_rgb": "00B050"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rounded Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 914400,
+        "top": 4114800,
+        "width": 2423160,
+        "height": 1371600,
+        "paragraphs": [
+          {
+            "full_text": "TEAM MEMBERS",
+            "runs": [
+              {
+                "text": "TEAM MEMBERS",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "E67E00"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Karvin.R (2403730410421067)\nM.R.Mithra (2403730410421091)\nM.Kavin Kumar (2403730410421072)",
+            "runs": [
+              {
+                "text": "Karvin.R (2403730410421067)\nM.R.Mithra (2403730410421091)\nM.Kavin Kumar (2403730410421072)",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": null,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "Rounded Rectangle 5",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 3557016,
+        "top": 4114800,
+        "width": 2423160,
+        "height": 1371600,
+        "paragraphs": [
+          {
+            "full_text": "DEPARTMENT",
+            "runs": [
+              {
+                "text": "DEPARTMENT",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "E67E00"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "B.E. Computer Science and Engineering (CSE)",
+            "runs": [
+              {
+                "text": "B.E. Computer Science and Engineering (CSE)",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": null,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 6199632,
+        "top": 4114800,
+        "width": 2423160,
+        "height": 1371600,
+        "paragraphs": [
+          {
+            "full_text": "MENTOR / GUIDE",
+            "runs": [
+              {
+                "text": "MENTOR / GUIDE",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "E67E00"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "MS.E.JANANI AP/CSE",
+            "runs": [
+              {
+                "text": "MS.E.JANANI AP/CSE",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": null,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "Rounded Rectangle 7",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 8842248,
+        "top": 4114800,
+        "width": 2423160,
+        "height": 1371600,
+        "paragraphs": [
+          {
+            "full_text": "COE ALIGNMENT",
+            "runs": [
+              {
+                "text": "COE ALIGNMENT",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "E67E00"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Associated Centre of Excellence:\nProduct Development Lab, ESEC",
+            "runs": [
+              {
+                "text": "Associated Centre of Excellence:\nProduct Development Lab, ESEC",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": null,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 2,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 640080,
+        "paragraphs": [
+          {
+            "full_text": "The Real-World Problem & Our Proposed Solution",
+            "runs": [
+              {
+                "text": "The Real-World Problem & Our Proposed Solution",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: PROBLEM IDENTIFICATION & INNOVATION (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: PROBLEM IDENTIFICATION & INNOVATION (10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "Rounded Rectangle 7",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1463040,
+        "width": 5120640,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "1. THE UNRESOLVED PROBLEM",
+            "runs": [
+              {
+                "text": "1. THE UNRESOLVED PROBLEM",
+                "font_name": null,
+                "size_pt": 17.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Problem Statement: Students and visitors lack campus information and a 24/7 assistant.",
+            "runs": [
+              {
+                "text": "• Problem Statement: Students and visitors lack campus information and a 24/7 assistant.",
+                "font_name": null,
+                "size_pt": 13.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Users: Students, visitors and staff.",
+            "runs": [
+              {
+                "text": "• Users: Students, visitors and staff.",
+                "font_name": null,
+                "size_pt": 13.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Impact: Finding basic campus details takes time.",
+            "runs": [
+              {
+                "text": "• Impact: Finding basic campus details takes time.",
+                "font_name": null,
+                "size_pt": 13.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Need: Quick and reliable answers.",
+            "runs": [
+              {
+                "text": "• Need: Quick and reliable answers.",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "name": "Rounded Rectangle 8",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 6385255,
+        "top": 1463040,
+        "width": 5120640,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "2. OUR PROPOSED SOLUTION",
+            "runs": [
+              {
+                "text": "2. OUR PROPOSED SOLUTION",
+                "font_name": null,
+                "size_pt": 17.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Product: College AI Assistant",
+            "runs": [
+              {
+                "text": "• Product: College AI Assistant",
+                "font_name": null,
+                "size_pt": 13.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Ask questions in natural language.",
+            "runs": [
+              {
+                "text": "• Ask questions in natural language.",
+                "font_name": null,
+                "size_pt": 13.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Get campus information instantly.",
+            "runs": [
+              {
+                "text": "• Get campus information instantly.",
+                "font_name": null,
+                "size_pt": 13.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Available as a 24/7 digital assistant.",
+            "runs": [
+              {
+                "text": "• Available as a 24/7 digital assistant.",
+                "font_name": null,
+                "size_pt": 13.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 3,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 640080,
+        "paragraphs": [
+          {
+            "full_text": "Defining Our Innovation & Technical Novelty",
+            "runs": [
+              {
+                "text": "Defining Our Innovation & Technical Novelty",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: PROBLEM IDENTIFICATION & INNOVATION (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: PROBLEM IDENTIFICATION & INNOVATION (10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "Rounded Rectangle 7",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1463040,
+        "width": 3322015,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "EXISTING SOLUTION & LIMITATIONS",
+            "runs": [
+              {
+                "text": "EXISTING SOLUTION & LIMITATIONS",
+                "font_name": null,
+                "size_pt": 15.5,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• College website and notices",
+            "runs": [
+              {
+                "text": "• College website and notices",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Manual enquiries",
+            "runs": [
+              {
+                "text": "• Manual enquiries",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Information is scattered",
+            "runs": [
+              {
+                "text": "• Information is scattered",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• No 24/7 personal assistant",
+            "runs": [
+              {
+                "text": "• No 24/7 personal assistant",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "name": "Rounded Rectangle 8",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 4434840,
+        "top": 1463040,
+        "width": 3322015,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "OUR UNIQUE IMPROVEMENT / NOVELTY",
+            "runs": [
+              {
+                "text": "OUR UNIQUE IMPROVEMENT / NOVELTY",
+                "font_name": null,
+                "size_pt": 15.5,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Personal AI assistant inside the campus",
+            "runs": [
+              {
+                "text": "• Personal AI assistant inside the campus",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Guides users on campus-related queries",
+            "runs": [
+              {
+                "text": "• Guides users on campus-related queries",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Natural-language interaction",
+            "runs": [
+              {
+                "text": "• Natural-language interaction",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• One place for college information",
+            "runs": [
+              {
+                "text": "• One place for college information",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "name": "Rounded Rectangle 9",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 8183879,
+        "top": 1463040,
+        "width": 3322015,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "INTELLECTUAL PROPERTY (IP) VIABILITY",
+            "runs": [
+              {
+                "text": "INTELLECTUAL PROPERTY (IP) VIABILITY",
+                "font_name": null,
+                "size_pt": 15.5,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Patent: Not currently applicable",
+            "runs": [
+              {
+                "text": "• Patent: Not currently applicable",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Mainly a software-based solution",
+            "runs": [
+              {
+                "text": "• Mainly a software-based solution",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Focus on useful implementation and future innovation",
+            "runs": [
+              {
+                "text": "• Focus on useful implementation and future innovation",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 4,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 640080,
+        "paragraphs": [
+          {
+            "full_text": "Case Study Analysis: Three Successful Startups",
+            "runs": [
+              {
+                "text": "Case Study Analysis: Three Successful Startups",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: MARKET & CASE STUDY ANALYSIS (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: MARKET & CASE STUDY ANALYSIS (10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "TextBox 7",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 1280160,
+        "width": 10820095,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Syllabus Compliance: Conduct detailed Business Analytics on three market-viable products or startups in emerging fields.",
+            "runs": [
+              {
+                "text": "Syllabus Compliance: Conduct detailed Business Analytics on three market-viable products or startups in emerging fields.",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "name": "Rounded Rectangle 8",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1737360,
+        "width": 3322015,
+        "height": 4114800,
+        "paragraphs": [
+          {
+            "full_text": "STARTUP 1: CampusCopilot",
+            "runs": [
+              {
+                "text": "STARTUP 1: CampusCopilot",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Target Market: Colleges & applicants",
+            "runs": [
+              {
+                "text": "• Target Market: Colleges & applicants",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Core Solution: AI enquiry assistant",
+            "runs": [
+              {
+                "text": "• Core Solution: AI enquiry assistant",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Revenue Model: Institution-based",
+            "runs": [
+              {
+                "text": "• Revenue Model: Institution-based",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Growth/Traction: Emerging product",
+            "runs": [
+              {
+                "text": "• Growth/Traction: Emerging product",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• KEY STRATEGIC LEARNING:",
+            "runs": [
+              {
+                "text": "• KEY STRATEGIC LEARNING:",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "AI can automate repeated college questions.",
+            "runs": [
+              {
+                "text": "AI can automate repeated college questions.",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "name": "Rounded Rectangle 9",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 4433925,
+        "top": 1737360,
+        "width": 3322015,
+        "height": 4114800,
+        "paragraphs": [
+          {
+            "full_text": "STARTUP 2: Campusify",
+            "runs": [
+              {
+                "text": "STARTUP 2: Campusify",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Target Market: Colleges & campus users",
+            "runs": [
+              {
+                "text": "• Target Market: Colleges & campus users",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Core Solution: AI campus platform",
+            "runs": [
+              {
+                "text": "• Core Solution: AI campus platform",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Revenue Model: Platform-based",
+            "runs": [
+              {
+                "text": "• Revenue Model: Platform-based",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Growth/Traction: Growing solution",
+            "runs": [
+              {
+                "text": "• Growth/Traction: Growing solution",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• KEY STRATEGIC LEARNING:",
+            "runs": [
+              {
+                "text": "• KEY STRATEGIC LEARNING:",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "AI can support everyday campus services.",
+            "runs": [
+              {
+                "text": "AI can support everyday campus services.",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 9,
+        "name": "Rounded Rectangle 10",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 8182050,
+        "top": 1737360,
+        "width": 3322015,
+        "height": 4114800,
+        "paragraphs": [
+          {
+            "full_text": "STARTUP 3: OnCampusERP",
+            "runs": [
+              {
+                "text": "STARTUP 3: OnCampusERP",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Target Market: Educational institutions",
+            "runs": [
+              {
+                "text": "• Target Market: Educational institutions",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Core Solution: College management platform",
+            "runs": [
+              {
+                "text": "• Core Solution: College management platform",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Revenue Model: Institutional service",
+            "runs": [
+              {
+                "text": "• Revenue Model: Institutional service",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Growth/Traction: Established category",
+            "runs": [
+              {
+                "text": "• Growth/Traction: Established category",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• KEY STRATEGIC LEARNING:",
+            "runs": [
+              {
+                "text": "• KEY STRATEGIC LEARNING:",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Centralized information improves campus management.",
+            "runs": [
+              {
+                "text": "Centralized information improves campus management.",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 5,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 640080,
+        "paragraphs": [
+          {
+            "full_text": "Competitor Landscape & Market Analysis",
+            "runs": [
+              {
+                "text": "Competitor Landscape & Market Analysis",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: MARKET & CASE STUDY ANALYSIS (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: MARKET & CASE STUDY ANALYSIS (10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "Table 7",
+        "shape_type": "TABLE (19)",
+        "left": 685800,
+        "top": 1463040,
+        "width": 10820095,
+        "height": 3291840,
+        "table": [
+          [
+            "FEATURES / PARAMETERS",
+            "COMPETITOR A: | College Website",
+            "COMPETITOR B: | College ERP",
+            "OUR SOLUTION: | College AI Assistant"
+          ],
+          [
+            "Information access",
+            "Manual search",
+            "Menu-based",
+            "AI conversation"
+          ],
+          [
+            "Response speed",
+            "Medium",
+            "Medium",
+            "Fast"
+          ],
+          [
+            "Ease of use",
+            "Simple",
+            "Moderate",
+            "Very simple"
+          ],
+          [
+            "College-specific",
+            "Yes",
+            "Yes",
+            "Yes + AI"
+          ]
+        ]
+      },
+      {
+        "index": 7,
+        "name": "Rounded Rectangle 8",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 4937760,
+        "width": 10820095,
+        "height": 1051560,
+        "paragraphs": [
+          {
+            "full_text": "OUR SUSTAINABLE COMPETITIVE ADVANTAGE",
+            "runs": [
+              {
+                "text": "OUR SUSTAINABLE COMPETITIVE ADVANTAGE",
+                "font_name": null,
+                "size_pt": 15.5,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Personal AI assistant for the campus",
+            "runs": [
+              {
+                "text": "• Personal AI assistant for the campus",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Quick natural-language access",
+            "runs": [
+              {
+                "text": "• Quick natural-language access",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Easy to customize for each college",
+            "runs": [
+              {
+                "text": "• Easy to customize for each college",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 6,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 640080,
+        "paragraphs": [
+          {
+            "full_text": "The Business Model Canvas (9-Block Matrix)",
+            "runs": [
+              {
+                "text": "The Business Model Canvas (9-Block Matrix)",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: BUSINESS MODEL CANVAS (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: BUSINESS MODEL CANVAS (10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "Rounded Rectangle 7",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1463040,
+        "width": 2011680,
+        "height": 2971800,
+        "paragraphs": [
+          {
+            "full_text": "KEY PARTNERS",
+            "runs": [
+              {
+                "text": "KEY PARTNERS",
+                "font_name": null,
+                "size_pt": 14.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• College / ESEC",
+            "runs": [
+              {
+                "text": "• College / ESEC",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• CoE / Lab",
+            "runs": [
+              {
+                "text": "• CoE / Lab",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• AI service provider",
+            "runs": [
+              {
+                "text": "• AI service provider",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "name": "Rounded Rectangle 8",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 4983480,
+        "top": 1463040,
+        "width": 2194560,
+        "height": 2971800,
+        "paragraphs": [
+          {
+            "full_text": "VALUE PROPOSITION",
+            "runs": [
+              {
+                "text": "VALUE PROPOSITION",
+                "font_name": null,
+                "size_pt": 14.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Quick information",
+            "runs": [
+              {
+                "text": "• Quick information",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Easy AI interaction",
+            "runs": [
+              {
+                "text": "• Easy AI interaction",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "name": "Rounded Rectangle 9",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 9464040,
+        "top": 1463040,
+        "width": 2041855,
+        "height": 2971800,
+        "paragraphs": [
+          {
+            "full_text": "CUSTOMER SEGMENTS",
+            "runs": [
+              {
+                "text": "CUSTOMER SEGMENTS",
+                "font_name": null,
+                "size_pt": 14.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Colleges",
+            "runs": [
+              {
+                "text": "• Colleges",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Students & staff",
+            "runs": [
+              {
+                "text": "• Students & staff",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 9,
+        "name": "Rounded Rectangle 10",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 2834640,
+        "top": 1463040,
+        "width": 2011680,
+        "height": 1417320,
+        "paragraphs": [
+          {
+            "full_text": "KEY ACTIVITIES",
+            "runs": [
+              {
+                "text": "KEY ACTIVITIES",
+                "font_name": null,
+                "size_pt": 14.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Software development",
+            "runs": [
+              {
+                "text": "• Software development",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• AI integration",
+            "runs": [
+              {
+                "text": "• AI integration",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Testing & updates",
+            "runs": [
+              {
+                "text": "• Testing & updates",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 10,
+        "name": "Rounded Rectangle 11",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 2834640,
+        "top": 3017520,
+        "width": 2011680,
+        "height": 1417320,
+        "paragraphs": [
+          {
+            "full_text": "KEY RESOURCES",
+            "runs": [
+              {
+                "text": "KEY RESOURCES",
+                "font_name": null,
+                "size_pt": 14.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Development skills",
+            "runs": [
+              {
+                "text": "• Development skills",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• College data",
+            "runs": [
+              {
+                "text": "• College data",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Cloud services",
+            "runs": [
+              {
+                "text": "• Cloud services",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 11,
+        "name": "Rounded Rectangle 12",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7315200,
+        "top": 1463040,
+        "width": 2011680,
+        "height": 1417320,
+        "paragraphs": [
+          {
+            "full_text": "CUSTOMER RELATIONSHIPS",
+            "runs": [
+              {
+                "text": "CUSTOMER RELATIONSHIPS",
+                "font_name": null,
+                "size_pt": 14.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Self-service",
+            "runs": [
+              {
+                "text": "• Self-service",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Online support",
+            "runs": [
+              {
+                "text": "• Online support",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 12,
+        "name": "Rounded Rectangle 13",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7315200,
+        "top": 3017520,
+        "width": 2011680,
+        "height": 1417320,
+        "paragraphs": [
+          {
+            "full_text": "CHANNELS",
+            "runs": [
+              {
+                "text": "CHANNELS",
+                "font_name": null,
+                "size_pt": 14.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• College website",
+            "runs": [
+              {
+                "text": "• College website",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Web / mobile app",
+            "runs": [
+              {
+                "text": "• Web / mobile app",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 13,
+        "name": "Rounded Rectangle 14",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 4572000,
+        "width": 5303520,
+        "height": 1371600,
+        "paragraphs": [
+          {
+            "full_text": "COST STRUCTURE",
+            "runs": [
+              {
+                "text": "COST STRUCTURE",
+                "font_name": null,
+                "size_pt": 14.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Development",
+            "runs": [
+              {
+                "text": "• Development",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• AI API",
+            "runs": [
+              {
+                "text": "• AI API",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Hosting",
+            "runs": [
+              {
+                "text": "• Hosting",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 14,
+        "name": "Rounded Rectangle 15",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 6126480,
+        "top": 4572000,
+        "width": 5379415,
+        "height": 1371600,
+        "paragraphs": [
+          {
+            "full_text": "REVENUE STREAMS",
+            "runs": [
+              {
+                "text": "REVENUE STREAMS",
+                "font_name": null,
+                "size_pt": 14.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Setup fee",
+            "runs": [
+              {
+                "text": "• Setup fee",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Annual subscription",
+            "runs": [
+              {
+                "text": "• Annual subscription",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Maintenance",
+            "runs": [
+              {
+                "text": "• Maintenance",
+                "font_name": null,
+                "size_pt": 12.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 7,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 640080,
+        "paragraphs": [
+          {
+            "full_text": "Technical & Financial Feasibility Assessment",
+            "runs": [
+              {
+                "text": "Technical & Financial Feasibility Assessment",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: FEASIBILITY IN INCUBATION CONTEXT (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: FEASIBILITY IN INCUBATION CONTEXT (10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "Rounded Rectangle 7",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1463040,
+        "width": 5120640,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "TECHNICAL FEASIBILITY (Can We Build It?)",
+            "runs": [
+              {
+                "text": "TECHNICAL FEASIBILITY (Can We Build It?)",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Hardware: Not required.",
+            "runs": [
+              {
+                "text": "• Hardware: Not required.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Stack: React, Node.js, Express, MongoDB.",
+            "runs": [
+              {
+                "text": "• Stack: React, Node.js, Express, MongoDB.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• AI: AI API for chatbot responses.",
+            "runs": [
+              {
+                "text": "• AI: AI API for chatbot responses.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Skills: CSE skills support development.",
+            "runs": [
+              {
+                "text": "• Skills: CSE skills support development.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "name": "Rounded Rectangle 8",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 6385255,
+        "top": 1463040,
+        "width": 5120640,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "FINANCIAL FEASIBILITY (Is it Economical?)",
+            "runs": [
+              {
+                "text": "FINANCIAL FEASIBILITY (Is it Economical?)",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Prototype: Low-cost software build.",
+            "runs": [
+              {
+                "text": "• Prototype: Low-cost software build.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Main costs: AI API + hosting.",
+            "runs": [
+              {
+                "text": "• Main costs: AI API + hosting.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Price idea: ₹20,000 setup + ₹10,000/year.",
+            "runs": [
+              {
+                "text": "• Price idea: ₹20,000 setup + ₹10,000/year.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Model: Institution-based subscription.",
+            "runs": [
+              {
+                "text": "• Model: Institution-based subscription.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 8,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 640080,
+        "paragraphs": [
+          {
+            "full_text": "Centre of Excellence (CoE) & Incubation Mapping",
+            "runs": [
+              {
+                "text": "Centre of Excellence (CoE) & Incubation Mapping",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: FUNDING STRATEGY (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: ",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              },
+              {
+                "text": "FUNDING STRATEGY ",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              },
+              {
+                "text": "(10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "TextBox 7",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 1234440,
+        "width": 10820095,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Syllabus Focus: Mapping your product requirements directly to the college labs, equipment, and incubation ecosystems.",
+            "runs": [
+              {
+                "text": "Syllabus Focus: Mapping your product requirements directly to the college labs, equipment, and incubation ecosystems.",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "name": "Rounded Rectangle 8",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1645920,
+        "width": 5120640,
+        "height": 4297680,
+        "paragraphs": [
+          {
+            "full_text": "COLLEGE COE & LAB INFRASTRUCTURE",
+            "runs": [
+              {
+                "text": "COLLEGE COE & LAB INFRASTRUCTURE",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Lab: Product Development Lab, ESEC.",
+            "runs": [
+              {
+                "text": "• Lab: Product Development Lab, ESEC.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Facilities: Development & testing systems.",
+            "runs": [
+              {
+                "text": "• Facilities: Development & testing systems.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Mentor: Ms. E. Janani.",
+            "runs": [
+              {
+                "text": "• Mentor: Ms. E. Janani.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "name": "Rounded Rectangle 9",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 6385255,
+        "top": 1645920,
+        "width": 5120640,
+        "height": 4297680,
+        "paragraphs": [
+          {
+            "full_text": "INCUBATION CENTRE VALUE-ADD",
+            "runs": [
+              {
+                "text": "INCUBATION CENTRE VALUE-ADD",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Prototype testing support.",
+            "runs": [
+              {
+                "text": "• Prototype testing support.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Business model guidance.",
+            "runs": [
+              {
+                "text": "• Business model guidance.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Product improvement feedback.",
+            "runs": [
+              {
+                "text": "• Product improvement feedback.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 9,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 640080,
+        "paragraphs": [
+          {
+            "full_text": "Business Opportunity & Scaling Potential",
+            "runs": [
+              {
+                "text": "Business Opportunity & Scaling Potential",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: MARKET STRATEGY (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: ",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              },
+              {
+                "text": "MARKET STRATEGY ",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              },
+              {
+                "text": "(10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "Rounded Rectangle 7",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1463040,
+        "width": 10820095,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "WHY CAN THIS BECOME A BUSINESS?",
+            "runs": [
+              {
+                "text": "WHY CAN THIS BECOME A BUSINESS?",
+                "font_name": null,
+                "size_pt": 16.5,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Problem: Students and visitors need quick campus information.",
+            "runs": [
+              {
+                "text": "• Problem: Students and visitors need quick campus information.",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Solution: A 24/7 personal AI assistant for the campus.",
+            "runs": [
+              {
+                "text": "• Solution: A 24/7 personal AI assistant for the campus.",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Customers: Colleges and educational institutions.",
+            "runs": [
+              {
+                "text": "• Customers: Colleges and educational institutions.",
+                "font_name": null,
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Entry: Pilot in ESEC → improve → sell to other colleges.",
+            "runs": [
+              {
+                "text": "• Entry: Pilot in ESEC → improve → sell to other colleges.",
+                "font_name": "Arial",
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Growth: Customize the same platform for multiple colleges.",
+            "runs": [
+              {
+                "text": "• Growth: Customize the same platform for multiple colleges.",
+                "font_name": "Arial",
+                "size_pt": 13.2,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• SOM: ESEC + nearby colleges",
+            "runs": [
+              {
+                "text": "• SOM: ESEC + nearby colleges",
+                "font_name": "Arial",
+                "size_pt": 11.5,
+                "bold": null,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "3. Market Entry Strategy:",
+            "runs": [
+              {
+                "text": "3. Market Entry Strategy:",
+                "font_name": "Arial",
+                "size_pt": 11.5,
+                "bold": null,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Pilot → feedback → improve → sell to colleges",
+            "runs": [
+              {
+                "text": "Pilot → feedback → improve → sell to colleges",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "4. Scaling:",
+            "runs": [
+              {
+                "text": "4. Scaling:",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "One platform can be customized for many colleges.",
+            "runs": [
+              {
+                "text": "One platform can be customized for many colleges.",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 10,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 640080,
+        "paragraphs": [
+          {
+            "full_text": "The 1-Minute Elevator Pitch Template",
+            "runs": [
+              {
+                "text": "The 1-Minute Elevator Pitch Template",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: INVESTOR PITCH DECK (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: ",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              },
+              {
+                "text": "INVESTOR ",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              },
+              {
+                "text": "PITCH ",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              },
+              {
+                "text": "DECK",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              },
+              {
+                "text": " (10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "Rounded Rectangle 7",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1463040,
+        "width": 10820095,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "THE ELEVATOR PITCH SCRIPTHOLDER",
+            "runs": [
+              {
+                "text": "THE ELEVATOR PITCH SCRIPTHOLDER",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "“Good morning panel members. Our project, College AI Assistant, solves the problem of scattered college information. It gives students and staff quick answers through a simple AI conversation. We use React, Node.js, MongoDB and an AI API to build the system. Our goal is to make campus information easier to access and offer the solution to colleges through an institution-based model.”",
+            "runs": [
+              {
+                "text": "“Good morning panel members. Our project, College AI Assistant, solves the problem of scattered college information. It gives students and staff quick answers through a simple AI conversation. We use React, Node.js, MongoDB and an AI API to build the system. Our goal is to make campus information easier to access and offer the solution to colleges through an institution-based model.”",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 11,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 640080,
+        "paragraphs": [
+          {
+            "full_text": "Continuous Assessment Roadmap & Milestones",
+            "runs": [
+              {
+                "text": "Continuous Assessment Roadmap & Milestones",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: PITCH & VIVA-VOCE (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: PITCH & VIVA-VOCE (10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "Rounded Rectangle 7",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1645920,
+        "width": 2468880,
+        "height": 4114800,
+        "paragraphs": [
+          {
+            "full_text": "WEEK 1 - 6",
+            "runs": [
+              {
+                "text": "WEEK 1 - 6",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "MILESTONE I: IDEA VALIDATION",
+            "runs": [
+              {
+                "text": "MILESTONE I: IDEA VALIDATION",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Problem & solution validation",
+            "runs": [
+              {
+                "text": "• Problem & solution validation",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Competitor study",
+            "runs": [
+              {
+                "text": "• Competitor study",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Business model",
+            "runs": [
+              {
+                "text": "• Business model",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• 9-block BMC finalized",
+            "runs": [
+              {
+                "text": "• 9-block BMC finalized",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• COE resource mapping",
+            "runs": [
+              {
+                "text": "• COE resource mapping",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Review I: 50 Marks",
+            "runs": [
+              {
+                "text": "• Review I: 50 Marks",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "name": "Rounded Rectangle 8",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 3429000,
+        "top": 1645920,
+        "width": 2468880,
+        "height": 4114800,
+        "paragraphs": [
+          {
+            "full_text": "WEEK 7 - 12",
+            "runs": [
+              {
+                "text": "WEEK 7 - 12",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "MILESTONE II: BUILD THE DEMO WEB",
+            "runs": [
+              {
+                "text": "MILESTONE II: BUILD THE DEMO WEB",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• UI development",
+            "runs": [
+              {
+                "text": "• UI development",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Database setup",
+            "runs": [
+              {
+                "text": "• Database setup",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• AI integration",
+            "runs": [
+              {
+                "text": "• AI integration",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Go-To-Market strategy",
+            "runs": [
+              {
+                "text": "• Go-To-Market strategy",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Technical risk mitigation",
+            "runs": [
+              {
+                "text": "• Technical risk mitigation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Review II: 50 Marks",
+            "runs": [
+              {
+                "text": "• Review II: 50 Marks",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "name": "Rounded Rectangle 9",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 6172200,
+        "top": 1645920,
+        "width": 2468880,
+        "height": 4114800,
+        "paragraphs": [
+          {
+            "full_text": "WEEK 13 - 15",
+            "runs": [
+              {
+                "text": "WEEK 13 - 15",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "MILESTONE III: PROGRESS & FULL WEB",
+            "runs": [
+              {
+                "text": "MILESTONE III: PROGRESS & FULL WEB",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Complete web features",
+            "runs": [
+              {
+                "text": "• Complete web features",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Testing & improvements",
+            "runs": [
+              {
+                "text": "• Testing & improvements",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• User feedback",
+            "runs": [
+              {
+                "text": "• User feedback",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Iterative design corrections",
+            "runs": [
+              {
+                "text": "• Iterative design corrections",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Mentorship logs completed",
+            "runs": [
+              {
+                "text": "• Mentorship logs completed",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Component III: 50 Marks",
+            "runs": [
+              {
+                "text": "• Component III: 50 Marks",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 9,
+        "name": "Rounded Rectangle 10",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 8915400,
+        "top": 1645920,
+        "width": 2468880,
+        "height": 4114800,
+        "paragraphs": [
+          {
+            "full_text": "WEEK 16",
+            "runs": [
+              {
+                "text": "WEEK 16",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "MILESTONE IV: FULL-FLEDGED APP",
+            "runs": [
+              {
+                "text": "MILESTONE IV: FULL-FLEDGED APP",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Convert web to app",
+            "runs": [
+              {
+                "text": "• Convert web to app",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Final testing",
+            "runs": [
+              {
+                "text": "• Final testing",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Product demonstration",
+            "runs": [
+              {
+                "text": "• Product demonstration",
+                "font_name": null,
+                "size_pt": 12.5,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Filing/Publication evidence",
+            "runs": [
+              {
+                "text": "• Filing/Publication evidence",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Commercialization route",
+            "runs": [
+              {
+                "text": "• Commercialization route",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Component IV: 50 Marks",
+            "runs": [
+              {
+                "text": "• Component IV: 50 Marks",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 12,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 492443,
+        "paragraphs": [
+          {
+            "full_text": "Risk & Feasibility Analysis",
+            "runs": [
+              {
+                "text": "Risk & Feasibility Analysis",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: RISK & FEASIBILITY ANALYSIS (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: ",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              },
+              {
+                "text": "RISK & FEASIBILITY ANALYSIS ",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              },
+              {
+                "text": "(10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "TextBox 7",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 1234440,
+        "width": 5072222,
+        "height": 269304,
+        "paragraphs": [
+          {
+            "full_text": "Assessment of technical, financial, market, operational and regulatory risks",
+            "runs": [
+              {
+                "text": "Assessment of technical, financial, market, operational and regulatory risks",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "name": "Rounded Rectangle 8",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1645920,
+        "width": 5120640,
+        "height": 4297680,
+        "paragraphs": [
+          {
+            "full_text": "Risk Identification & Mitigation",
+            "runs": [
+              {
+                "text": "Risk Identification & Mitigation",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Technical: AI errors → testing & validation",
+            "runs": [
+              {
+                "text": "Technical: AI errors → testing & validation",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Financial: API/hosting cost → usage control",
+            "runs": [
+              {
+                "text": "Financial: API/hosting cost → usage control",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Market: Low adoption → pilot testing",
+            "runs": [
+              {
+                "text": "Market: Low adoption → pilot testing",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Operational: Outdated data → admin updates",
+            "runs": [
+              {
+                "text": "Operational: Outdated data → admin updates",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Data: Privacy concerns → access control",
+            "runs": [
+              {
+                "text": "Data: Privacy concerns → access control",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "name": "Rounded Rectangle 9",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 6385255,
+        "top": 1645920,
+        "width": 5120640,
+        "height": 4297680,
+        "paragraphs": [
+          {
+            "full_text": "Feasibility Decision",
+            "runs": [
+              {
+                "text": "Feasibility Decision",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Technical: Feasible",
+            "runs": [
+              {
+                "text": "Technical: Feasible",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Financial: Low-cost software model",
+            "runs": [
+              {
+                "text": "Financial: Low-cost software model",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Market: Colleges with recurring queries",
+            "runs": [
+              {
+                "text": "Market: Colleges with recurring queries",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Incubation: Product Development Lab support",
+            "runs": [
+              {
+                "text": "Incubation: Product Development Lab support",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "Decision: GO — Build & Test Prototype",
+            "runs": [
+              {
+                "text": "Decision: GO — Build & Test Prototype",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "slide_num": 13,
+    "shapes": [
+      {
+        "index": 0,
+        "name": "TextBox 1",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 274320,
+        "width": 10820095,
+        "height": 274320,
+        "paragraphs": [
+          {
+            "full_text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+            "runs": [
+              {
+                "text": "REVIEW I: IDEA VALIDATION & BUSINESS MODELING",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "name": "TextBox 2",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 685800,
+        "top": 502920,
+        "width": 10820095,
+        "height": 640080,
+        "paragraphs": [
+          {
+            "full_text": "Viva-Voce Preparation: Strategic Q&A Prep",
+            "runs": [
+              {
+                "text": "Viva-Voce Preparation: Strategic Q&A Prep",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "name": "Rectangle 3",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1188720,
+        "width": 10820095,
+        "height": 25400,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "name": "Rectangle 4",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 6217920,
+        "width": 10820095,
+        "height": 411480,
+        "paragraphs": [
+          {
+            "full_text": "",
+            "runs": [],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "name": "TextBox 5",
+        "shape_type": "TEXT_BOX (17)",
+        "left": 822960,
+        "top": 6236208,
+        "width": 5486400,
+        "height": 365760,
+        "paragraphs": [
+          {
+            "full_text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+            "runs": [
+              {
+                "text": "Course: 23MEY06 / 23CSY06 Entrepreneurship & Business Incubation",
+                "font_name": null,
+                "size_pt": null,
+                "bold": null,
+                "italic": null
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "name": "Rounded Rectangle 6",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 7498079,
+        "top": 6263640,
+        "width": 3840480,
+        "height": 320040,
+        "paragraphs": [
+          {
+            "full_text": "RUBRIC: PITCH & VIVA-VOCE (10 MARKS)",
+            "runs": [
+              {
+                "text": "RUBRIC: PITCH & VIVA-VOCE (10 MARKS)",
+                "font_name": "Arial",
+                "size_pt": 9.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "FFFFFF"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "name": "Rounded Rectangle 7",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 685800,
+        "top": 1463040,
+        "width": 3322015,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "HOD'S COMPLIANCE EXPECTATIONS",
+            "runs": [
+              {
+                "text": "HOD'S COMPLIANCE EXPECTATIONS",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Focus: Syllabus adherence & execution.",
+            "runs": [
+              {
+                "text": "• Focus: Syllabus adherence & execution.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Q1: Are you using the Product Development Lab?",
+            "runs": [
+              {
+                "text": "• Q1: Are you using the Product Development Lab?",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Prep: Maintain project records.",
+            "runs": [
+              {
+                "text": "• Prep: Maintain project records.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Q2: How will the business earn revenue?",
+            "runs": [
+              {
+                "text": "• Q2: How will the business earn revenue?",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Prep: Explain setup fee + subscription.",
+            "runs": [
+              {
+                "text": "• Prep: Explain setup fee + subscription.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "name": "Rounded Rectangle 8",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 4433925,
+        "top": 1463040,
+        "width": 3322015,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "FACULTY MEMBER'S TECHNICAL CONCERNS",
+            "runs": [
+              {
+                "text": "FACULTY MEMBER'S TECHNICAL CONCERNS",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Focus: Technical clarity & feasibility.",
+            "runs": [
+              {
+                "text": "• Focus: Technical clarity & feasibility.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Q1: What makes your idea unique?",
+            "runs": [
+              {
+                "text": "• Q1: What makes your idea unique?",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Prep: Explain the college-specific AI knowledge base.",
+            "runs": [
+              {
+                "text": "• Prep: Explain the college-specific AI knowledge base.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Q2: Can you build it with college facilities?",
+            "runs": [
+              {
+                "text": "• Q2: Can you build it with college facilities?",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Prep: Explain the simple software stack.",
+            "runs": [
+              {
+                "text": "• Prep: Explain the simple software stack.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "name": "Rounded Rectangle 9",
+        "shape_type": "AUTO_SHAPE (1)",
+        "left": 8182050,
+        "top": 1463040,
+        "width": 3322015,
+        "height": 4480560,
+        "paragraphs": [
+          {
+            "full_text": "INDUSTRY EXPERT'S MARKET QUESTIONS",
+            "runs": [
+              {
+                "text": "INDUSTRY EXPERT'S MARKET QUESTIONS",
+                "font_name": null,
+                "size_pt": 15.0,
+                "bold": true,
+                "italic": null,
+                "color_rgb": "DC2D2D"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Focus: Business viability & scaling.",
+            "runs": [
+              {
+                "text": "• Focus: Business viability & scaling.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Q1: Who will buy it first?",
+            "runs": [
+              {
+                "text": "• Q1: Who will buy it first?",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Prep: Colleges and educational institutions.",
+            "runs": [
+              {
+                "text": "• Prep: Colleges and educational institutions.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Q2: How can you protect the innovation?",
+            "runs": [
+              {
+                "text": "• Q2: How can you protect the innovation?",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          },
+          {
+            "full_text": "• Prep: Discuss software/IP possibilities.",
+            "runs": [
+              {
+                "text": "• Prep: Discuss software/IP possibilities.",
+                "font_name": null,
+                "size_pt": 13.0,
+                "bold": false,
+                "italic": null,
+                "color_rgb": "1F2937"
+              }
+            ],
+            "level": 0
+          }
+        ]
+      }
+    ]
+  }
+]

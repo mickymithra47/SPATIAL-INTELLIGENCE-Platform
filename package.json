@@ -1,0 +1,30 @@
+{
+  "name": "spatial-intelligence-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI that understands, navigates, and operates physical spaces",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "db:migrate": "npm run migrate --workspace=@spatial/database",
+    "db:seed": "npm run seed --workspace=@spatial/database",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "keywords": [
+    "spatial-intelligence",
+    "ai-agent",
+    "indoor-navigation",
+    "digital-twin",
+    "knowledge-graph",
+    "postgis"
+  ],
+  "author": "Spatial AI Team",
+  "license": "UNLICENSED"
+}
