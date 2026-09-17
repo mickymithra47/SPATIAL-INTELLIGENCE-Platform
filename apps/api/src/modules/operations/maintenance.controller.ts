@@ -1,54 +1,39 @@
-import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
-import { MaintenanceTicket } from '@spatial/types';
+import { Controller, Get, Post, Patch, Body, Param, NotFoundException } from '@nestjs/common';
+import { SpatialDataService } from '../../common/data/spatial-data.service.js';
 
 export class CreateTicketDto {
-  roomId: string;
-  assetId?: string;
-  issueSummary: string;
-  details?: string;
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  room: string;
+  asset?: string;
+  issue: string;
+  priority?: string;
 }
 
 @Controller('api/v1/maintenance')
 export class MaintenanceController {
+  constructor(private spatialData: SpatialDataService) {}
+
   @Get('tickets')
-  async getTickets(): Promise<MaintenanceTicket[]> {
-    return [
-      {
-        id: 't-1001',
-        ticketNumber: 'TICK-4821',
-        roomId: 'r-sample-ai-lab-2',
-        assetId: 'eq-proj-01',
-        reportedByUserId: 'usr-student-01',
-        issueSummary: 'Projector ceiling mount HDMI signal loss',
-        status: 'OPEN',
-        priority: 'MEDIUM',
-        createdAt: new Date().toISOString(),
-      },
-    ];
+  async getTickets() {
+    return this.spatialData.getTickets();
   }
 
   @Post('tickets')
-  async createTicket(@Body() dto: CreateTicketDto): Promise<MaintenanceTicket> {
-    return {
-      id: `t-${Date.now()}`,
-      ticketNumber: `TICK-${Math.floor(1000 + Math.random() * 9000)}`,
-      roomId: dto.roomId,
-      assetId: dto.assetId,
-      reportedByUserId: 'usr-current',
-      issueSummary: dto.issueSummary,
-      details: dto.details,
-      status: 'OPEN',
-      priority: dto.priority || 'MEDIUM',
-      createdAt: new Date().toISOString(),
-    };
+  async createTicket(@Body() dto: CreateTicketDto) {
+    return this.spatialData.createTicket({
+      roomQuery: dto.room,
+      assetQuery: dto.asset,
+      issueSummary: dto.issue,
+      priority: dto.priority,
+    });
   }
 
   @Patch('tickets/:id/status')
   async updateStatus(
     @Param('id') id: string,
-    @Body('status') status: MaintenanceTicket['status']
+    @Body('status') status: string
   ) {
-    return { ticketId: id, status, updated: true };
+    const updated = this.spatialData.updateTicketStatus(id, status);
+    if (!updated) throw new NotFoundException(`Ticket '${id}' not found`);
+    return updated;
   }
 }

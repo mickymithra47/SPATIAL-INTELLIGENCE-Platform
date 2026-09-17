@@ -1,4 +1,6 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Headers } from '@nestjs/common';
+import { AgentService } from './services/agent.service.js';
+import { ToolExecutorService, ToolName } from './services/tool-executor.service.js';
 import { AIResponse } from '@spatial/types';
 
 export class ChatMessageDto {
@@ -8,30 +10,35 @@ export class ChatMessageDto {
   currentRoomId?: string;
 }
 
+export class ExecuteToolDto {
+  toolName: ToolName;
+  arguments: Record<string, unknown>;
+}
+
 @Controller('api/v1/ai')
 export class AIAgentController {
+  constructor(
+    private agentService: AgentService,
+    private toolExecutor: ToolExecutorService
+  ) {}
+
   @Post('chat')
   @HttpCode(HttpStatus.OK)
-  async handleChat(@Body() dto: ChatMessageDto): Promise<AIResponse> {
-    // Grounded AI Agent Execution Pipeline:
-    // 1. Intent Detection
-    // 2. Controlled Tool Execution (Spatial Graph / Timetable / Maintenance)
-    // 3. Structured Response Formulation
-    
-    return {
-      reply: `I have identified AI Lab 2 in Block B on the second floor. It is currently operational.`,
-      conversationId: dto.conversationId || 'conv-sample-101',
-      highlightedEntity: {
-        type: 'ROOM',
-        id: 'r-sample-ai-lab-2',
-      },
-      executedActions: [
-        {
-          actionType: 'RESOLVE_SPATIAL_ENTITY',
-          summary: 'Located AI Lab 2 in Engineering Block B, Floor 2',
-          payload: { roomId: 'r-sample-ai-lab-2', building: 'Block B', floor: 2 },
-        },
-      ],
-    };
+  async handleChat(
+    @Body() dto: ChatMessageDto,
+    @Headers('x-user-role') roleHeader?: string
+  ): Promise<AIResponse> {
+    const userRole = roleHeader || 'STUDENT';
+    return this.agentService.processMessage(dto.message, dto.conversationId, userRole);
+  }
+
+  @Post('tool')
+  @HttpCode(HttpStatus.OK)
+  async handleTool(
+    @Body() dto: ExecuteToolDto,
+    @Headers('x-user-role') roleHeader?: string
+  ) {
+    const userRole = roleHeader || 'STUDENT';
+    return this.toolExecutor.executeTool(dto.toolName, dto.arguments, userRole);
   }
 }
