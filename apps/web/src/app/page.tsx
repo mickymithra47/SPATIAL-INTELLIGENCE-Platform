@@ -1,11 +1,19 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { GlobalAIChatBar } from '../components/ai/GlobalAIChatBar';
+import { AIChatDrawer } from '../components/ai/AIChatDrawer';
 import { CampusMapView } from '../components/map/CampusMapView';
-import { Navigation, Calendar, Wrench, ShieldCheck, Compass, Cpu } from 'lucide-react';
+import { MaintenanceReportModal } from '../components/maintenance/MaintenanceReportModal';
+import { useAIChatStore } from '../stores/useAIChatStore';
+import { Navigation, Calendar, Wrench, ShieldCheck, Compass, Cpu, Layers } from 'lucide-react';
 
 export default function DashboardPage() {
+  const { sendMessage } = useAIChatStore();
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center p-6">
+    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center p-6 relative overflow-x-hidden">
       {/* Top Header */}
       <header className="w-full max-w-6xl flex items-center justify-between py-4 border-b border-slate-900 mb-6">
         <div className="flex items-center gap-3">
@@ -14,15 +22,21 @@ export default function DashboardPage() {
           </div>
           <div>
             <h1 className="text-base font-bold text-white tracking-tight">SPATIAL INTELLIGENCE</h1>
-            <p className="text-[11px] text-slate-400">Campus Operating System • Main Campus</p>
+            <p className="text-[11px] text-slate-400">Campus Operating System • National Institute of Technology</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/20">
+        <div className="flex items-center gap-3">
+          <span className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/20">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
             Knowledge Graph Live
           </span>
+          <button
+            onClick={() => setIsReportModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-semibold border border-amber-500/30 transition-all"
+          >
+            <Wrench className="w-3.5 h-3.5" /> Report Issue
+          </button>
         </div>
       </header>
 
@@ -32,23 +46,54 @@ export default function DashboardPage() {
         <GlobalAIChatBar />
 
         {/* Quick Operational Actions Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
           {[
-            { label: 'Next Class', icon: Calendar, color: 'text-cyan-400' },
-            { label: 'Find Room', icon: Compass, color: 'text-indigo-400' },
-            { label: 'Indoor Route', icon: Navigation, color: 'text-blue-400' },
-            { label: 'Lab Machines', icon: Cpu, color: 'text-emerald-400' },
-            { label: 'Report Issue', icon: Wrench, color: 'text-amber-400' },
-            { label: 'Safety Exits', icon: ShieldCheck, color: 'text-rose-400' },
-          ].map((action) => {
-            const Icon = action.icon;
+            {
+              label: 'Next Class',
+              icon: Calendar,
+              color: 'text-cyan-400',
+              action: () => sendMessage('What is scheduled in Room 204?'),
+            },
+            {
+              label: 'Find Room 204',
+              icon: Compass,
+              color: 'text-indigo-400',
+              action: () => sendMessage('Where is Room 204?'),
+            },
+            {
+              label: 'Indoor Route',
+              icon: Navigation,
+              color: 'text-blue-400',
+              action: () => sendMessage('How do I get from Room 101 to Room 204?'),
+            },
+            {
+              label: 'Equipment Status',
+              icon: Cpu,
+              color: 'text-emerald-400',
+              action: () => sendMessage('Where is projector P-204?'),
+            },
+            {
+              label: 'Report Issue',
+              icon: Wrench,
+              color: 'text-amber-400',
+              action: () => setIsReportModalOpen(true),
+            },
+            {
+              label: 'Safety Exits',
+              icon: ShieldCheck,
+              color: 'text-rose-400',
+              action: () => sendMessage('Where are the elevators and emergency exits in Block B?'),
+            },
+          ].map((item) => {
+            const Icon = item.icon;
             return (
               <button
-                key={action.label}
-                className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-900/60 hover:bg-slate-900 border border-slate-800/80 hover:border-slate-700 transition-all text-left group"
+                key={item.label}
+                onClick={item.action}
+                className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-900/60 hover:bg-slate-900 border border-slate-800/80 hover:border-slate-700 transition-all text-left group shadow-lg"
               >
-                <Icon className={`w-4 h-4 ${action.color} group-hover:scale-110 transition-transform`} />
-                <span className="text-xs font-medium text-slate-200">{action.label}</span>
+                <Icon className={`w-4 h-4 ${item.color} group-hover:scale-110 transition-transform`} />
+                <span className="text-xs font-semibold text-slate-200">{item.label}</span>
               </button>
             );
           })}
@@ -57,6 +102,15 @@ export default function DashboardPage() {
         {/* 2.5D Interactive Cartography Canvas */}
         <CampusMapView />
       </div>
+
+      {/* Expandable Slide-out Chat Drawer */}
+      <AIChatDrawer />
+
+      {/* Incident Report Modal */}
+      <MaintenanceReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+      />
     </main>
   );
 }
