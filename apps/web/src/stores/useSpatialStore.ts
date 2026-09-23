@@ -1,5 +1,34 @@
 import { create } from 'zustand';
-import { Campus, Building, Floor, Room, Waypoint } from '@spatial/types';
+import { Campus, Floor, Waypoint } from '@spatial/types';
+import {
+  ExtendedBuilding,
+  ExtendedRoom,
+  EquipmentItem,
+  SafetyNode,
+  EXTENDED_BUILDINGS,
+  EXTENDED_ROOMS,
+  EXTENDED_EQUIPMENT,
+  SAFETY_NODES,
+} from '../services/campusData.service';
+
+export type ViewMode = 'DIGITAL_TWIN' | 'ANALYTICS' | 'KNOWLEDGE_GRAPH' | 'SAFETY' | 'MAINTENANCE';
+export type MapPerspective = '2D' | '2.5D_ISOMETRIC' | '3D_TILT';
+export type UserRole = 'STUDENT' | 'FACULTY' | 'MAINTENANCE_STAFF' | 'CAMPUS_ADMIN';
+
+export interface SpatialLayers {
+  buildings: boolean;
+  rooms: boolean;
+  navigation: boolean;
+  peopleDensity: boolean;
+  wifiCoverage: boolean;
+  cctvCoverage: boolean;
+  energyConsumption: boolean;
+  airQuality: boolean;
+  equipment: boolean;
+  accessibility: boolean;
+  fireSafety: boolean;
+  parking: boolean;
+}
 
 export interface ActiveRoute {
   originName: string;
@@ -7,30 +36,109 @@ export interface ActiveRoute {
   totalDistanceMeters: number;
   estimatedMinutes: number;
   waypoints: Waypoint[];
+  accessible: boolean;
+  reasoning?: string;
+  steps?: {
+    instruction: string;
+    distance: string;
+    level: string;
+    type: 'WALK' | 'STAIR' | 'ELEVATOR' | 'DOOR';
+  }[];
 }
 
-interface SpatialState {
-  campuses: Campus[];
-  buildings: Building[];
-  floors: Floor[];
-  rooms: Room[];
+export type SelectedEntity =
+  | { type: 'ROOM'; data: ExtendedRoom }
+  | { type: 'BUILDING'; data: ExtendedBuilding }
+  | { type: 'EQUIPMENT'; data: EquipmentItem }
+  | { type: 'SAFETY'; data: SafetyNode }
+  | null;
 
+interface SpatialState {
+  // Navigation & View Mode
+  viewMode: ViewMode;
+  setViewMode: (mode: ViewMode) => void;
+
+  // Perspective & Camera Controls
+  perspective: MapPerspective;
+  setPerspective: (perspective: MapPerspective) => void;
+  zoomLevel: number;
+  setZoomLevel: (zoom: number) => void;
+  panOffset: { x: number; y: number };
+  setPanOffset: (offset: { x: number; y: number }) => void;
+  resetCamera: () => void;
+
+  // User Context
+  userRole: UserRole;
+  setUserRole: (role: UserRole) => void;
+
+  // Data Collections
+  campuses: Campus[];
+  buildings: ExtendedBuilding[];
+  rooms: ExtendedRoom[];
+  equipment: EquipmentItem[];
+  safetyNodes: SafetyNode[];
+
+  // Active Selections
   activeCampusId: string;
   activeBuildingId: string;
   activeFloorNumber: number;
-  selectedRoom: Room | null;
+  selectedEntity: SelectedEntity;
   highlightedEntityId: string | null;
   activeRoute: ActiveRoute | null;
+  selectedBuildingView: boolean; // true = building interior floorplan, false = campus macro view
 
+  // Spatial GIS Layers
+  layers: SpatialLayers;
+  toggleLayer: (layerName: keyof SpatialLayers) => void;
+  setLayers: (layers: Partial<SpatialLayers>) => void;
+
+  // Live Campus Metrics Counters
+  liveTelemetry: {
+    totalOccupants: number;
+    activeRooms: number;
+    onlineBuildings: number;
+    maintenanceAlerts: number;
+    equipmentWarnings: number;
+    safetyAlerts: number;
+  };
+
+  // Demo Runner State
+  isDemoRunning: boolean;
+  demoStepIndex: number;
+  setDemoRunning: (running: boolean) => void;
+  setDemoStepIndex: (index: number) => void;
+
+  // Actions
   setActiveCampusId: (id: string) => void;
   setActiveBuildingId: (id: string) => void;
   setActiveFloorNumber: (floorNum: number) => void;
-  setSelectedRoom: (room: Room | null) => void;
+  setSelectedEntity: (entity: SelectedEntity) => void;
+  setSelectedRoom: (room: ExtendedRoom | null) => void;
   setHighlightedEntityId: (id: string | null) => void;
   setActiveRoute: (route: ActiveRoute | null) => void;
+  setSelectedBuildingView: (interior: boolean) => void;
 }
 
-export const useSpatialStore = create<SpatialState>((set) => ({
+export const useSpatialStore = create<SpatialState>((set, get) => ({
+  viewMode: 'DIGITAL_TWIN',
+  setViewMode: (mode) => {
+    set({ viewMode: mode });
+    if (mode === 'SAFETY') {
+      get().setLayers({ fireSafety: true, navigation: true, peopleDensity: false });
+    }
+  },
+
+  perspective: '2.5D_ISOMETRIC',
+  setPerspective: (perspective) => set({ perspective }),
+  zoomLevel: 1,
+  setZoomLevel: (zoom) => set({ zoomLevel: Math.max(0.6, Math.min(2.2, zoom)) }),
+  panOffset: { x: 0, y: 0 },
+  setPanOffset: (panOffset) => set({ panOffset }),
+  resetCamera: () => set({ zoomLevel: 1, panOffset: { x: 0, y: 0 }, perspective: '2.5D_ISOMETRIC' }),
+
+  userRole: 'STUDENT',
+  setUserRole: (userRole) => set({ userRole }),
+
   campuses: [
     {
       id: 'c-main-001',
@@ -40,105 +148,85 @@ export const useSpatialStore = create<SpatialState>((set) => ({
       centerCoordinates: { latitude: 12.9716, longitude: 77.5946 },
     },
   ],
-  buildings: [
-    {
-      id: 'b-cse-001',
-      campusId: 'c-main-001',
-      name: 'Computer Science & AI Block B',
-      code: 'BLOCK_B',
-      totalFloors: 3,
-    },
-    {
-      id: 'b-admin-002',
-      campusId: 'c-main-001',
-      name: 'Central Administration & Library',
-      code: 'BLOCK_A',
-      totalFloors: 2,
-    },
-  ],
-  floors: [
-    {
-      id: 'fl-b-01',
-      buildingId: 'b-cse-001',
-      floorNumber: 1,
-      name: 'Ground Floor',
-      elevationMeters: 0,
-    },
-    {
-      id: 'fl-b-02',
-      buildingId: 'b-cse-001',
-      floorNumber: 2,
-      name: 'Second Floor',
-      elevationMeters: 4.5,
-    },
-  ],
-  rooms: [
-    {
-      id: 'r-101',
-      floorId: 'fl-b-01',
-      roomNumber: '101',
-      name: 'Lecture Hall 101',
-      roomType: 'CLASSROOM',
-      capacity: 60,
-      isAccessible: true,
-    },
-    {
-      id: 'r-102',
-      floorId: 'fl-b-01',
-      roomNumber: '102',
-      name: 'Computing Systems Lab 102',
-      roomType: 'COMPUTER_LAB',
-      capacity: 40,
-      isAccessible: true,
-    },
-    {
-      id: 'r-201',
-      floorId: 'fl-b-02',
-      roomNumber: '201',
-      name: 'Seminar Hall 201',
-      roomType: 'CLASSROOM',
-      capacity: 90,
-      isAccessible: true,
-    },
-    {
-      id: 'r-202',
-      floorId: 'fl-b-02',
-      roomNumber: '202',
-      name: 'Faculty Room 202',
-      roomType: 'FACULTY_OFFICE',
-      capacity: 15,
-      isAccessible: true,
-    },
-    {
-      id: 'r-204',
-      floorId: 'fl-b-02',
-      roomNumber: '204',
-      name: 'AI & Robotics Lab 204',
-      roomType: 'RESEARCH_LAB',
-      capacity: 40,
-      isAccessible: true,
-    },
-  ],
+  buildings: EXTENDED_BUILDINGS,
+  rooms: EXTENDED_ROOMS,
+  equipment: EXTENDED_EQUIPMENT,
+  safetyNodes: SAFETY_NODES,
 
   activeCampusId: 'c-main-001',
   activeBuildingId: 'b-cse-001',
   activeFloorNumber: 2,
-  selectedRoom: {
-    id: 'r-204',
-    floorId: 'fl-b-02',
-    roomNumber: '204',
-    name: 'AI & Robotics Lab 204',
-    roomType: 'RESEARCH_LAB',
-    capacity: 40,
-    isAccessible: true,
+  selectedBuildingView: true,
+
+  selectedEntity: {
+    type: 'ROOM',
+    data: EXTENDED_ROOMS[0], // Room 204
   },
   highlightedEntityId: 'r-204',
   activeRoute: null,
 
+  layers: {
+    buildings: true,
+    rooms: true,
+    navigation: true,
+    peopleDensity: false,
+    wifiCoverage: false,
+    cctvCoverage: false,
+    energyConsumption: false,
+    airQuality: false,
+    equipment: true,
+    accessibility: false,
+    fireSafety: false,
+    parking: true,
+  },
+
+  toggleLayer: (layerName) =>
+    set((state) => ({
+      layers: {
+        ...state.layers,
+        [layerName]: !state.layers[layerName],
+      },
+    })),
+
+  setLayers: (layerUpdates) =>
+    set((state) => ({
+      layers: {
+        ...state.layers,
+        ...layerUpdates,
+      },
+    })),
+
+  liveTelemetry: {
+    totalOccupants: 1240,
+    activeRooms: 84,
+    onlineBuildings: 12,
+    maintenanceAlerts: 18,
+    equipmentWarnings: 4,
+    safetyAlerts: 2,
+  },
+
+  isDemoRunning: false,
+  demoStepIndex: 0,
+  setDemoRunning: (isDemoRunning) => set({ isDemoRunning }),
+  setDemoStepIndex: (demoStepIndex) => set({ demoStepIndex }),
+
   setActiveCampusId: (id) => set({ activeCampusId: id }),
-  setActiveBuildingId: (id) => set({ activeBuildingId: id }),
+  setActiveBuildingId: (id) => {
+    const building = get().buildings.find((b) => b.id === id);
+    set({
+      activeBuildingId: id,
+      selectedBuildingView: true,
+      selectedEntity: building ? { type: 'BUILDING', data: building } : null,
+    });
+  },
   setActiveFloorNumber: (floorNum) => set({ activeFloorNumber: floorNum }),
-  setSelectedRoom: (room) => set({ selectedRoom: room }),
+  setSelectedEntity: (entity) => set({ selectedEntity: entity }),
+  setSelectedRoom: (room) =>
+    set({
+      selectedEntity: room ? { type: 'ROOM', data: room } : null,
+      highlightedEntityId: room ? room.id : null,
+    }),
   setHighlightedEntityId: (id) => set({ highlightedEntityId: id }),
   setActiveRoute: (route) => set({ activeRoute: route }),
+  setSelectedBuildingView: (interior) => set({ selectedBuildingView: interior }),
 }));

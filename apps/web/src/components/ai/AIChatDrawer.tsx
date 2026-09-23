@@ -2,156 +2,168 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useAIChatStore } from '../../stores/useAIChatStore';
-import { Bot, User, X, Send, Sparkles, Navigation, Wrench, Calendar, Compass, Shield } from 'lucide-react';
+import { useSpatialStore } from '../../stores/useSpatialStore';
+import { X, Sparkles, Send, Compass, ArrowRight, ShieldCheck, CheckCircle2, Navigation, Trash2 } from 'lucide-react';
 
 export function AIChatDrawer() {
-  const { isOpen, toggleOpen, messages, sendMessage, isLoading } = useAIChatStore();
+  const { isOpen, setIsOpen, messages, sendMessage, isLoading, clearChat } = useAIChatStore();
+  const { setSelectedRoom, setActiveFloorNumber, setActiveBuildingId, setSelectedBuildingView, setActiveRoute, setViewMode, rooms } =
+    useSpatialStore();
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, isOpen]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
+  if (!isOpen) return null;
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-    sendMessage(input.trim());
+    sendMessage(input);
     setInput('');
   };
 
-  const samplePrompts = [
-    { label: 'Where is Room 204?', prompt: 'Where is Room 204?', icon: Compass },
-    { label: 'Directions from 101 to 204', prompt: 'How do I get from Room 101 to Room 204?', icon: Navigation },
-    { label: 'Where is projector P-204?', prompt: 'Where is projector P-204?', icon: Shield },
-    { label: 'Schedule in Room 204', prompt: 'What is scheduled in Room 204?', icon: Calendar },
-    { label: 'Report Projector Issue', prompt: 'Create a maintenance ticket for the projector in Room 204', icon: Wrench },
-  ];
-
-  if (!isOpen) return null;
+  const handleActionClick = (actionType: string, payload: any) => {
+    if (actionType === 'FOCUS_ROOM') {
+      const room = rooms.find((r) => r.id === payload || r.roomNumber === payload);
+      if (room) {
+        setSelectedRoom(room);
+        setActiveFloorNumber(room.floorNumber);
+        setActiveBuildingId(room.buildingId);
+        setSelectedBuildingView(true);
+      }
+    } else if (actionType === 'START_ROUTE') {
+      setActiveRoute({
+        originName: 'Lecture Hall 101',
+        destinationName: 'AI & Robotics Lab 204',
+        totalDistanceMeters: 54,
+        estimatedMinutes: 1.8,
+        waypoints: [],
+        accessible: true,
+        reasoning: 'Shortest indoor accessible corridor via elevator',
+      });
+      setActiveFloorNumber(2);
+      setSelectedBuildingView(true);
+    } else if (actionType === 'SAFETY_MODE') {
+      setViewMode('SAFETY');
+    }
+  };
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-slate-900/95 backdrop-blur-xl border-l border-slate-800 shadow-2xl flex flex-col transition-all">
-      {/* Drawer Header */}
-      <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-950/60">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
-            <Bot className="w-4 h-4" />
+    <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-[440px] bg-slate-950/95 backdrop-blur-2xl border-l border-slate-800 shadow-2xl flex flex-col transition-all animate-in slide-in-from-right duration-300">
+      {/* Header */}
+      <div className="p-4 border-b border-slate-800/80 flex items-center justify-between bg-slate-900/60">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/20">
+            <Sparkles className="w-4 h-4" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-              Spatial Assistant <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              Campus AI Copilot
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
             </h3>
-            <p className="text-[10px] text-slate-400">Contextual Physical Grounding • Active</p>
+            <p className="text-[11px] text-slate-400">Spatially Grounded Natural Intelligence</p>
           </div>
         </div>
 
-        <button
-          onClick={toggleOpen}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={clearChat}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors"
+            title="Clear Chat"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            title="Close Drawer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
-      {/* Messages Feed */}
+      {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg) => {
-          const isUser = msg.role === 'user';
-          return (
+        {messages.map((msg) => (
+          <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
             <div
-              key={msg.id}
-              className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
+              className={`max-w-[88%] rounded-2xl p-3.5 text-xs leading-relaxed ${
+                msg.role === 'user'
+                  ? 'bg-gradient-to-r from-cyan-600 to-indigo-600 text-white font-medium shadow-md shadow-cyan-500/10'
+                  : 'bg-slate-900 border border-slate-800 text-slate-200 shadow-lg'
+              }`}
             >
-              {!isUser && (
-                <div className="w-7 h-7 rounded-lg bg-cyan-600/30 text-cyan-300 flex items-center justify-center flex-shrink-0 mt-1">
-                  <Bot className="w-3.5 h-3.5" />
+              <div className="whitespace-pre-line">{msg.content}</div>
+
+              {/* Spatial Explanation Card if available */}
+              {msg.spatialExplanation && (
+                <div className="mt-3 pt-2.5 border-t border-slate-800/80 bg-slate-950/60 rounded-xl p-2.5">
+                  <div className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <Navigation className="w-3 h-3" /> Spatial Decision Reasoning
+                  </div>
+                  <ul className="space-y-1 text-[11px] text-slate-300">
+                    {msg.spatialExplanation.highlights.map((h, i) => (
+                      <li key={i} className="flex items-start gap-1.5">
+                        <span className="text-cyan-400">✓</span> {h}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
-              <div
-                className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed ${
-                  isUser
-                    ? 'bg-cyan-600 text-white rounded-tr-none shadow-md'
-                    : 'bg-slate-800/80 border border-slate-700/60 text-slate-200 rounded-tl-none'
-                }`}
-              >
-                <div className="whitespace-pre-line">{msg.content}</div>
-                <div
-                  className={`text-[9px] mt-1 text-right ${
-                    isUser ? 'text-cyan-200/80' : 'text-slate-400'
-                  }`}
-                >
-                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </div>
-              </div>
-
-              {isUser && (
-                <div className="w-7 h-7 rounded-lg bg-slate-700 text-slate-200 flex items-center justify-center flex-shrink-0 mt-1">
-                  <User className="w-3.5 h-3.5" />
+              {/* Interactive Spatial Action Triggers */}
+              {msg.spatialActions && msg.spatialActions.length > 0 && (
+                <div className="mt-2.5 pt-2 border-t border-slate-800 flex flex-wrap gap-1.5">
+                  {msg.spatialActions.map((act, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleActionClick(act.type, act.payload)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-[11px] font-semibold border border-cyan-500/30 transition-all hover:scale-102"
+                    >
+                      <ArrowRight className="w-3 h-3" />
+                      {act.label}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
-          );
-        })}
+            <span className="text-[9px] text-slate-500 mt-1 px-1">
+              {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          </div>
+        ))}
 
         {isLoading && (
-          <div className="flex gap-3 items-center text-slate-400 text-xs">
-            <div className="w-7 h-7 rounded-lg bg-cyan-600/30 text-cyan-300 flex items-center justify-center animate-pulse">
-              <Bot className="w-3.5 h-3.5" />
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" />
-              <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce [animation-delay:0.2s]" />
-              <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce [animation-delay:0.4s]" />
-            </div>
+          <div className="flex items-center gap-2 p-3 bg-slate-900 border border-slate-800 rounded-2xl w-fit">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+            <span className="text-xs text-slate-400 font-medium">Resolving spatial graph & sensor telemetry...</span>
           </div>
         )}
-
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Suggested Quick Prompts */}
-      <div className="p-3 border-t border-slate-800/80 bg-slate-950/40">
-        <p className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-2">
-          Suggested Spatial Actions
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {samplePrompts.map((s) => {
-            const Icon = s.icon;
-            return (
-              <button
-                key={s.label}
-                onClick={() => sendMessage(s.prompt)}
-                disabled={isLoading}
-                className="flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all text-left"
-              >
-                <Icon className="w-3 h-3 text-cyan-400" />
-                {s.label}
-              </button>
-            );
-          })}
+      {/* Input Form */}
+      <form onSubmit={handleSend} className="p-3 border-t border-slate-800 bg-slate-900/80">
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask your campus anything..."
+            className="flex-1 bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
+          />
+          <button
+            type="submit"
+            disabled={!input.trim() || isLoading}
+            className="p-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl disabled:opacity-40 transition-colors"
+          >
+            <Send className="w-4 h-4" />
+          </button>
         </div>
-      </div>
-
-      {/* Input Field */}
-      <form onSubmit={handleSend} className="p-3 border-t border-slate-800 bg-slate-950/80 flex gap-2">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask a follow-up or report..."
-          className="flex-1 bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
-        />
-        <button
-          type="submit"
-          disabled={!input.trim() || isLoading}
-          className="p-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white disabled:opacity-40 transition-all flex items-center justify-center"
-        >
-          <Send className="w-3.5 h-3.5" />
-        </button>
       </form>
     </div>
   );

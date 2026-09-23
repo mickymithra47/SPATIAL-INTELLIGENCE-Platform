@@ -1,116 +1,98 @@
 'use client';
 
 import React, { useState } from 'react';
+import { TopHeaderBar } from '../components/layout/TopHeaderBar';
+import { MissionControlSidebar } from '../components/layout/MissionControlSidebar';
+import { CampusMapView } from '../components/map/CampusMapView';
+import { ContextInspector } from '../components/inspector/ContextInspector';
 import { GlobalAIChatBar } from '../components/ai/GlobalAIChatBar';
 import { AIChatDrawer } from '../components/ai/AIChatDrawer';
-import { CampusMapView } from '../components/map/CampusMapView';
+import { SafetyEmergencyHUD } from '../components/safety/SafetyEmergencyHUD';
+import { KnowledgeGraphModal } from '../components/intelligence/KnowledgeGraphModal';
+import { CampusAnalyticsView } from '../components/intelligence/CampusAnalyticsView';
+import { PresentationDemoRunner } from '../components/demo/PresentationDemoRunner';
 import { MaintenanceReportModal } from '../components/maintenance/MaintenanceReportModal';
-import { useAIChatStore } from '../stores/useAIChatStore';
-import { Navigation, Calendar, Wrench, ShieldCheck, Compass, Cpu, Layers } from 'lucide-react';
+import { useSpatialStore } from '../stores/useSpatialStore';
 
-export default function DashboardPage() {
-  const { sendMessage } = useAIChatStore();
+export default function CampusOperatingSystemPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
+  const [isKnowledgeGraphOpen, setIsKnowledgeGraphOpen] = useState(false);
+
+  const { setDemoRunning, setDemoStepIndex, viewMode } = useSpatialStore();
+
+  const handleStartDemo = () => {
+    setDemoStepIndex(0);
+    setDemoRunning(true);
+  };
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center p-6 relative overflow-x-hidden">
-      {/* Top Header */}
-      <header className="w-full max-w-6xl flex items-center justify-between py-4 border-b border-slate-900 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/20">
-            S
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col overflow-x-hidden selection:bg-cyan-500 selection:text-slate-950">
+      {/* Top Header Bar */}
+      <TopHeaderBar
+        onOpenReportModal={() => setIsReportModalOpen(true)}
+        onStartDemo={handleStartDemo}
+      />
+
+      {/* Main Mission Control Layout Body */}
+      <div className="flex-1 flex w-full relative overflow-hidden">
+        {/* Left Mission Control Sidebar */}
+        <MissionControlSidebar
+          onOpenReportModal={() => setIsReportModalOpen(true)}
+          onOpenAnalytics={() => setIsAnalyticsOpen(true)}
+          onOpenKnowledgeGraph={() => setIsKnowledgeGraphOpen(true)}
+          onStartDemo={handleStartDemo}
+        />
+
+        {/* Central Workspace Stage: Digital Twin Map as Primary Interface */}
+        <main className="flex-1 flex flex-col p-4 md:p-6 gap-4 overflow-y-auto">
+          {/* Omnipresent Floating AI Copilot Prompt */}
+          <div className="w-full max-w-5xl mx-auto">
+            <GlobalAIChatBar />
           </div>
-          <div>
-            <h1 className="text-base font-bold text-white tracking-tight">SPATIAL INTELLIGENCE</h1>
-            <p className="text-[11px] text-slate-400">Campus Operating System • National Institute of Technology</p>
+
+          {/* Core Central Workspace: 2.5D Digital Twin Map & Context Inspector */}
+          <div className="flex-1 flex flex-col lg:flex-row gap-5 items-start w-full">
+            {/* The Campus Is The Interface: Full Digital Twin Cartography Canvas */}
+            <div className="flex-1 w-full min-h-[580px] flex flex-col">
+              <CampusMapView />
+            </div>
+
+            {/* Right Context-Aware Spatial Intelligence Inspector */}
+            <ContextInspector onOpenReportModal={() => setIsReportModalOpen(true)} />
           </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <span className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/20">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            Knowledge Graph Live
-          </span>
-          <button
-            onClick={() => setIsReportModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-semibold border border-amber-500/30 transition-all"
-          >
-            <Wrench className="w-3.5 h-3.5" /> Report Issue
-          </button>
-        </div>
-      </header>
-
-      {/* Main Core View */}
-      <div className="w-full max-w-6xl flex flex-col gap-6">
-        {/* Global AI Chat Bar */}
-        <GlobalAIChatBar />
-
-        {/* Quick Operational Actions Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-          {[
-            {
-              label: 'Next Class',
-              icon: Calendar,
-              color: 'text-cyan-400',
-              action: () => sendMessage('What is scheduled in Room 204?'),
-            },
-            {
-              label: 'Find Room 204',
-              icon: Compass,
-              color: 'text-indigo-400',
-              action: () => sendMessage('Where is Room 204?'),
-            },
-            {
-              label: 'Indoor Route',
-              icon: Navigation,
-              color: 'text-blue-400',
-              action: () => sendMessage('How do I get from Room 101 to Room 204?'),
-            },
-            {
-              label: 'Equipment Status',
-              icon: Cpu,
-              color: 'text-emerald-400',
-              action: () => sendMessage('Where is projector P-204?'),
-            },
-            {
-              label: 'Report Issue',
-              icon: Wrench,
-              color: 'text-amber-400',
-              action: () => setIsReportModalOpen(true),
-            },
-            {
-              label: 'Safety Exits',
-              icon: ShieldCheck,
-              color: 'text-rose-400',
-              action: () => sendMessage('Where are the elevators and emergency exits in Block B?'),
-            },
-          ].map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.label}
-                onClick={item.action}
-                className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-900/60 hover:bg-slate-900 border border-slate-800/80 hover:border-slate-700 transition-all text-left group shadow-lg"
-              >
-                <Icon className={`w-4 h-4 ${item.color} group-hover:scale-110 transition-transform`} />
-                <span className="text-xs font-semibold text-slate-200">{item.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* 2.5D Interactive Cartography Canvas */}
-        <CampusMapView />
+        </main>
       </div>
 
-      {/* Expandable Slide-out Chat Drawer */}
+      {/* Emergency Mode High-Visibility HUD */}
+      <SafetyEmergencyHUD />
+
+      {/* Slide-out AI Copilot Drawer */}
       <AIChatDrawer />
 
-      {/* Incident Report Modal */}
+      {/* Campus Analytics Modal */}
+      <CampusAnalyticsView
+        isOpen={isAnalyticsOpen}
+        onClose={() => setIsAnalyticsOpen(false)}
+      />
+
+      {/* Multi-Relational Knowledge Graph Modal */}
+      <KnowledgeGraphModal
+        isOpen={isKnowledgeGraphOpen}
+        onClose={() => setIsKnowledgeGraphOpen(false)}
+      />
+
+      {/* Incident / Maintenance Report Modal */}
       <MaintenanceReportModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
       />
-    </main>
+
+      {/* 1-Click Automated Presentation Tour Runner */}
+      <PresentationDemoRunner
+        onOpenAnalytics={() => setIsAnalyticsOpen(true)}
+        onOpenKnowledgeGraph={() => setIsKnowledgeGraphOpen(true)}
+      />
+    </div>
   );
 }
