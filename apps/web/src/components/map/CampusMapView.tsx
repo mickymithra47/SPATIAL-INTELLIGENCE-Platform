@@ -26,10 +26,15 @@ import {
   X,
   AlertTriangle,
   ArrowUpRight,
+  Globe,
+  Sparkles,
 } from 'lucide-react';
+import { ArcGISMapView } from './esri/ArcGISMapView';
 
 export function CampusMapView() {
   const {
+    mapEngine,
+    setMapEngine,
     perspective,
     setPerspective,
     zoomLevel,
@@ -55,6 +60,7 @@ export function CampusMapView() {
     toggleLayer,
     viewMode,
   } = useSpatialStore();
+
 
   const [isLayersOpen, setIsLayersOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -87,12 +93,13 @@ export function CampusMapView() {
     setSelectedRoom(room);
   };
 
-  return (
+  const renderDigitalTwin = () => (
     <div
       className={`relative w-full ${
         isFullscreen ? 'fixed inset-0 z-50 rounded-0 h-screen' : 'h-[620px] rounded-3xl'
       } bg-slate-950 border border-slate-800/80 overflow-hidden shadow-2xl flex flex-col select-none`}
     >
+
       {/* Subtle Grid & Hologram Background */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black pointer-events-none" />
       <div
@@ -129,6 +136,43 @@ export function CampusMapView() {
             </div>
           </div>
 
+          {/* 3-Engine Mode Switcher: GIS vs 2.5D Digital Twin vs Dual Split */}
+          <div className="bg-slate-900/90 backdrop-blur-xl p-1 rounded-2xl border border-slate-800 flex gap-1 shadow-xl">
+            <button
+              onClick={() => setMapEngine('ESRI_ARCGIS')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                mapEngine === 'ESRI_ARCGIS'
+                  ? 'bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Esri GIS</span>
+            </button>
+            <button
+              onClick={() => setMapEngine('DIGITAL_TWIN')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                mapEngine === 'DIGITAL_TWIN'
+                  ? 'bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Building className="w-3.5 h-3.5" />
+              <span>2.5D Twin</span>
+            </button>
+            <button
+              onClick={() => setMapEngine('DUAL_SYNC')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                mapEngine === 'DUAL_SYNC'
+                  ? 'bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>Dual View</span>
+            </button>
+          </div>
+
           {/* Toggle between Macro Campus vs Building Interior */}
           <div className="bg-slate-900/90 backdrop-blur-xl p-1 rounded-2xl border border-slate-800 flex gap-1 shadow-xl">
             <button
@@ -153,6 +197,7 @@ export function CampusMapView() {
             </button>
           </div>
         </div>
+
 
         {/* Right: Floor Selector & Quick Perspective Pills */}
         <div className="pointer-events-auto flex items-center gap-2">
@@ -802,4 +847,55 @@ export function CampusMapView() {
       )}
     </div>
   );
+
+  if (mapEngine === 'ESRI_ARCGIS') {
+    return <ArcGISMapView />;
+  }
+
+  if (mapEngine === 'DUAL_SYNC') {
+    return (
+      <div className="w-full flex flex-col gap-4">
+        {/* Top Dual View Status Header */}
+        <div className="flex items-center justify-between bg-slate-900/90 backdrop-blur-xl px-4 py-2.5 rounded-2xl border border-slate-800 shadow-xl">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-cyan-400 animate-pulse" />
+            <span className="text-xs font-bold text-white tracking-wide">
+              Synchronized Spatial Intelligence
+            </span>
+            <span className="text-[10px] text-slate-400 hidden sm:inline">
+              • Esri ArcGIS (Macro Geographic GIS) ↔ 2.5D Digital Twin (Micro Interior)
+            </span>
+          </div>
+          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <button
+              onClick={() => setMapEngine('ESRI_ARCGIS')}
+              className="px-2.5 py-1 text-[11px] font-semibold text-slate-400 hover:text-white rounded-lg transition-colors"
+            >
+              Esri Only
+            </button>
+            <button
+              onClick={() => setMapEngine('DIGITAL_TWIN')}
+              className="px-2.5 py-1 text-[11px] font-semibold text-slate-400 hover:text-white rounded-lg transition-colors"
+            >
+              Twin Only
+            </button>
+            <button
+              onClick={() => setMapEngine('DUAL_SYNC')}
+              className="px-2.5 py-1 text-[11px] font-bold text-cyan-300 bg-cyan-500/20 rounded-lg border border-cyan-500/30"
+            >
+              Dual View
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 w-full">
+          <ArcGISMapView />
+          {renderDigitalTwin()}
+        </div>
+      </div>
+    );
+  }
+
+  return renderDigitalTwin();
 }
+

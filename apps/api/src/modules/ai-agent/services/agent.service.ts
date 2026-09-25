@@ -177,10 +177,93 @@ export class AgentService {
       };
     }
 
+    // =========================================================
+    // SPATIAL INTELLIGENCE & ESRI / SIMULATION INTENTS (Sections 14, 18, 19)
+    // =========================================================
+
+    // Intent 6: Simulation / What-If Analysis
+    // e.g. "Simulate an emergency evacuation from Building B" or "What happens if the main entrance is closed?"
+    if (lower.includes('simulate') || lower.includes('evacuation') || lower.includes('what happens if') || lower.includes('closed') || lower.includes('blocked')) {
+      const isEvacuation = lower.includes('evacuation') || lower.includes('emergency');
+      const isClosure = lower.includes('closed') || lower.includes('blocked') || lower.includes('what happens');
+
+      const simType = isEvacuation ? 'EMERGENCY_EVACUATION' : 'WHAT_IF_CLOSURE';
+      const blockedIds = lower.includes('entrance') ? ['ent-main-gate'] : lower.includes('exit') ? ['exit-east'] : ['r-101'];
+
+      const simResult = await this.toolExecutor.executeTool(
+        'simulateSpatialScenario',
+        {
+          type: simType,
+          environmentId: 'b-cse-001',
+          blockedEntityIds: blockedIds,
+          occupancyLoad: 420,
+        },
+        userRole
+      );
+
+      const r = simResult.result;
+      return {
+        conversationId,
+        reply: `[Spatial Simulation Result] ${r.summary}\n\nKey Recommendations:\n${r.recommendations.map((rec: string) => `• ${rec}`).join('\n')}`,
+        highlightedEntity: {
+          type: 'SIMULATION',
+          id: r.scenarioId,
+        },
+        executedActions: [
+          {
+            actionType: 'SIMULATE_SPATIAL_SCENARIO',
+            summary: r.summary,
+            payload: r,
+          },
+        ],
+      };
+    }
+
+    // Intent 7: Geospatial Buffer / Proximity Query
+    // e.g. "What buildings are within 500 meters of the main entrance?" or "Find facilities near main gate"
+    if (lower.includes('within') || lower.includes('meters') || lower.includes('near') || lower.includes('nearby')) {
+      const radiusMatch = lower.match(/(\d+)\s*(?:m|meters)/);
+      const radiusMeters = radiusMatch ? parseInt(radiusMatch[1], 10) : 500;
+      const entityMatch = lower.includes('entrance') || lower.includes('gate') ? 'ent-main-gate' : 'b-cse-001';
+
+      const bufferResult = await this.toolExecutor.executeTool(
+        'findNearbyEntities',
+        {
+          entityQuery: entityMatch,
+          radiusMeters,
+        },
+        userRole
+      );
+
+      if (bufferResult.success && bufferResult.entities.length > 0) {
+        const entityList = bufferResult.entities
+          .slice(0, 5)
+          .map((e: any) => `• ${e.name} (${e.type}) — ${e.distanceMeters}m away`)
+          .join('\n');
+
+        return {
+          conversationId,
+          reply: `Here are the spatial entities located within ${radiusMeters}m of ${entityMatch}:\n${entityList}`,
+          highlightedEntity: {
+            type: 'GEOSPATIAL_BUFFER',
+            id: entityMatch,
+          },
+          executedActions: [
+            {
+              actionType: 'QUERY_SPATIAL_BUFFER',
+              summary: `Found ${bufferResult.count} entities within ${radiusMeters}m`,
+              payload: bufferResult,
+            },
+          ],
+        };
+      }
+    }
+
     // Default conversational guidance
     return {
       conversationId,
-      reply: `I can help you navigate the campus. Try asking:\n• "Where is Room 204?"\n• "How do I get from Room 101 to Room 204?"\n• "Where is projector P-204?"\n• "What is scheduled in Room 204?"\n• "Create a maintenance ticket for the projector in Room 204"`,
+      reply: `I can help you navigate and simulate physical spaces. Try asking:\n• "Where is Room 204?"\n• "How do I get from Room 101 to Room 204?"\n• "What buildings are within 500 meters of the main entrance?"\n• "Simulate an emergency evacuation from Building B"\n• "What happens if the main entrance is closed?"\n• "Where is projector P-204?"`,
     };
+
   }
 }
