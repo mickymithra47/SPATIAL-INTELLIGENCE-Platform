@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import * as fs from 'fs';
+import * as path from 'path';
 import {
   ALL_CAMPUS_ENTITIES,
   findRoomByIdOrName,
@@ -10,6 +12,47 @@ import {
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+function getServerOpenAIConfig(): { apiKey: string; model: string } {
+  let apiKey = process.env.OPENAI_API_KEY || '';
+  let model = process.env.OPENAI_MODEL || 'gpt-5.6-luna';
+
+  // If not found in process.env, check local and root .env files server-side
+  if (!apiKey || apiKey.trim() === '') {
+    const candidatePaths = [
+      path.resolve(process.cwd(), '.env'),
+      path.resolve(process.cwd(), '.env.local'),
+      path.resolve(process.cwd(), 'apps/web/.env'),
+      path.resolve(process.cwd(), 'apps/web/.env.local'),
+      path.resolve(process.cwd(), '../../.env'),
+      path.resolve(process.cwd(), '../../.env.local'),
+    ];
+
+    for (const p of candidatePaths) {
+      if (fs.existsSync(p)) {
+        try {
+          const content = fs.readFileSync(p, 'utf8');
+          for (const line of content.split('\n')) {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('OPENAI_API_KEY=')) {
+              const val = trimmed.replace('OPENAI_API_KEY=', '').replace(/['"]/g, '').trim();
+              if (val) apiKey = val;
+            }
+            if (trimmed.startsWith('OPENAI_MODEL=')) {
+              const val = trimmed.replace('OPENAI_MODEL=', '').replace(/['"]/g, '').trim();
+              if (val) model = val;
+            }
+          }
+          if (apiKey) break;
+        } catch {
+          // ignore read error
+        }
+      }
+    }
+  }
+
+  return { apiKey: apiKey.trim(), model: model.trim() || 'gpt-5.6-luna' };
+}
 
 const SYSTEM_PROMPT = `You are Campus AI Copilot, the spatial intelligence assistant for the Spatial Intelligence Platform.
 
@@ -198,13 +241,28 @@ function executeServerTool(name: string, args: any, context: any, actions: any[]
     case 'search_spatial_entities': {
       const q = (args.query || '').toLowerCase().trim();
       const matches = ALL_CAMPUS_ENTITIES.filter(
-        (e) => e.name.toLowerCase().includes(q) || e.id.toLowerCase().includes(q) || e.type.toLowerCase().includes(q)
+        (e) =>
+          e.name.toLowerCase().includes(q) ||
+          e.id.toLowerCase().includes(q) ||
+          e.type.toLowerCase().includes(q) ||
+          (e.code && e.code.toLowerCase().includes(q)) ||
+          (e.refLabel && e.refLabel.toLowerCase().includes(q))
       );
+      if (matches.length > 0 && !actions.some((a) => a.action === 'FOCUS_ENTITY')) {
+        actions.push({
+          action: 'FOCUS_ENTITY',
+          entityId: matches[0].id,
+          roomName: matches[0].name,
+          floor: matches[0].floor,
+        });
+      }
       return {
         count: matches.length,
         results: matches.slice(0, 6).map((m) => ({
           id: m.id,
           name: m.name,
+          code: m.code,
+          refLabel: m.refLabel,
           type: m.type,
           floor: m.floor,
           description: m.description,
@@ -376,13 +434,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { message, conversationId, context, history = [] } = body;
 
-    const apiKey = process.env.OPENAI_API_KEY;
-    const model = process.env.OPENAI_MODEL || 'gpt-5.6-luna';
+    const { apiKey, model } = getServerOpenAIConfig();
 
     if (!apiKey || apiKey.trim() === '') {
       return NextResponse.json(
         {
-          reply: `⚠️ **OpenAI API Key Not Configured**\n\nThe server is set to use model \`${model}\`, but \`OPENAI_API_KEY\` is not set in the backend environment. Please set \`OPENAI_API_KEY\` in your \`.env\` file.\n\nYour spatial navigation and Digital Twin map engine remain fully active.`,
+          reply: `⚠️ **OpenAI API Key Not Configured**\n\nThe server is set to use model \`${model}\`, but \`OPENAI_API_KEY\` is not set in your server environment (\`.env\`). Please configure \`OPENAI_API_KEY\` in your \`.env\` file.\n\nYour spatial navigation and Digital Twin map engine remain fully active.`,
           isConfigured: false,
           model,
           actions: [],
