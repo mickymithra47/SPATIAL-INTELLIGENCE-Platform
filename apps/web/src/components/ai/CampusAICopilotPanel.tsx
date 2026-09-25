@@ -161,7 +161,7 @@ export function CampusAICopilotPanel({
     };
   };
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleSendMessage = async (textToSend?: string) => {
     const query = textToSend || inputValue;
     if (!query.trim()) return;
 
@@ -176,12 +176,67 @@ export function CampusAICopilotPanel({
     setInputValue('');
     setIsTyping(true);
 
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: query,
+          conversationId: 'copilot-panel',
+          context: {
+            institutionName: 'ESEC Campus',
+            floorId: activeFloor,
+            selectedEntityId: selectedEntity?.id,
+            activeView: '2.5D',
+          },
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setIsTyping(false);
+
+        // Process any returned spatial actions
+        if (Array.isArray(data.actions)) {
+          for (const act of data.actions) {
+            if (act.floor) {
+              setActiveFloor(act.floor);
+            }
+            if (act.entityId) {
+              const matched = ALL_CAMPUS_ENTITIES.find(
+                (e) => e.id === act.entityId || e.name.toLowerCase().includes((act.roomName || '').toLowerCase())
+              );
+              if (matched) {
+                onSelectEntity(matched);
+                if (act.action === 'NAVIGATE') {
+                  onStartRoute(matched);
+                }
+              }
+            }
+          }
+        }
+
+        const aiMsg: CopilotMessage = {
+          id: `ai-${Date.now()}`,
+          sender: 'ai',
+          text: data.reply,
+          timestamp: 'Just now',
+        };
+
+        setMessages((prev) => [...prev, aiMsg]);
+        return;
+      }
+    } catch {
+      // Gracefully fall back to local spatial knowledge engine
+    }
+
+    // Offline fallback mode
     setTimeout(() => {
       const response = processSpatialQuery(query);
       const aiMsg: CopilotMessage = {
         id: `ai-${Date.now()}`,
         sender: 'ai',
-        text: response.text,
+        text: `[Offline Fallback Mode]\n\n${response.text}`,
         timestamp: 'Just now',
         spatialAction: response.spatialAction,
       };

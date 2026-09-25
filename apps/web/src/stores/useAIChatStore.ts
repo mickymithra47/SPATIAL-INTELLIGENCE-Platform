@@ -677,49 +677,72 @@ export const useAIChatStore = create<AIChatState>((set, get) => ({
     }));
 
     const spatialStore = useSpatialStore.getState();
+    const history = get().messages.slice(-8).map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
 
-    // First attempt: call the real NestJS backend API
+    const currentEntity = spatialStore.selectedEntity?.data;
+    const spatialContext = {
+      institutionName: 'ESEC Campus',
+      floorId: spatialStore.activeFloorNumber,
+      selectedEntityId: currentEntity?.id || 'GF-REC-01',
+      currentLocation: currentEntity && 'name' in currentEntity ? (currentEntity as any).name : 'Ground Floor Reception',
+      activeView: spatialStore.selectedBuildingView ? '3D' : '2D',
+    };
+
+    // Attempt 1: Call Next.js Server-Side Route (/api/ai/chat) with full OpenAI SDK and Spatial Tools
     try {
-      const response = await fetch('http://localhost:4000/api/v1/ai/chat', {
+      const response = await fetch('/api/ai/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-role': spatialStore.userRole,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
           conversationId: get().conversationId,
+          context: spatialContext,
+          history,
         }),
       });
 
       if (response.ok) {
-        const data: AIResponse = await response.json();
+        const data = await response.json();
 
-        // Process highlight and route sync
-        if (data.highlightedEntity) {
-          spatialStore.setHighlightedEntityId(data.highlightedEntity.id);
-          const matchedRoom = spatialStore.rooms.find(
-            (r) => r.id === data.highlightedEntity?.id || r.roomNumber === data.highlightedEntity?.id
-          );
-          if (matchedRoom) {
-            spatialStore.setSelectedRoom(matchedRoom);
-            spatialStore.setActiveFloorNumber(matchedRoom.floorNumber);
-            spatialStore.setSelectedBuildingView(true);
+        // Process any returned spatial actions (focus, navigate, switch floor)
+        if (Array.isArray(data.actions)) {
+          for (const act of data.actions) {
+            if (act.action === 'FOCUS_ENTITY') {
+              const matchedRoom = spatialStore.rooms.find(
+                (r) => r.id === act.entityId || r.roomNumber === act.entityId || r.name.toLowerCase().includes((act.roomName || '').toLowerCase())
+              );
+              if (matchedRoom) {
+                spatialStore.setSelectedRoom(matchedRoom);
+                spatialStore.setActiveFloorNumber(matchedRoom.floorNumber);
+                spatialStore.setSelectedBuildingView(true);
+              }
+            } else if (act.action === 'NAVIGATE') {
+              const matchedRoom = spatialStore.rooms.find(
+                (r) => r.id === act.entityId || r.roomNumber === act.entityId || r.name.toLowerCase().includes((act.roomName || '').toLowerCase())
+              );
+              if (matchedRoom) {
+                spatialStore.setSelectedRoom(matchedRoom);
+                spatialStore.setActiveFloorNumber(matchedRoom.floorNumber);
+                spatialStore.setSelectedBuildingView(true);
+              }
+              if (act.route) {
+                spatialStore.setActiveRoute({
+                  originName: act.route.origin || 'Reception',
+                  destinationName: act.route.destination || act.roomName || 'Destination',
+                  totalDistanceMeters: act.route.totalDistanceMeters || 48,
+                  estimatedMinutes: act.route.estimatedMinutes || 1.6,
+                  waypoints: act.route.waypoints || [],
+                  accessible: true,
+                  reasoning: 'Optimal indoor corridor route avoiding congestion',
+                });
+              }
+            } else if (act.action === 'SWITCH_FLOOR' && typeof act.floorNumber === 'number') {
+              spatialStore.setActiveFloorNumber(act.floorNumber);
+            }
           }
-        }
-
-        const routeAction = data.executedActions?.find((a) => a.actionType === 'CALCULATE_INDOOR_ROUTE');
-        if (routeAction && (routeAction.payload as any)?.route) {
-          const p = routeAction.payload as any;
-          spatialStore.setActiveRoute({
-            originName: p.origin?.name || 'Lecture Hall 101',
-            destinationName: p.destination?.name || 'AI & Robotics Lab 204',
-            totalDistanceMeters: p.route.totalDistanceMeters || 54,
-            estimatedMinutes: p.route.estimatedMinutes || 1.8,
-            waypoints: p.route.waypoints || [],
-            accessible: true,
-            reasoning: 'Optimal indoor corridor route avoiding congestion',
-          });
         }
 
         const aiMsg: ExtendedChatMessage = {
@@ -736,17 +759,48 @@ export const useAIChatStore = create<AIChatState>((set, get) => ({
         return;
       }
     } catch {
-      // Gracefully fall back to Smart Spatial AI Engine
+      // Continue to backend fallback
     }
 
-    // Fallback: Advanced Spatial AI Natural Query Intelligence Engine
-    // Simulate natural thinking delay for realistic feel
-    await new Promise((resolve) => setTimeout(resolve, 600 + Math.random() * 800));
+    // Attempt 2: Call NestJS backend API on port 4000
+    try {
+      const response = await fetch('http://localhost:4000/api/v1/ai/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-role': spatialStore.userRole,
+        },
+        body: JSON.stringify({
+          message: text,
+          conversationId: get().conversationId,
+          context: spatialContext,
+        }),
+      });
 
+      if (response.ok) {
+        const data = await response.json();
+        const aiMsg: ExtendedChatMessage = {
+          id: `ai-${Date.now()}`,
+          role: 'assistant',
+          content: data.reply,
+          timestamp: new Date().toISOString(),
+        };
+
+        set((state) => ({
+          messages: [...state.messages, aiMsg],
+          isLoading: false,
+        }));
+        return;
+      }
+    } catch {
+      // Fallback
+    }
+
+    // Fallback: Clearly marked offline fallback mode (never silently pretending it came from OpenAI)
+    await new Promise((resolve) => setTimeout(resolve, 500));
     const intent = classifyIntent(text);
     const { reply, actions, explanation, spatialSideEffects } = generateSmartResponse(text, intent, spatialStore);
 
-    // Execute spatial side effects (map updates, room focus, etc.)
     if (spatialSideEffects) {
       spatialSideEffects();
     }
@@ -754,7 +808,7 @@ export const useAIChatStore = create<AIChatState>((set, get) => ({
     const aiMsg: ExtendedChatMessage = {
       id: `ai-${Date.now()}`,
       role: 'assistant',
-      content: reply,
+      content: `[Offline Fallback Mode]\n\n${reply}`,
       timestamp: new Date().toISOString(),
       spatialActions: actions,
       spatialExplanation: explanation,

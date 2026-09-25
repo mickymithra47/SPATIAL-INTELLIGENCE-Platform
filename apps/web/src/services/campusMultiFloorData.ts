@@ -1338,6 +1338,14 @@ export function getEntitiesForFloor(floor: FloorLevel): CampusRoomEntity[] {
   }
 }
 
+export function findRoomByIdOrName(query?: string): CampusRoomEntity | undefined {
+  if (!query) return undefined;
+  const q = query.toLowerCase().trim();
+  return ALL_CAMPUS_ENTITIES.find(
+    (e) => e.id.toLowerCase() === q || e.name.toLowerCase().includes(q) || (e.code && e.code.toLowerCase() === q)
+  );
+}
+
 // -------------------------------------------------------------
 // MULTI-FLOOR NAVIGATION WAYPOINTS
 // -------------------------------------------------------------
