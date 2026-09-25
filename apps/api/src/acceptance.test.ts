@@ -108,10 +108,43 @@ export async function runV1AcceptanceTests() {
   const campuses = spatialData.getCampuses();
   assert(campuses.length > 0 && campuses[0].organizationId === 'org-nit-001', 'TEST 7: Campuses isolated to tenant organization org-nit-001');
 
+  // --- ACCEPTANCE TEST 8: ESRI / GIS GeoJSON Layers & Unified Entity Model ---
+  console.log('\nTEST 8 — ESRI / GIS GeoJSON Layers & Unified Spatial Entity Model');
+  const gisLayers = spatialData.getGisGeoJsonLayers();
+  assert(gisLayers.type === 'FeatureCollection', 'TEST 8: GIS Layers return standard GeoJSON FeatureCollection');
+  assert(gisLayers.features.length >= 4, 'TEST 8: GeoJSON contains perimeter, buildings, corridors, and portals');
+  const unifiedEntities = spatialData.getUnifiedEntities();
+  assert(unifiedEntities.length >= 5, 'TEST 8: Unified spatial entities populated across campus, buildings, entrances');
+
+  // --- ACCEPTANCE TEST 9: Geospatial Buffer Proximity Query ---
+  console.log('\nTEST 9 — Geospatial Buffer Proximity Query: "What buildings are within 500 meters of the main entrance?"');
+  const bufferQueryResponse = await agent.processMessage('What buildings are within 500 meters of the main entrance?', 'conv-buf-1');
+  assert(bufferQueryResponse.reply.includes('spatial entities located within 500m'), 'TEST 9: AI responded with grounded spatial entities in buffer');
+  assert(bufferQueryResponse.highlightedEntity?.type === 'GEOSPATIAL_BUFFER', 'TEST 9: Map entity highlighted with GEOSPATIAL_BUFFER type');
+
+  // --- ACCEPTANCE TEST 10: Multimodal Outdoor-to-Indoor Navigation ---
+  console.log('\nTEST 10 — Multimodal Outdoor-to-Indoor Navigation');
+  const multimodalRoute = spatialData.calculateMultimodalRoute('ent-main-gate', '204', false);
+  assert(!('error' in multimodalRoute), 'TEST 10: Multimodal route calculated from outdoor gate to indoor room');
+  if (!('error' in multimodalRoute)) {
+    assert(multimodalRoute.segments.some((s) => s.segmentType === 'OUTDOOR_GIS'), 'TEST 10: Contains OUTDOOR_GIS pedestrian segment');
+    assert(multimodalRoute.segments.some((s) => s.segmentType === 'INDOOR_CORRIDOR'), 'TEST 10: Contains INDOOR_CORRIDOR wayfinding segment');
+  }
+
+  // --- ACCEPTANCE TEST 11: Spatial Simulation Engine (What-If & Emergency Evacuation) ---
+  console.log('\nTEST 11 — Spatial Simulation Engine');
+  const evacResponse = await agent.processMessage('Simulate an emergency evacuation from Building B', 'conv-sim-1');
+  assert(evacResponse.reply.includes('[Spatial Simulation Result]'), 'TEST 11: AI triggered Emergency Evacuation simulation');
+  assert(evacResponse.highlightedEntity?.type === 'SIMULATION', 'TEST 11: Map entity highlighted with SIMULATION type');
+
+  const closureResponse = await agent.processMessage('What happens if the main entrance is closed?', 'conv-sim-2');
+  assert(closureResponse.reply.includes('Spatial What-If Analysis'), 'TEST 11: AI triggered What-If Closure simulation');
+
   console.log('\n====================================================');
-  console.log(`ALL ${passed}/${total} V1 ACCEPTANCE TESTS PASSED SUCCESSFULLY!`);
+  console.log(`ALL ${passed}/${total} SPATIAL INTELLIGENCE ACCEPTANCE TESTS PASSED!`);
   console.log('====================================================\n');
 }
+
 
 if (process.argv[1] && process.argv[1].includes('acceptance.test')) {
   runV1AcceptanceTests().catch((err) => {

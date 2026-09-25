@@ -37,6 +37,52 @@ export const UpdateTicketStatusSchema = z.object({
   status: z.enum(['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']),
 });
 
+export const SearchSpatialEntitiesSchema = z.object({
+  query: z.string().optional().describe('Name, code or keyword to search'),
+  type: z
+    .enum([
+      'CAMPUS',
+      'BUILDING',
+      'FLOOR',
+      'ROOM',
+      'LAB',
+      'CORRIDOR',
+      'DOOR',
+      'STAIR',
+      'ELEVATOR',
+      'ENTRANCE',
+      'EXIT',
+      'EQUIPMENT',
+      'PARKING',
+      'EMERGENCY_POINT',
+      'SERVICE_POINT',
+    ])
+    .optional()
+    .describe('Spatial entity type filter'),
+});
+
+export const FindNearbyEntitiesSchema = z.object({
+  entityQuery: z.string().optional().describe('Center entity name or ID (e.g. "main entrance", "Block B")'),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  radiusMeters: z.number().default(500).describe('Search radius in meters'),
+  typeFilter: z.string().optional().describe('Entity type filter'),
+});
+
+export const CalculateMultimodalRouteSchema = z.object({
+  origin: z.string().min(1).describe('Outdoor gate/entrance or indoor room'),
+  destination: z.string().min(1).describe('Target indoor room or facility'),
+  accessibleOnly: z.boolean().default(false).describe('Avoid stairs / require elevator'),
+});
+
+export const SimulateSpatialScenarioSchema = z.object({
+  type: z.enum(['EMERGENCY_EVACUATION', 'WHAT_IF_CLOSURE', 'ACCESSIBILITY_AUDIT', 'CROWD_CONGESTION']),
+  name: z.string().optional(),
+  environmentId: z.string().default('b-cse-001'),
+  blockedEntityIds: z.array(z.string()).default([]),
+  occupancyLoad: z.number().optional(),
+});
+
 export type ToolName =
   | 'findRoom'
   | 'findBuilding'
@@ -44,7 +90,12 @@ export type ToolName =
   | 'calculateIndoorRoute'
   | 'getRoomSchedule'
   | 'createMaintenanceTicket'
-  | 'updateTicketStatus';
+  | 'updateTicketStatus'
+  | 'searchSpatialEntities'
+  | 'findNearbyEntities'
+  | 'calculateMultimodalRoute'
+  | 'simulateSpatialScenario';
+
 
 @Injectable()
 export class ToolExecutorService {
@@ -175,8 +226,93 @@ export class ToolExecutorService {
         };
       }
 
+      case 'searchSpatialEntities': {
+        const validated = SearchSpatialEntitiesSchema.parse(args);
+        let entities = this.spatialData.getUnifiedEntities(validated.type as any);
+        if (validated.query) {
+          const q = validated.query.toLowerCase().trim();
+          entities = entities.filter(
+            (e) =>
+              e.name.toLowerCase().includes(q) ||
+              e.id.toLowerCase().includes(q) ||
+              e.type.toLowerCase().includes(q)
+          );
+        }
+        return {
+          success: true,
+          count: entities.length,
+          entities: entities.slice(0, 10),
+        };
+      }
+
+      case 'findNearbyEntities': {
+        const validated = FindNearbyEntitiesSchema.parse(args);
+        let lat = validated.latitude || 12.9716;
+        let lng = validated.longitude || 77.5946;
+
+        if (validated.entityQuery) {
+          const center = this.spatialData.getEntityById(validated.entityQuery);
+          if (center) {
+            lat = center.latitude;
+            lng = center.longitude;
+          }
+        }
+
+        const nearby = this.spatialData.findNearbyEntities(
+          lat,
+          lng,
+          validated.radiusMeters,
+          validated.typeFilter as any
+        );
+
+        return {
+          success: true,
+          centerCoordinates: { latitude: lat, longitude: lng },
+          radiusMeters: validated.radiusMeters,
+          count: nearby.length,
+          entities: nearby.map((e) => ({
+            id: e.id,
+            name: e.name,
+            type: e.type,
+            distanceMeters: e.distanceMeters,
+            isAccessible: e.accessibility?.isWheelchairAccessible,
+          })),
+        };
+      }
+
+      case 'calculateMultimodalRoute': {
+        const validated = CalculateMultimodalRouteSchema.parse(args);
+        const route = this.spatialData.calculateMultimodalRoute(
+          validated.origin,
+          validated.destination,
+          validated.accessibleOnly
+        );
+        return {
+          success: !('error' in route),
+          ...route,
+        };
+      }
+
+      case 'simulateSpatialScenario': {
+        const validated = SimulateSpatialScenarioSchema.parse(args);
+        const scenario = {
+          id: `scenario-${Date.now()}`,
+          name: validated.name || `Simulation: ${validated.type}`,
+          type: validated.type,
+          environmentId: validated.environmentId,
+          blockedEntityIds: validated.blockedEntityIds,
+          occupancyLoad: validated.occupancyLoad,
+        };
+        const result = this.spatialData.runSimulation(scenario as any);
+        return {
+          success: true,
+          result,
+        };
+      }
+
       default:
         throw new Error(`Unknown tool: ${toolName}`);
     }
   }
 }
+

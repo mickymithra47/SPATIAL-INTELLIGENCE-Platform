@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Campus, Floor, Waypoint } from '@spatial/types';
+import { Campus, Floor, Waypoint, SimulationResult } from '@spatial/types';
 import {
   ExtendedBuilding,
   ExtendedRoom,
@@ -14,6 +14,18 @@ import {
 export type ViewMode = 'DIGITAL_TWIN' | 'ANALYTICS' | 'KNOWLEDGE_GRAPH' | 'SAFETY' | 'MAINTENANCE';
 export type MapPerspective = '2D' | '2.5D_ISOMETRIC' | '3D_TILT';
 export type UserRole = 'STUDENT' | 'FACULTY' | 'MAINTENANCE_STAFF' | 'CAMPUS_ADMIN';
+export type MapEngine = 'ESRI_ARCGIS' | 'DIGITAL_TWIN' | 'DUAL_SYNC';
+export type GisBasemap = 'dark-gray-vector' | 'satellite' | 'streets-navigation-vector' | 'topo-vector';
+
+export interface GisLayersState {
+  boundary: boolean;
+  buildings: boolean;
+  paths: boolean;
+  entrances: boolean;
+  emergency: boolean;
+  simulation: boolean;
+}
+
 
 export interface SpatialLayers {
   buildings: boolean;
@@ -107,6 +119,18 @@ interface SpatialState {
   demoStepIndex: number;
   setDemoRunning: (running: boolean) => void;
   setDemoStepIndex: (index: number) => void;
+
+  // Map Engine & ESRI GIS Integration
+  mapEngine: MapEngine;
+  setMapEngine: (engine: MapEngine) => void;
+  gisBasemap: GisBasemap;
+  setGisBasemap: (basemap: GisBasemap) => void;
+  gisLayers: GisLayersState;
+  toggleGisLayer: (layerName: keyof GisLayersState) => void;
+
+  // Spatial Simulation Results
+  activeSimulation: SimulationResult | null;
+  setActiveSimulation: (sim: SimulationResult | null) => void;
 
   // Actions
   setActiveCampusId: (id: string) => void;
@@ -210,6 +234,29 @@ export const useSpatialStore = create<SpatialState>((set, get) => ({
   setDemoRunning: (isDemoRunning) => set({ isDemoRunning }),
   setDemoStepIndex: (demoStepIndex) => set({ demoStepIndex }),
 
+  // ESRI GIS & Simulation Initial State
+  mapEngine: 'ESRI_ARCGIS',
+  setMapEngine: (mapEngine) => set({ mapEngine }),
+  gisBasemap: 'dark-gray-vector',
+  setGisBasemap: (gisBasemap) => set({ gisBasemap }),
+  gisLayers: {
+    boundary: true,
+    buildings: true,
+    paths: true,
+    entrances: true,
+    emergency: true,
+    simulation: true,
+  },
+  toggleGisLayer: (layerName) =>
+    set((state) => ({
+      gisLayers: {
+        ...state.gisLayers,
+        [layerName]: !state.gisLayers[layerName],
+      },
+    })),
+  activeSimulation: null,
+  setActiveSimulation: (sim) => set({ activeSimulation: sim }),
+
   setActiveCampusId: (id) => set({ activeCampusId: id }),
   setActiveBuildingId: (id) => {
     const building = get().buildings.find((b) => b.id === id);
@@ -230,3 +277,4 @@ export const useSpatialStore = create<SpatialState>((set, get) => ({
   setActiveRoute: (route) => set({ activeRoute: route }),
   setSelectedBuildingView: (interior) => set({ selectedBuildingView: interior }),
 }));
+

@@ -1,6 +1,13 @@
-import { Controller, Get, Param, Query, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, NotFoundException } from '@nestjs/common';
 import { SpatialDataService } from '../../common/data/spatial-data.service.js';
-import { Campus, Building, Floor, Room } from '@spatial/types';
+import {
+  Campus,
+  Building,
+  Floor,
+  Room,
+  SpatialEntityType,
+  SimulationScenario,
+} from '@spatial/types';
 
 @Controller('api/v1/spatial')
 export class SpatialController {
@@ -61,4 +68,66 @@ export class SpatialController {
   async getRoomSchedule(@Param('id') id: string) {
     return this.spatialData.getRoomSchedule(id);
   }
+
+  // =========================================================
+  // ESRI / GIS & UNIFIED SPATIAL ENTITY ENDPOINTS (Section 24)
+  // =========================================================
+
+  @Get('entities')
+  async getEntities(@Query('type') type?: SpatialEntityType) {
+    return this.spatialData.getUnifiedEntities(type);
+  }
+
+  @Get('entities/:id')
+  async getEntity(@Param('id') id: string) {
+    const entity = this.spatialData.getEntityById(id);
+    if (!entity) throw new NotFoundException(`Spatial entity '${id}' not found`);
+    return entity;
+  }
+
+  @Get('gis/layers')
+  async getGisLayers() {
+    return this.spatialData.getGisGeoJsonLayers();
+  }
+
+  @Post('gis/buffer')
+  async queryBuffer(
+    @Body()
+    body: {
+      latitude: number;
+      longitude: number;
+      radiusMeters: number;
+      typeFilter?: SpatialEntityType;
+    }
+  ) {
+    const { latitude, longitude, radiusMeters, typeFilter } = body;
+    return this.spatialData.findNearbyEntities(
+      latitude || 12.9716,
+      longitude || 77.5946,
+      radiusMeters || 500,
+      typeFilter
+    );
+  }
+
+  @Post('routing/multimodal')
+  async calculateMultimodal(
+    @Body()
+    body: {
+      origin: string;
+      destination: string;
+      accessible?: boolean;
+    }
+  ) {
+    return this.spatialData.calculateMultimodalRoute(
+      body.origin,
+      body.destination,
+      body.accessible ?? false
+    );
+  }
+
+  @Post('simulation/run')
+  async runSimulationScenario(@Body() scenario: SimulationScenario) {
+    return this.spatialData.runSimulation(scenario);
+  }
 }
+

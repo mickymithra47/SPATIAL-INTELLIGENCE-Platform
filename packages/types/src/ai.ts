@@ -22,7 +22,7 @@ export interface AIResponse {
     payload: Record<string, unknown>;
   }[];
   highlightedEntity?: {
-    type: 'ROOM' | 'BUILDING' | 'ASSET' | 'ROUTE';
+    type: 'ROOM' | 'BUILDING' | 'ASSET' | 'ROUTE' | 'SIMULATION' | 'GEOSPATIAL_BUFFER';
     id: string;
   };
 }
