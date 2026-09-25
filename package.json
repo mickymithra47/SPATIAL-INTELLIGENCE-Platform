@@ -26,5 +26,8 @@
     "postgis"
   ],
   "author": "Spatial AI Team",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@google/genai": "^2.24.0"
+  }
 }

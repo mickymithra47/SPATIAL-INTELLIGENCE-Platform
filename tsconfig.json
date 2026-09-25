@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@spatial/types": ["packages/types/src"],
+      "@spatial/types/*": ["packages/types/src/*"],
+      "@spatial/database": ["packages/database/src"],
+      "@spatial/database/*": ["packages/database/src/*"],
+      "@spatial/spatial-graph": ["packages/spatial-graph/src"],
+      "@spatial/spatial-graph/*": ["packages/spatial-graph/src/*"]
+    }
+  },
+  "include": ["apps/**/*.ts", "apps/**/*.tsx", "packages/**/*.ts", "packages/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

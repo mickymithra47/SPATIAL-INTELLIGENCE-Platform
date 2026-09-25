@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useSpatialStore, UserRole } from '../../stores/useSpatialStore';
 import { useAIChatStore } from '../../stores/useAIChatStore';
+
 import {
   Building,
   Bell,
@@ -131,7 +133,7 @@ export function TopHeaderBar({ onOpenReportModal, onStartDemo }: TopHeaderBarPro
           )}
         </div>
 
-        {/* AI Copilot Toggle Button */}
+        {/* AI Copilot Quick Drawer Toggle */}
         <button
           onClick={toggleOpen}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition-all"
@@ -139,6 +141,16 @@ export function TopHeaderBar({ onOpenReportModal, onStartDemo }: TopHeaderBarPro
           <Sparkles className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">AI Copilot</span>
         </button>
+
+        {/* Fullscreen AI Chat Application Link */}
+        <Link
+          href="/chat"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white border border-cyan-400/30 text-xs font-bold transition-all shadow-lg shadow-cyan-500/20"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>AI Chat</span>
+        </Link>
+
 
         {/* Role Switcher Dropdown */}
         <div className="relative">

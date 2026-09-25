@@ -42,3 +42,19 @@ export class AIAgentController {
     return this.toolExecutor.executeTool(dto.toolName, dto.arguments, userRole);
   }
 }
+
+@Controller('api')
+export class APIChatAliasController {
+  constructor(private agentService: AgentService) {}
+
+  @Post('chat')
+  @HttpCode(HttpStatus.OK)
+  async handleChat(
+    @Body() dto: ChatMessageDto,
+    @Headers('x-user-role') roleHeader?: string
+  ): Promise<AIResponse> {
+    const userRole = roleHeader || 'STUDENT';
+    return this.agentService.processMessage(dto.message, dto.conversationId, userRole);
+  }
+}
+

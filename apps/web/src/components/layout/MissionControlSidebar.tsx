@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useSpatialStore, ViewMode } from '../../stores/useSpatialStore';
 import { useAIChatStore } from '../../stores/useAIChatStore';
+
 import {
   Compass,
   Sparkles,
@@ -65,6 +67,14 @@ export function MissionControlSidebar({
           action: () => toggleOpen(),
           badge: 'Live',
         },
+        {
+          id: 'ai_chat_app',
+          label: 'AI Chat Interface',
+          icon: Sparkles,
+          href: '/chat',
+          badge: 'App',
+        },
+
         {
           id: 'live_map',
           label: 'Digital Twin Map',

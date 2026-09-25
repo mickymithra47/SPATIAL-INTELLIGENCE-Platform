@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SpatialController } from './modules/spatial/spatial.controller.js';
-import { AIAgentController } from './modules/ai-agent/ai-agent.controller.js';
+import { AIAgentController, APIChatAliasController } from './modules/ai-agent/ai-agent.controller.js';
 import { MaintenanceController } from './modules/operations/maintenance.controller.js';
 import { SpatialDataService } from './common/data/spatial-data.service.js';
 import { ToolExecutorService } from './modules/ai-agent/services/tool-executor.service.js';
@@ -8,8 +8,9 @@ import { AgentService } from './modules/ai-agent/services/agent.service.js';
 
 @Module({
   imports: [],
-  controllers: [SpatialController, AIAgentController, MaintenanceController],
+  controllers: [SpatialController, AIAgentController, APIChatAliasController, MaintenanceController],
   providers: [SpatialDataService, ToolExecutorService, AgentService],
   exports: [SpatialDataService, ToolExecutorService, AgentService],
 })
 export class AppModule {}
+
