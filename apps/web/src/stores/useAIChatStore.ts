@@ -297,7 +297,7 @@ function generateSmartResponse(
       const distance = Math.abs(targetRoom.floorNumber - originRoom.floorNumber) * 12 + 42;
       const minutes = (distance / 30).toFixed(1);
 
-      const steps = [];
+      const steps: Array<{ instruction: string; distance: string; level: string; type: 'ELEVATOR' | 'DOOR' | 'WALK' | 'STAIR' }> = [];
       steps.push({ instruction: `Exit ${originRoom.name} into the main corridor`, distance: '8m', level: `Floor ${originRoom.floorNumber}`, type: 'DOOR' });
 
       if (targetRoom.floorNumber !== originRoom.floorNumber) {
