@@ -395,7 +395,7 @@ export function CampusAICopilotPanel({
     setMessages((prev) => [...prev, userMsg]);
     setInputValue('');
     setIsTyping(true);
-
+    try {
       const response = await processSpatialQuery(query);
       const aiMsg: CopilotMessage = {
         id: `ai-${Date.now()}`,
