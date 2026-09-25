@@ -61,7 +61,7 @@ export function CampusAICopilotPanel({
     {
       id: 'welcome-1',
       sender: 'ai',
-      text: 'I am your Campus Spatial AI Copilot. Ask about any classroom, lab, route, or facility across Ground, 1st, 2nd, and Terrace floors.',
+      text: "Hi! 👋 I'm your Campus AI Assistant. How can I help you today? You can ask me about rooms, labs, navigation, available spaces, or campus information.",
       timestamp: 'Just now',
     },
   ]);
@@ -73,7 +73,7 @@ export function CampusAICopilotPanel({
     'Where is Lab 1?',
     'Find nearest restroom',
     'Navigate to Seminar Hall',
-    'Show available rooms',
+    'What rooms are available?',
     'How do I reach the first floor?',
   ];
 
@@ -81,83 +81,303 @@ export function CampusAICopilotPanel({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  const processSpatialQuery = (userQuery: string) => {
-    const q = userQuery.toLowerCase().trim();
+  const conversationIdRef = useRef<string>('conv-' + Date.now());
+  const localContextRef = useRef<{ lastEntity?: CampusRoomEntity; lastDistanceMeters?: number }>({});
 
-    // 1. Where is Lab 1?
-    if (q.includes('lab 1') || q.includes('lab1')) {
-      const room = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'GF-LAB-01')!;
-      setActiveFloor('GROUND');
-      onSelectEntity(room);
+  /**
+   * RESPONSE HANDLING LAYER:
+   * 1. Query Backend API (with conversationId for session context awareness)
+   * 2. Fall back to local spatial & conversational intelligence if backend is unavailable
+   */
+  const processSpatialQuery = async (userQuery: string): Promise<{
+    text: string;
+    spatialAction?: CopilotMessage['spatialAction'];
+  }> => {
+    // -------------------------------------------------------------
+    // ATTEMPT 1: CALL REAL BACKEND API (Architecture: User -> UI -> Frontend -> Backend -> Data)
+    // -------------------------------------------------------------
+    try {
+      const res = await fetch('http://localhost:4000/api/v1/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userQuery,
+          conversationId: conversationIdRef.current,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        let reply = (data.reply || '').trim();
+
+        // Strip any technical internal debug phrases that might slip through
+        reply = reply
+          .replace(/Analyzing spatial graph for [^.]+\./gi, '')
+          .replace(/Running spatial query\.*/gi, '')
+          .replace(/Query classified as [^.]+\./gi, '')
+          .replace(/Graph traversal completed\.*/gi, '')
+          .replace(/Intent detected:?\s*\w+/gi, '')
+          .trim();
+
+        let action: CopilotMessage['spatialAction'];
+        if (data.highlightedEntity?.id) {
+          const entityId = data.highlightedEntity.id;
+          const matchedEntity = ALL_CAMPUS_ENTITIES.find(
+            (e) =>
+              e.id.toLowerCase() === entityId.toLowerCase() ||
+              e.code.toLowerCase() === entityId.toLowerCase()
+          );
+
+          if (matchedEntity) {
+            localContextRef.current.lastEntity = matchedEntity;
+            setActiveFloor(matchedEntity.floor);
+            onSelectEntity(matchedEntity);
+
+            if (data.highlightedEntity.type === 'ROUTE') {
+              onStartRoute(matchedEntity);
+              action = {
+                type: 'START_ROUTE',
+                floor: matchedEntity.floor,
+                roomId: matchedEntity.id,
+                roomName: matchedEntity.name,
+              };
+            } else {
+              action = {
+                type: 'HIGHLIGHT_ROOM',
+                floor: matchedEntity.floor,
+                roomId: matchedEntity.id,
+                roomName: matchedEntity.name,
+              };
+            }
+          }
+        }
+
+        if (reply) {
+          return { text: reply, spatialAction: action };
+        }
+      }
+    } catch {
+      // Backend temporarily offline; gracefully continue to local conversational engine
+    }
+
+    // -------------------------------------------------------------
+    // ATTEMPT 2: ROBUST LOCAL CONVERSATIONAL ENGINE (Complete Context & Natural Variations)
+    // -------------------------------------------------------------
+    const raw = userQuery.trim().toLowerCase();
+    const clean = raw.replace(/[?!.,;:'"()]/g, '').trim();
+
+    // 1. Greetings
+    if (
+      clean === 'hi' ||
+      clean === 'hey' ||
+      clean === 'hello' ||
+      clean === 'heyy' ||
+      clean === 'hiya' ||
+      clean === 'howdy' ||
+      clean === 'greetings' ||
+      clean.startsWith('hi ') ||
+      clean.startsWith('hey ') ||
+      clean.startsWith('hello ')
+    ) {
+      if (clean.includes('hello')) {
+        return { text: "Hello! 👋 What would you like to find on campus?" };
+      }
+      if (clean.includes('hey')) {
+        return { text: "Hey! How can I help you around campus?" };
+      }
+      return { text: "Hi! 👋 I'm your Campus AI Assistant. How can I help you today?" };
+    }
+
+    if (clean.startsWith('good morning')) {
+      return { text: "Good morning! ☀️ How can I assist you on campus today?" };
+    }
+    if (clean.startsWith('good afternoon')) {
+      return { text: "Good afternoon! 👋 How can I help you around campus today?" };
+    }
+    if (clean.startsWith('good evening')) {
+      return { text: "Good evening! 🌙 How can I assist you with the campus tonight?" };
+    }
+
+    // 2. Capabilities
+    if (
+      clean.includes('what can you do') ||
+      clean.includes('how can you help me') ||
+      clean.includes('what are your features') ||
+      clean.includes('what do you do') ||
+      clean.includes('what can i ask') ||
+      clean === 'help' ||
+      clean === 'help me'
+    ) {
       return {
-        text: 'Lab 1 (CR-02) is on the Ground Floor, west perimeter connecting directly to Central Hub corridor. 70 m², 40 workstations with live robotics telemetry.',
-        spatialAction: { type: 'HIGHLIGHT_ROOM' as const, floor: 'GROUND' as const, roomId: room.id, roomName: room.name },
+        text: "I can help you explore the campus, find rooms and labs, locate facilities, check available spaces, and guide you to destinations. You can simply ask me something like 'Where is Lab 1?' or 'How do I get to the Seminar Hall?'",
       };
     }
 
-    // 2. Restrooms
-    if (q.includes('restroom') || q.includes('washroom') || q.includes('toilet')) {
-      const room = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'GF-GEN-01')!;
-      setActiveFloor('GROUND');
-      onSelectEntity(room);
+    // 3. Normal conversation
+    if (
+      clean.includes('how are you') ||
+      clean.includes('how r u') ||
+      clean.includes("how're you") ||
+      clean.includes('how are u')
+    ) {
+      return { text: "I'm doing great! 😊 I'm ready to help you find your way around campus." };
+    }
+
+    if (clean.includes('who are you') || clean.includes('what are you')) {
+      return { text: "I'm your Campus AI Assistant. I can help you find places, navigate the campus, and answer questions about available spaces." };
+    }
+
+    if (clean.includes('thank you') || clean.includes('thanks') || clean.includes('thx') || clean === 'ty') {
+      return { text: "You're very welcome! 😊 Let me know if you need anything else." };
+    }
+
+    if (clean.includes('bye') || clean.includes('goodbye') || clean.includes('see you') || clean.includes('cya')) {
+      return { text: "Goodbye! 👋 Have a great day!" };
+    }
+
+    // 4. Unrelated questions
+    if (
+      clean.includes('weather') ||
+      clean.includes('rain tomorrow') ||
+      clean.includes('joke') ||
+      clean.includes('who is the president')
+    ) {
       return {
-        text: 'Restrooms are along the southern corridor on Ground Floor: Gents Restroom (southwest, 30 m²) and Ladies Restroom (southeast, 30 m²).',
-        spatialAction: { type: 'HIGHLIGHT_ROOM' as const, floor: 'GROUND' as const, roomId: room.id, roomName: room.name },
+        text: "I don't currently have weather information available. I can help you with campus locations, navigation, rooms, facilities, and available spaces.",
       };
     }
 
-    // 3. Navigate to Seminar Hall
-    if (q.includes('navigate') && (q.includes('seminar') || q.includes('hall'))) {
-      const room = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'GF-SEM-01')!;
-      setActiveFloor('GROUND');
-      onSelectEntity(room);
-      onStartRoute(room);
+    // 5. Follow-up questions & context resolution
+    if (clean.includes('how far') || clean === 'distance') {
+      if (localContextRef.current.lastEntity) {
+        const ent = localContextRef.current.lastEntity;
+        const dist = localContextRef.current.lastDistanceMeters || 18;
+        return {
+          text: `${ent.name} is about ${dist} m from the Central Hub.`,
+        };
+      }
+      return { text: "Which location or room would you like to check the distance for?" };
+    }
+
+    if (
+      clean === 'how do i get there' ||
+      clean.includes('how do i get there') ||
+      clean === 'take me there' ||
+      clean.includes('take me there') ||
+      clean === 'navigate there' ||
+      clean.includes('navigate there')
+    ) {
+      if (localContextRef.current.lastEntity) {
+        const ent = localContextRef.current.lastEntity;
+        setActiveFloor(ent.floor);
+        onSelectEntity(ent);
+        onStartRoute(ent);
+        return {
+          text: `I can guide you there. I've highlighted the route from the Central Hub on the map.`,
+          spatialAction: { type: 'START_ROUTE', floor: ent.floor, roomId: ent.id, roomName: ent.name },
+        };
+      }
+      return { text: "Of course. Where would you like to go?" };
+    }
+
+    // 6. Ambiguous questions
+    if (clean === 'where is the lab' || clean === 'find the lab' || clean === 'locate the lab') {
       return {
-        text: 'Route to Seminar Hall calculated: From Central Hub → South Corridor → Seminar Hall Stage. Distance: 18m, Est. Time: 22s.',
-        spatialAction: { type: 'START_ROUTE' as const, floor: 'GROUND' as const, roomId: room.id, roomName: room.name },
+        text: "Sure! Which lab are you looking for? We have Lab 1 (Robotics), Computing Systems Lab 102, and AI & Robotics Lab 204.",
       };
     }
 
-    // 4. Show available / empty rooms
-    if (q.includes('empty') || q.includes('available') || q.includes('vacant')) {
-      const room = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'GF-EMP-01')!;
-      setActiveFloor('GROUND');
-      onSelectEntity(room);
-      return {
-        text: 'Empty Space (CR-10) is currently AVAILABLE on the northeast wing (50 m², 25 cap). On Terrace, Open Classroom Studios 1 & 2 are also free.',
-        spatialAction: { type: 'HIGHLIGHT_ROOM' as const, floor: 'GROUND' as const, roomId: room.id, roomName: room.name },
-      };
+    // 7. Campus landmark queries
+    // Lab 1
+    if (clean.includes('lab 1') || clean.includes('lab1') || clean.includes('cr-02')) {
+      const room = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'GF-LAB-01');
+      if (room) {
+        localContextRef.current.lastEntity = room;
+        localContextRef.current.lastDistanceMeters = 18;
+        setActiveFloor('GROUND');
+        onSelectEntity(room);
+        return {
+          text: 'Lab 1 (CR-02) is on the Ground Floor, near the Central Hub corridor. It has 40 workstations. Would you like me to show you the route?',
+          spatialAction: { type: 'HIGHLIGHT_ROOM', floor: 'GROUND', roomId: room.id, roomName: room.name },
+        };
+      }
     }
 
-    // 5. How do I reach the first floor?
-    if (q.includes('first floor') || q.includes('1st floor') || q.includes('stairs')) {
+    // Restrooms
+    if (clean.includes('restroom') || clean.includes('washroom') || clean.includes('toilet')) {
+      const room = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'GF-GEN-01');
+      if (room) {
+        localContextRef.current.lastEntity = room;
+        localContextRef.current.lastDistanceMeters = 22;
+        setActiveFloor('GROUND');
+        onSelectEntity(room);
+        return {
+          text: "I found two restrooms nearby. The closest options are the Gents Restroom and Ladies Restroom along the southern corridor on the Ground Floor. I've highlighted them on the map.",
+          spatialAction: { type: 'HIGHLIGHT_ROOM', floor: 'GROUND', roomId: room.id, roomName: room.name },
+        };
+      }
+    }
+
+    // Seminar Hall
+    if (clean.includes('seminar hall') || (clean.includes('seminar') && clean.includes('hall'))) {
+      const room = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'GF-SEM-01');
+      if (room) {
+        localContextRef.current.lastEntity = room;
+        localContextRef.current.lastDistanceMeters = 18;
+        setActiveFloor('GROUND');
+        onSelectEntity(room);
+        onStartRoute(room);
+        return {
+          text: "Sure! The Seminar Hall is about an 18 m walk from the Central Hub via the South Corridor. I've highlighted the route on the map for you.",
+          spatialAction: { type: 'START_ROUTE', floor: 'GROUND', roomId: room.id, roomName: room.name },
+        };
+      }
+    }
+
+    // Lift
+    if (clean.includes('lift') || clean.includes('elevator')) {
+      const lift = ALL_CAMPUS_ENTITIES.find((r) => r.id === '1F-LIFT-01');
+      if (lift) {
+        localContextRef.current.lastEntity = lift;
+        localContextRef.current.lastDistanceMeters = 12;
+        setActiveFloor('GROUND');
+        onSelectEntity(lift);
+        return {
+          text: "The Central Lift is located right next to the Central Hub and Vertical Core on the Ground Floor, with elevator access to all floors. I've highlighted it on the map for you.",
+          spatialAction: { type: 'HIGHLIGHT_ROOM', floor: 'GROUND', roomId: lift.id, roomName: lift.name },
+        };
+      }
+    }
+
+    // Available Rooms
+    if (clean.includes('available') || clean.includes('empty') || clean.includes('vacant')) {
+      const room = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'GF-EMP-01');
+      if (room) {
+        localContextRef.current.lastEntity = room;
+        localContextRef.current.lastDistanceMeters = 25;
+        setActiveFloor('GROUND');
+        onSelectEntity(room);
+        return {
+          text: "I found a few available spaces on the Terrace Floor. Would you like me to show them on the map?",
+          spatialAction: { type: 'HIGHLIGHT_ROOM', floor: 'GROUND', roomId: room.id, roomName: room.name },
+        };
+      }
+    }
+
+    // First Floor
+    if (clean.includes('first floor') || clean.includes('1st floor')) {
       setActiveFloor('FIRST');
-      const lift = ALL_CAMPUS_ENTITIES.find((r) => r.id === '1F-LIFT-01')!;
-      onSelectEntity(lift);
+      const lift = ALL_CAMPUS_ENTITIES.find((r) => r.id === '1F-LIFT-01');
+      if (lift) onSelectEntity(lift);
       return {
-        text: 'Take either Stairs (West) or Central Lift from Ground Floor up to First Floor. Switched Digital Twin to First Floor.',
-        spatialAction: { type: 'CHANGE_FLOOR' as const, floor: 'FIRST' as const },
+        text: "You can use the nearest stairs or lift. Take either the West Stairs or Central Lift from the Ground Floor up to the First Floor. I've switched your view to the First Floor!",
+        spatialAction: { type: 'CHANGE_FLOOR', floor: 'FIRST' },
       };
     }
 
-    // 6. Second Floor / Terrace
-    if (q.includes('second floor') || q.includes('2nd floor')) {
-      setActiveFloor('SECOND');
-      return {
-        text: 'Switched to Second Floor: Featuring Robotics Lab 4, Innovation Studio 201, and Campus Startup Incubator.',
-        spatialAction: { type: 'CHANGE_FLOOR' as const, floor: 'SECOND' as const },
-      };
-    }
-    if (q.includes('terrace') || q.includes('roof')) {
-      setActiveFloor('TERRACE');
-      return {
-        text: 'Switched to Terrace: Contains Open Classroom Studios 1 & 2, Lift Penthouse, and 240 m² Solar Observation Deck.',
-        spatialAction: { type: 'CHANGE_FLOOR' as const, floor: 'TERRACE' as const },
-      };
-    }
-
+    // Default friendly conversational response
     return {
-      text: `Analyzing spatial graph for "${userQuery}". You can navigate across Ground, 1st, 2nd, and Terrace floors, or check telemetry.`,
+      text: "Hi! 👋 How can I help you today? You can ask me about rooms, labs, navigation, available spaces, or campus information.",
     };
   };
 
@@ -176,73 +396,26 @@ export function CampusAICopilotPanel({
     setInputValue('');
     setIsTyping(true);
 
-    try {
-      const res = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: query,
-          conversationId: 'copilot-panel',
-          context: {
-            institutionName: 'ESEC Campus',
-            floorId: activeFloor,
-            selectedEntityId: selectedEntity?.id,
-            activeView: '2.5D',
-          },
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setIsTyping(false);
-
-        // Process any returned spatial actions
-        if (Array.isArray(data.actions)) {
-          for (const act of data.actions) {
-            if (act.floor) {
-              setActiveFloor(act.floor);
-            }
-            if (act.entityId) {
-              const matched = ALL_CAMPUS_ENTITIES.find(
-                (e) => e.id === act.entityId || e.name.toLowerCase().includes((act.roomName || '').toLowerCase())
-              );
-              if (matched) {
-                onSelectEntity(matched);
-                if (act.action === 'NAVIGATE') {
-                  onStartRoute(matched);
-                }
-              }
-            }
-          }
-        }
-
-        const aiMsg: CopilotMessage = {
-          id: `ai-${Date.now()}`,
-          sender: 'ai',
-          text: data.reply,
-          timestamp: 'Just now',
-        };
-
-        setMessages((prev) => [...prev, aiMsg]);
-        return;
-      }
-    } catch {
-      // Gracefully fall back to local spatial knowledge engine
-    }
-
-    // Offline fallback mode
-    setTimeout(() => {
-      const response = processSpatialQuery(query);
+      const response = await processSpatialQuery(query);
       const aiMsg: CopilotMessage = {
         id: `ai-${Date.now()}`,
         sender: 'ai',
-        text: `[Offline Fallback Mode]\n\n${response.text}`,
+        text: response.text,
         timestamp: 'Just now',
         spatialAction: response.spatialAction,
       };
       setMessages((prev) => [...prev, aiMsg]);
+    } catch {
+      const errorMsg: CopilotMessage = {
+        id: `ai-${Date.now()}`,
+        sender: 'ai',
+        text: "I'm having a little trouble connecting to the campus server right now, but I can still help you navigate using local campus maps. Please feel free to ask again!",
+        timestamp: 'Just now',
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
       setIsTyping(false);
-    }, 400);
+    }
   };
 
   // If minimized, display a floating pill trigger
@@ -340,10 +513,13 @@ export function CampusAICopilotPanel({
         ))}
 
         {isTyping && (
-          <div className="flex items-center gap-1 p-2 rounded-xl bg-slate-800 text-slate-400 w-16">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" />
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce [animation-delay:0.2s]" />
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce [animation-delay:0.4s]" />
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/90 border border-slate-700/60 text-slate-300 w-fit">
+            <div className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" />
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce [animation-delay:0.2s]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce [animation-delay:0.4s]" />
+            </div>
+            <span className="text-[10px] text-cyan-300 font-medium">Thinking...</span>
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -376,17 +552,24 @@ export function CampusAICopilotPanel({
           }}
           className="relative flex items-center"
         >
-          <input
-            type="text"
+          <textarea
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Ask Campus AI..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-2.5 pr-8 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+              }
+            }}
+            placeholder="Ask Campus AI (Enter to send)..."
+            rows={1}
+            className="w-full resize-none bg-slate-950 border border-slate-800 rounded-lg pl-2.5 pr-8 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 min-h-[34px] max-h-[80px]"
           />
           <button
             type="submit"
             disabled={!inputValue.trim()}
-            className="absolute right-1 p-1 rounded-md bg-cyan-500 text-slate-950 font-bold hover:bg-cyan-400 disabled:opacity-30"
+            className="absolute right-1.5 p-1.5 rounded-md bg-cyan-500 text-slate-950 font-bold hover:bg-cyan-400 disabled:opacity-30 transition-colors"
+            title="Send Message"
           >
             <Send className="w-3 h-3" />
           </button>

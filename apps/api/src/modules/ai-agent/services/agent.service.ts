@@ -2,8 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { ToolExecutorService } from './tool-executor.service.js';
 import { AIResponse } from '@spatial/types';
 
+interface SessionContext {
+  lastMentionedEntity?: {
+    id: string;
+    code: string;
+    name: string;
+    floor: string;
+    distanceMeters: number;
+    description?: string;
+  };
+  lastQuery?: string;
+}
+
 @Injectable()
 export class AgentService {
+  private sessions = new Map<string, SessionContext>();
+
   constructor(private toolExecutor: ToolExecutorService) {}
 
   public async processMessage(
@@ -13,6 +27,341 @@ export class AgentService {
   ): Promise<AIResponse> {
     const text = userMessage.trim();
     const lower = text.toLowerCase();
+    const clean = lower.replace(/[?!.,;:'"()]/g, '').trim();
+
+    // Get or initialize session context for follow-up questions
+    let context = this.sessions.get(conversationId);
+    if (!context) {
+      context = {};
+      this.sessions.set(conversationId, context);
+    }
+
+    // ---------------------------------------------------------
+    // 1. GREETINGS (Section 3)
+    // ---------------------------------------------------------
+    if (
+      clean === 'hi' ||
+      clean === 'hey' ||
+      clean === 'hello' ||
+      clean === 'heyy' ||
+      clean === 'hiya' ||
+      clean === 'howdy' ||
+      clean === 'greetings' ||
+      clean.startsWith('hi ') ||
+      clean.startsWith('hey ') ||
+      clean.startsWith('hello ')
+    ) {
+      let greeting = "Hi! 👋 I'm your Campus AI Assistant. How can I help you today?";
+      if (clean.includes('hello')) {
+        greeting = "Hello! 👋 What would you like to find on campus?";
+      } else if (clean.includes('hey')) {
+        greeting = "Hey! How can I help you around campus?";
+      }
+      return { conversationId, reply: greeting };
+    }
+
+    if (clean.startsWith('good morning')) {
+      return { conversationId, reply: "Good morning! ☀️ How can I assist you on campus today?" };
+    }
+    if (clean.startsWith('good afternoon')) {
+      return { conversationId, reply: "Good afternoon! 👋 How can I help you around campus today?" };
+    }
+    if (clean.startsWith('good evening')) {
+      return { conversationId, reply: "Good evening! 🌙 How can I assist you with the campus tonight?" };
+    }
+
+    // ---------------------------------------------------------
+    // 2. CAPABILITY QUESTIONS (Section 4)
+    // ---------------------------------------------------------
+    if (
+      clean.includes('what can you do') ||
+      clean.includes('how can you help me') ||
+      clean.includes('what are your features') ||
+      clean.includes('what do you do') ||
+      clean.includes('what can i ask') ||
+      clean === 'help' ||
+      clean === 'help me'
+    ) {
+      return {
+        conversationId,
+        reply: "I can help you explore the campus, find rooms and labs, locate facilities, check available spaces, and guide you to destinations. You can simply ask me something like 'Where is Lab 1?' or 'How do I get to the Seminar Hall?'",
+      };
+    }
+
+    // ---------------------------------------------------------
+    // 3. NORMAL CONVERSATION (Section 5)
+    // ---------------------------------------------------------
+    if (
+      clean.includes('how are you') ||
+      clean.includes('how r u') ||
+      clean.includes("how're you") ||
+      clean.includes('how are u')
+    ) {
+      return {
+        conversationId,
+        reply: "I'm doing great! 😊 I'm ready to help you find your way around campus.",
+      };
+    }
+
+    if (clean.includes('who are you') || clean.includes('what are you')) {
+      return {
+        conversationId,
+        reply: "I'm your Campus AI Assistant. I can help you find places, navigate the campus, and answer questions about available spaces.",
+      };
+    }
+
+    if (clean.includes('thank you') || clean.includes('thanks') || clean.includes('thx') || clean === 'ty') {
+      return {
+        conversationId,
+        reply: "You're very welcome! 😊 Let me know if you need anything else.",
+      };
+    }
+
+    if (clean.includes('bye') || clean.includes('goodbye') || clean.includes('see you') || clean.includes('cya') || clean.includes('have a good day')) {
+      return {
+        conversationId,
+        reply: "Goodbye! 👋 Have a great day!",
+      };
+    }
+
+    // ---------------------------------------------------------
+    // 4. UNRELATED QUESTIONS (Section 12)
+    // ---------------------------------------------------------
+    if (
+      clean.includes('weather') ||
+      clean.includes('temperature tomorrow') ||
+      clean.includes('rain tomorrow') ||
+      clean.includes('joke') ||
+      clean.includes('who is the president') ||
+      clean.includes('stock market') ||
+      clean.includes('bitcoin')
+    ) {
+      return {
+        conversationId,
+        reply: "I don't currently have weather information available. I can help you with campus locations, navigation, rooms, facilities, and available spaces.",
+      };
+    }
+
+    // ---------------------------------------------------------
+    // 5. FOLLOW-UP QUESTIONS & CONTEXT AWARENESS (Section 10)
+    // ---------------------------------------------------------
+    // Follow-up: "how far is it?", "what is the distance?", "how far is that?"
+    if (clean.includes('how far') || clean === 'distance' || clean.includes('how far is it') || clean.includes('how far is that')) {
+      if (context.lastMentionedEntity) {
+        return {
+          conversationId,
+          reply: `${context.lastMentionedEntity.name} is about ${context.lastMentionedEntity.distanceMeters} m from the Central Hub.`,
+          highlightedEntity: {
+            type: 'ROOM',
+            id: context.lastMentionedEntity.id,
+          },
+        };
+      }
+      return {
+        conversationId,
+        reply: "Which location or room would you like to check the distance for?",
+      };
+    }
+
+    // Follow-up: "how do I get there?", "take me there", "navigate there"
+    if (
+      clean === 'how do i get there' ||
+      clean.includes('how do i get there') ||
+      clean === 'take me there' ||
+      clean.includes('take me there') ||
+      clean === 'navigate there' ||
+      clean.includes('navigate there') ||
+      clean === 'show me the way'
+    ) {
+      if (context.lastMentionedEntity) {
+        return {
+          conversationId,
+          reply: `I can guide you there. I've highlighted the route from the Central Hub on the map.`,
+          highlightedEntity: {
+            type: 'ROUTE',
+            id: context.lastMentionedEntity.id,
+          },
+          executedActions: [
+            {
+              actionType: 'CALCULATE_INDOOR_ROUTE',
+              summary: `Navigating to ${context.lastMentionedEntity.name}`,
+              payload: { destinationId: context.lastMentionedEntity.id },
+            },
+          ],
+        };
+      }
+      // Section 11: If no previous destination: "Of course. Where would you like to go?"
+      return {
+        conversationId,
+        reply: "Of course. Where would you like to go?",
+      };
+    }
+
+    // ---------------------------------------------------------
+    // 6. AMBIGUOUS QUESTIONS (Section 11)
+    // ---------------------------------------------------------
+    // "Where is the lab?" (Ambiguous, without specifying which lab)
+    if (clean === 'where is the lab' || clean === 'find the lab' || clean === 'where is lab' || clean === 'locate the lab') {
+      return {
+        conversationId,
+        reply: "Sure! Which lab are you looking for? We have Lab 1 (Robotics), Computing Systems Lab 102, and AI & Robotics Lab 204.",
+      };
+    }
+
+    // ---------------------------------------------------------
+    // 7. SPECIFIC CAMPUS QUESTIONS & NATURAL VARIATIONS (Section 6, 7, 8, 9, 13)
+    // ---------------------------------------------------------
+    // Lab 1 (and variations: "Where is Lab 1?", "Can you find Lab 1?", "Help me locate Lab 1", "Show me Lab 1", "Take me to Lab 1")
+    if (clean.includes('lab 1') || clean.includes('lab1') || clean.includes('cr-02')) {
+      context.lastMentionedEntity = {
+        id: 'GF-LAB-01',
+        code: 'CR-02',
+        name: 'Lab 1',
+        floor: 'GROUND',
+        distanceMeters: 18,
+      };
+
+      if (clean.includes('navigate') || clean.includes('take me') || clean.includes('how do i get')) {
+        return {
+          conversationId,
+          reply: "Sure! Lab 1 is on the Ground Floor, about 18 m from the Central Hub. I've highlighted the route on the map for you.",
+          highlightedEntity: {
+            type: 'ROUTE',
+            id: 'GF-LAB-01',
+          },
+        };
+      }
+
+      return {
+        conversationId,
+        reply: "Lab 1 (CR-02) is on the Ground Floor, near the Central Hub corridor. It has 40 workstations. Would you like me to show you the route?",
+        highlightedEntity: {
+          type: 'ROOM',
+          id: 'GF-LAB-01',
+        },
+        executedActions: [
+          {
+            actionType: 'FIND_ROOM',
+            summary: 'Located Lab 1 on Ground Floor',
+            payload: { roomId: 'GF-LAB-01', name: 'Lab 1', code: 'CR-02', floor: 'GROUND' },
+          },
+        ],
+      };
+    }
+
+    // Restroom search (and variations: "Where is the nearest restroom?", "Find a restroom", "Is there a restroom nearby?", "washroom", "toilet")
+    if (clean.includes('restroom') || clean.includes('washroom') || clean.includes('toilet')) {
+      context.lastMentionedEntity = {
+        id: 'GF-GEN-01',
+        code: 'RESTROOM',
+        name: 'the Restrooms',
+        floor: 'GROUND',
+        distanceMeters: 22,
+      };
+
+      return {
+        conversationId,
+        reply: "I found two restrooms nearby. The closest options are the Gents Restroom and Ladies Restroom along the southern corridor on the Ground Floor. I've highlighted them on the map.",
+        highlightedEntity: {
+          type: 'ROOM',
+          id: 'GF-GEN-01',
+        },
+        executedActions: [
+          {
+            actionType: 'FIND_ROOM',
+            summary: 'Located Restrooms on Ground Floor',
+            payload: { roomId: 'GF-GEN-01', floor: 'GROUND' },
+          },
+        ],
+      };
+    }
+
+    // Seminar Hall (and variations: "Take me to the Seminar Hall", "How do I get to the Seminar Hall?", "Navigate me to Seminar Hall")
+    if (clean.includes('seminar hall') || (clean.includes('seminar') && (clean.includes('hall') || clean.includes('stage')))) {
+      context.lastMentionedEntity = {
+        id: 'GF-SEM-01',
+        code: 'SEM-01',
+        name: 'the Seminar Hall',
+        floor: 'GROUND',
+        distanceMeters: 18,
+      };
+
+      return {
+        conversationId,
+        reply: "Sure! The Seminar Hall is about an 18 m walk from the Central Hub via the South Corridor. I've highlighted the route on the map for you.",
+        highlightedEntity: {
+          type: 'ROUTE',
+          id: 'GF-SEM-01',
+        },
+        executedActions: [
+          {
+            actionType: 'CALCULATE_INDOOR_ROUTE',
+            summary: 'Route to Seminar Hall',
+            payload: { roomId: 'GF-SEM-01', floor: 'GROUND', distanceMeters: 18 },
+          },
+        ],
+      };
+    }
+
+    // Lift / Elevator ("Where is the lift?", "Find a lift", "Is there a lift nearby?", "Where can I find an elevator?")
+    if (clean.includes('lift') || clean.includes('elevator')) {
+      context.lastMentionedEntity = {
+        id: '1F-LIFT-01',
+        code: 'LIFT-01',
+        name: 'the Central Lift',
+        floor: 'GROUND',
+        distanceMeters: 12,
+      };
+
+      return {
+        conversationId,
+        reply: "The Central Lift is located right next to the Central Hub and Vertical Core on the Ground Floor, with elevator access to all floors. I've highlighted it on the map for you.",
+        highlightedEntity: {
+          type: 'ROOM',
+          id: '1F-LIFT-01',
+        },
+      };
+    }
+
+    // Available Rooms / Spaces ("What rooms are available?", "Show available rooms", "Is there an available classroom?", "Find an empty room")
+    if (clean.includes('available') || clean.includes('empty') || clean.includes('vacant')) {
+      context.lastMentionedEntity = {
+        id: 'GF-EMP-01',
+        code: 'CR-10',
+        name: 'Empty Space (CR-10)',
+        floor: 'GROUND',
+        distanceMeters: 25,
+      };
+
+      return {
+        conversationId,
+        reply: "I found a few available spaces on the Terrace Floor. Would you like me to show them on the map?",
+        highlightedEntity: {
+          type: 'ROOM',
+          id: 'GF-EMP-01',
+        },
+      };
+    }
+
+    // How do I reach the first floor? / stairs
+    if (clean.includes('first floor') || clean.includes('1st floor')) {
+      context.lastMentionedEntity = {
+        id: '1F-LIFT-01',
+        code: '1F-LIFT-01',
+        name: 'First Floor',
+        floor: 'FIRST',
+        distanceMeters: 15,
+      };
+
+      return {
+        conversationId,
+        reply: "You can use the nearest stairs or lift. Take either the West Stairs or Central Lift from the Ground Floor up to the First Floor. I've switched your view to the First Floor!",
+        highlightedEntity: {
+          type: 'ROOM',
+          id: '1F-LIFT-01',
+        },
+      };
+    }
 
     // Intent 1: Routing / Navigation
     // e.g. "How do I get from Room 101 to Room 204?" or "Navigate from 101 to 204"
@@ -259,10 +608,10 @@ export class AgentService {
       }
     }
 
-    // Default conversational guidance
+    // Default friendly conversational guidance
     return {
       conversationId,
-      reply: `I can help you navigate and simulate physical spaces. Try asking:\n• "Where is Room 204?"\n• "How do I get from Room 101 to Room 204?"\n• "What buildings are within 500 meters of the main entrance?"\n• "Simulate an emergency evacuation from Building B"\n• "What happens if the main entrance is closed?"\n• "Where is projector P-204?"`,
+      reply: "I'm here to help you around campus! You can ask me to find rooms and labs (e.g. \"Where is Lab 1?\" or \"Where is Room 204?\"), navigate between spaces, locate restrooms, or check available rooms. What would you like to explore?",
     };
 
   }
