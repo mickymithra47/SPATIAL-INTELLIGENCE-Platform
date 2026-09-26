@@ -63,20 +63,25 @@ export function CampusDigitalTwin({
   const [isRouteCardCollapsed, setIsRouteCardCollapsed] = useState(false);
   const [showDetailedInfo, setShowDetailedInfo] = useState(false);
 
-  const handleStartRouteToEntity = (entity: CampusRoomEntity) => {
-    const originWpId = activeFloor === 'GROUND' ? 'wp-gf-entrance' : `wp-${activeFloor.toLowerCase()}-hub`;
-    const targetWpId = entity.connectedWaypoints[0] || 'wp-gf-hub';
-    const route = calculateMultiFloorRoute(originWpId, targetWpId, blockedWaypoints);
+  const handleStartRouteToEntity = (entity: CampusRoomEntity, originEntity?: CampusRoomEntity | null) => {
+    const originId = originEntity ? originEntity.id : (activeFloor === 'GROUND' ? 'wp-gf-entrance' : `wp-${activeFloor.toLowerCase()}-hub`);
+    const targetWpId = entity.id;
+    const route = calculateMultiFloorRoute(originId, targetWpId, blockedWaypoints);
 
-    setActiveRoute({
-      origin: activeFloor === 'GROUND' ? 'Main Entrance' : `${activeFloor} Floor Atrium`,
-      destination: entity.name,
-      distanceMeters: route.distanceMeters,
-      estimatedSeconds: route.estimatedSeconds,
-      waypoints: route.path,
-      floorTransitions: route.floorTransitions,
-      steps: route.steps,
-    });
+    if (route.isValid && route.path.length > 0) {
+      const startFloor = originEntity ? originEntity.floor : route.path[0].floor;
+      setActiveFloor(startFloor);
+
+      setActiveRoute({
+        origin: originEntity ? originEntity.name : (activeFloor === 'GROUND' ? 'Main Entrance' : `${activeFloor} Floor Atrium`),
+        destination: entity.name,
+        distanceMeters: route.distanceMeters,
+        estimatedSeconds: route.estimatedSeconds,
+        waypoints: route.path,
+        floorTransitions: route.floorTransitions,
+        steps: route.steps,
+      });
+    }
   };
 
   return (
@@ -205,15 +210,20 @@ export function CampusDigitalTwin({
       {/* COMPACT INDOOR ROUTE CARD (Max 240px, Section 5)         */}
       {/* ======================================================== */}
       {activeRoute && (
-        <div className="absolute top-14 left-4 z-30 w-[230px] bg-slate-900/95 backdrop-blur-xl border border-cyan-500/40 rounded-xl p-2.5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-150 text-xs">
+        <div className="absolute top-14 left-4 z-30 w-[240px] bg-slate-900/95 backdrop-blur-xl border border-cyan-500/40 rounded-xl p-2.5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-150 text-xs">
           <div className="flex items-center justify-between pb-1 border-b border-slate-800">
-            <div className="flex items-center gap-1.5">
-              <Navigation className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="text-[10px] font-bold text-white truncate max-w-[140px]">
-                To: {activeRoute.destination}
-              </span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <Navigation className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <div className="min-w-0 truncate">
+                <span className="text-[10px] font-bold text-white block truncate">
+                  To: {activeRoute.destination}
+                </span>
+                <span className="text-[9px] text-slate-400 block truncate">
+                  From: {activeRoute.origin}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 shrink-0 ml-1">
               <button
                 onClick={() => setIsRouteCardCollapsed(!isRouteCardCollapsed)}
                 className="text-slate-400 hover:text-white"
@@ -236,10 +246,35 @@ export function CampusDigitalTwin({
             <span>Time: <strong className="text-emerald-400">{activeRoute.estimatedSeconds}s</strong></span>
           </div>
 
+          {/* Multi-Floor Quick Floor Switcher */}
+          {activeRoute.floorTransitions && activeRoute.floorTransitions.length > 0 && (
+            <div className="flex items-center gap-1 py-1 border-t border-slate-800/80">
+              <span className="text-[9px] text-cyan-400 font-semibold mr-0.5">Floor:</span>
+              {(['GROUND', 'FIRST', 'SECOND', 'TERRACE'] as FloorLevel[])
+                .filter((fl) => activeRoute.waypoints.some((w) => w.floor === fl))
+                .map((fl) => (
+                  <button
+                    key={fl}
+                    onClick={() => setActiveFloor(fl)}
+                    className={`px-1.5 py-0.5 rounded text-[9px] font-bold transition-all ${
+                      activeFloor === fl
+                        ? 'bg-cyan-500 text-slate-950 shadow-sm shadow-cyan-500/50'
+                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    }`}
+                  >
+                    {fl === 'GROUND' ? 'GF' : fl === 'FIRST' ? '1F' : fl === 'SECOND' ? '2F' : '3F'}
+                  </button>
+                ))}
+            </div>
+          )}
+
           {!isRouteCardCollapsed && activeRoute.steps && (
-            <div className="pt-1 border-t border-slate-800 text-[10px] text-slate-400 space-y-1 max-h-20 overflow-y-auto pr-0.5">
-              {activeRoute.steps.slice(0, 3).map((st, i) => (
-                <div key={i} className="truncate">• {st.instruction}</div>
+            <div className="pt-1 border-t border-slate-800 text-[10px] text-slate-400 space-y-1 max-h-28 overflow-y-auto pr-0.5">
+              {activeRoute.steps.map((st, i) => (
+                <div key={i} className="flex items-start gap-1 leading-tight">
+                  <span className="text-cyan-400 font-bold shrink-0">{i + 1}.</span>
+                  <span className="text-slate-300">{st.instruction}</span>
+                </div>
               ))}
             </div>
           )}

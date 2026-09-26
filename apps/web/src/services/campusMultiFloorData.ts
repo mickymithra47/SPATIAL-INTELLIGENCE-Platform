@@ -59,11 +59,13 @@ export interface CampusRoomEntity {
 export interface MultiFloorWaypoint {
   id: string;
   floor: FloorLevel;
+  floorNumber?: number;
   name: string;
   x: number;
   y: number;
-  type: 'HUB' | 'CORRIDOR' | 'DOOR' | 'STAIRS' | 'LIFT' | 'ROOM_CENTER' | 'ENTRANCE';
+  type: 'HUB' | 'CORRIDOR' | 'DOOR' | 'STAIRS' | 'LIFT' | 'ROOM_CENTER' | 'ENTRANCE' | 'CLASSROOM';
   isBlocked?: boolean;
+  roomId?: string;
 }
 
 export interface MultiFloorEdge {
@@ -1271,6 +1273,10 @@ export function findRoomByIdOrName(query?: string): CampusRoomEntity | undefined
     const sem = ALL_CAMPUS_ENTITIES.find((e) => e.id === 'GF-SEM-01');
     if (sem) return sem;
   }
+  if (raw === 'coe' || raw === 'coe lab' || raw === 'coe hall' || raw.includes('coe') || clean.includes('coe')) {
+    const coe = ALL_CAMPUS_ENTITIES.find((e) => e.id === 'GF-COE-01');
+    if (coe) return coe;
+  }
 
   return (
     ALL_CAMPUS_ENTITIES.find(
@@ -1323,139 +1329,510 @@ export function getFloorCapacity(floorQuery: FloorLevel | string) {
 // MULTI-FLOOR NAVIGATION WAYPOINTS (Vertically Aligned Cores)
 // -------------------------------------------------------------
 export const ALL_CAMPUS_WAYPOINTS: MultiFloorWaypoint[] = [
-  // Ground Floor Waypoints
-  { id: 'wp-gf-entrance', floor: 'GROUND', name: 'Main Entrance Gate', x: 500, y: 700, type: 'ENTRANCE' },
-  { id: 'wp-gf-hub', floor: 'GROUND', name: 'Central Hexagonal Corridor', x: 500, y: 480, type: 'HUB' },
-  { id: 'wp-gf-coe-door', floor: 'GROUND', name: 'COE Hall Entrance', x: 422, y: 480, type: 'DOOR' },
-  { id: 'wp-gf-ladies-door', floor: 'GROUND', name: 'Ladies Toilet Entrance', x: 461, y: 412, type: 'DOOR' },
-  { id: 'wp-gf-seminar-door', floor: 'GROUND', name: 'Main Block Seminar Hall Entrance', x: 539, y: 412, type: 'DOOR' },
-  { id: 'wp-gf-gents-door', floor: 'GROUND', name: 'Gents Toilet Entrance', x: 578, y: 445, type: 'DOOR' },
-  { id: 'wp-gf-lift', floor: 'GROUND', name: 'Ground Floor Lift Core', x: 578, y: 475, type: 'LIFT' },
-  { id: 'wp-gf-str-e', floor: 'GROUND', name: 'Ground Floor Upstairs Landing', x: 578, y: 510, type: 'STAIRS' },
-  { id: 'wp-gf-cctv-door', floor: 'GROUND', name: 'CCTV Monitoring Room Entrance', x: 578, y: 530, type: 'DOOR' },
+  // Ground Floor (Floor 0) Waypoints
+  { id: 'wp-gf-entrance', floor: 'GROUND', floorNumber: 0, name: 'Main Entrance Gate', x: 500, y: 700, type: 'ENTRANCE' },
+  { id: 'wp-gf-hub', floor: 'GROUND', floorNumber: 0, name: 'Central Hexagonal Corridor', x: 500, y: 480, type: 'HUB' },
+  { id: 'wp-gf-coe-door', floor: 'GROUND', floorNumber: 0, name: 'COE Hall Entrance', x: 422, y: 480, type: 'DOOR' },
+  { id: 'wp-gf-ladies-door', floor: 'GROUND', floorNumber: 0, name: 'Ladies Toilet Entrance', x: 461, y: 412, type: 'DOOR' },
+  { id: 'wp-gf-seminar-door', floor: 'GROUND', floorNumber: 0, name: 'Main Block Seminar Hall Entrance', x: 539, y: 412, type: 'DOOR' },
+  { id: 'wp-gf-gents-door', floor: 'GROUND', floorNumber: 0, name: 'Gents Toilet Entrance', x: 578, y: 445, type: 'DOOR' },
+  { id: 'wp-gf-lift', floor: 'GROUND', floorNumber: 0, name: 'Ground Floor Lift Core', x: 578, y: 475, type: 'LIFT' },
+  { id: 'wp-gf-str-door', floor: 'GROUND', floorNumber: 0, name: 'Ground Floor Staircase Corridor Entrance', x: 565, y: 500, type: 'DOOR' },
+  { id: 'wp-gf-str-e', floor: 'GROUND', floorNumber: 0, name: 'Ground Floor Upstairs Staircase Landing', x: 650, y: 515, type: 'STAIRS' },
+  { id: 'wp-gf-cctv-door', floor: 'GROUND', floorNumber: 0, name: 'CCTV Monitoring Room Entrance', x: 578, y: 530, type: 'DOOR' },
+  // Ground Floor Room Nodes
+  { id: 'wp-room-gf-lab-01', floor: 'GROUND', floorNumber: 0, name: 'Computer Systems Lab 1 (CR-02)', x: 275, y: 530, type: 'CLASSROOM', roomId: 'GF-LAB-01' },
+  { id: 'wp-room-gf-sem-01', floor: 'GROUND', floorNumber: 0, name: 'Main Block Seminar Hall', x: 635, y: 270, type: 'ROOM_CENTER', roomId: 'GF-SEM-01' },
+  { id: 'wp-room-gf-coe-01', floor: 'GROUND', floorNumber: 0, name: 'Center of Excellence (COE)', x: 365, y: 485, type: 'ROOM_CENTER', roomId: 'GF-COE-01' },
+  { id: 'wp-room-gf-gen-01', floor: 'GROUND', floorNumber: 0, name: 'Gents Restroom', x: 710, y: 425, type: 'ROOM_CENTER', roomId: 'GF-GEN-01' },
+  { id: 'wp-room-gf-lad-01', floor: 'GROUND', floorNumber: 0, name: 'Ladies Restroom', x: 365, y: 270, type: 'ROOM_CENTER', roomId: 'GF-LAD-01' },
+  { id: 'wp-room-gf-cct-01', floor: 'GROUND', floorNumber: 0, name: 'CCTV Monitoring Room', x: 645, y: 675, type: 'ROOM_CENTER', roomId: 'GF-CCT-01' },
 
-  // First Floor Waypoints
-  { id: 'wp-1f-hub', floor: 'FIRST', name: 'First Floor Central Atrium', x: 500, y: 480, type: 'HUB' },
-  { id: 'wp-1f-foyer', floor: 'FIRST', name: 'First Floor Main Foyer', x: 500, y: 700, type: 'CORRIDOR' },
-  { id: 'wp-1f-lab2-door', floor: 'FIRST', name: 'AI Research Lab Entrance', x: 422, y: 480, type: 'DOOR' },
-  { id: 'wp-1f-fac-door', floor: 'FIRST', name: 'Faculty Suite 1F Entrance', x: 461, y: 412, type: 'DOOR' },
-  { id: 'wp-1f-theatre-door', floor: 'FIRST', name: 'Smart Theatre 101 Entrance', x: 539, y: 412, type: 'DOOR' },
-  { id: 'wp-1f-lib-door', floor: 'FIRST', name: 'Digital Library Entrance', x: 578, y: 445, type: 'DOOR' },
-  { id: 'wp-1f-lift', floor: 'FIRST', name: 'First Floor Lift Core', x: 578, y: 475, type: 'LIFT' },
-  { id: 'wp-1f-str-e', floor: 'FIRST', name: 'First Floor Upstairs Landing', x: 578, y: 510, type: 'STAIRS' },
-  { id: 'wp-1f-cr102-door', floor: 'FIRST', name: 'Classroom 102 Entrance', x: 578, y: 530, type: 'DOOR' },
+  // First Floor (Floor 1) Waypoints
+  { id: 'wp-1f-hub', floor: 'FIRST', floorNumber: 1, name: 'First Floor Central Atrium Corridor', x: 500, y: 480, type: 'HUB' },
+  { id: 'wp-1f-foyer', floor: 'FIRST', floorNumber: 1, name: 'First Floor Main Foyer', x: 500, y: 700, type: 'CORRIDOR' },
+  { id: 'wp-1f-lab2-door', floor: 'FIRST', floorNumber: 1, name: 'Classroom 101 Entrance Door', x: 410, y: 485, type: 'DOOR' },
+  { id: 'wp-1f-fac-door', floor: 'FIRST', floorNumber: 1, name: 'Classroom 102 Entrance Door', x: 450, y: 375, type: 'DOOR' },
+  { id: 'wp-1f-theatre-door', floor: 'FIRST', floorNumber: 1, name: 'Classroom 103 Entrance Door', x: 550, y: 375, type: 'DOOR' },
+  { id: 'wp-1f-lib-door', floor: 'FIRST', floorNumber: 1, name: 'Classroom 104 Entrance Door', x: 600, y: 445, type: 'DOOR' },
+  { id: 'wp-1f-lift', floor: 'FIRST', floorNumber: 1, name: 'First Floor Lift Core', x: 578, y: 475, type: 'LIFT' },
+  { id: 'wp-1f-str-door', floor: 'FIRST', floorNumber: 1, name: 'First Floor Staircase Corridor Entrance', x: 565, y: 500, type: 'DOOR' },
+  { id: 'wp-1f-str-down', floor: 'FIRST', floorNumber: 1, name: 'First Floor Staircase Landing (from Ground)', x: 650, y: 510, type: 'STAIRS' },
+  { id: 'wp-1f-str-e', floor: 'FIRST', floorNumber: 1, name: 'First Floor Staircase Landing (to Floor 2)', x: 660, y: 520, type: 'STAIRS' },
+  { id: 'wp-1f-cr102-door', floor: 'FIRST', floorNumber: 1, name: 'Classroom 105 Entrance Door', x: 600, y: 535, type: 'DOOR' },
+  // First Floor Classrooms
+  { id: 'wp-room-1f-cr-101', floor: 'FIRST', floorNumber: 1, name: 'Classroom 101', x: 275, y: 530, type: 'CLASSROOM', roomId: '1F-CR-101' },
+  { id: 'wp-room-1f-cr-102', floor: 'FIRST', floorNumber: 1, name: 'Classroom 102', x: 365, y: 270, type: 'CLASSROOM', roomId: '1F-CR-102' },
+  { id: 'wp-room-1f-cr-103', floor: 'FIRST', floorNumber: 1, name: 'Classroom 103', x: 635, y: 270, type: 'CLASSROOM', roomId: '1F-CR-103' },
+  { id: 'wp-room-1f-cr-104', floor: 'FIRST', floorNumber: 1, name: 'Classroom 104', x: 710, y: 425, type: 'CLASSROOM', roomId: '1F-CR-104' },
+  { id: 'wp-room-1f-cr-105', floor: 'FIRST', floorNumber: 1, name: 'Classroom 105', x: 645, y: 675, type: 'CLASSROOM', roomId: '1F-CR-105' },
 
-  // Second Floor Waypoints
-  { id: 'wp-2f-hub', floor: 'SECOND', name: 'Second Floor Central Gallery', x: 500, y: 480, type: 'HUB' },
-  { id: 'wp-2f-foyer', floor: 'SECOND', name: 'Second Floor Main Foyer', x: 500, y: 700, type: 'CORRIDOR' },
-  { id: 'wp-2f-lab4-door', floor: 'SECOND', name: 'Robotics Lab Entrance', x: 422, y: 480, type: 'DOOR' },
-  { id: 'wp-2f-inc-door', floor: 'SECOND', name: 'Incubator Suite Entrance', x: 461, y: 412, type: 'DOOR' },
-  { id: 'wp-2f-sem-door', floor: 'SECOND', name: 'Executive Seminar Room Entrance', x: 539, y: 412, type: 'DOOR' },
-  { id: 'wp-2f-res-door', floor: 'SECOND', name: 'Senior Research Suite Entrance', x: 578, y: 445, type: 'DOOR' },
-  { id: 'wp-2f-lift', floor: 'SECOND', name: 'Second Floor Lift Core', x: 578, y: 475, type: 'LIFT' },
-  { id: 'wp-2f-str-e', floor: 'SECOND', name: 'Second Floor Upstairs Landing', x: 578, y: 510, type: 'STAIRS' },
-  { id: 'wp-2f-cr202-door', floor: 'SECOND', name: 'Classroom 202 Entrance', x: 578, y: 530, type: 'DOOR' },
+  // Second Floor (Floor 2) Waypoints
+  { id: 'wp-2f-hub', floor: 'SECOND', floorNumber: 2, name: 'Second Floor Central Gallery Corridor', x: 500, y: 480, type: 'HUB' },
+  { id: 'wp-2f-foyer', floor: 'SECOND', floorNumber: 2, name: 'Second Floor Main Foyer', x: 500, y: 700, type: 'CORRIDOR' },
+  { id: 'wp-2f-lab4-door', floor: 'SECOND', floorNumber: 2, name: 'Classroom 201 Entrance Door', x: 410, y: 485, type: 'DOOR' },
+  { id: 'wp-2f-inc-door', floor: 'SECOND', floorNumber: 2, name: 'Classroom 202 Entrance Door', x: 450, y: 375, type: 'DOOR' },
+  { id: 'wp-2f-sem-door', floor: 'SECOND', floorNumber: 2, name: 'Classroom 203 Entrance Door', x: 550, y: 375, type: 'DOOR' },
+  { id: 'wp-2f-res-door', floor: 'SECOND', floorNumber: 2, name: 'Classroom 204 Entrance Door', x: 600, y: 445, type: 'DOOR' },
+  { id: 'wp-2f-lift', floor: 'SECOND', floorNumber: 2, name: 'Second Floor Lift Core', x: 578, y: 475, type: 'LIFT' },
+  { id: 'wp-2f-str-door', floor: 'SECOND', floorNumber: 2, name: 'Second Floor Staircase Corridor Entrance', x: 565, y: 500, type: 'DOOR' },
+  { id: 'wp-2f-str-down', floor: 'SECOND', floorNumber: 2, name: 'Second Floor Staircase Landing (from Floor 1)', x: 660, y: 510, type: 'STAIRS' },
+  { id: 'wp-2f-str-e', floor: 'SECOND', floorNumber: 2, name: 'Second Floor Staircase Landing (to Floor 3)', x: 710, y: 515, type: 'STAIRS' },
+  { id: 'wp-2f-cr202-door', floor: 'SECOND', floorNumber: 2, name: 'Classroom 205 Entrance Door', x: 600, y: 535, type: 'DOOR' },
+  // Second Floor Classrooms
+  { id: 'wp-room-2f-cr-201', floor: 'SECOND', floorNumber: 2, name: 'Classroom 201', x: 275, y: 530, type: 'CLASSROOM', roomId: '2F-CR-201' },
+  { id: 'wp-room-2f-cr-202', floor: 'SECOND', floorNumber: 2, name: 'Classroom 202', x: 365, y: 270, type: 'CLASSROOM', roomId: '2F-CR-202' },
+  { id: 'wp-room-2f-cr-203', floor: 'SECOND', floorNumber: 2, name: 'Classroom 203', x: 635, y: 270, type: 'CLASSROOM', roomId: '2F-CR-203' },
+  { id: 'wp-room-2f-cr-204', floor: 'SECOND', floorNumber: 2, name: 'Classroom 204', x: 710, y: 425, type: 'CLASSROOM', roomId: '2F-CR-204' },
+  { id: 'wp-room-2f-cr-205', floor: 'SECOND', floorNumber: 2, name: 'Classroom 205', x: 645, y: 675, type: 'CLASSROOM', roomId: '2F-CR-205' },
 
-  // Terrace Waypoints
-  { id: 'wp-tr-deck', floor: 'TERRACE', name: 'Terrace Central Atrium Deck', x: 500, y: 480, type: 'HUB' },
-  { id: 'wp-tr-skydeck', floor: 'TERRACE', name: 'Terrace Skydeck Foyer', x: 500, y: 700, type: 'CORRIDOR' },
-  { id: 'wp-tr-cr1-door', floor: 'TERRACE', name: 'Open Studio 1 Entrance', x: 422, y: 480, type: 'DOOR' },
-  { id: 'wp-tr-cr2-door', floor: 'TERRACE', name: 'Open Studio 2 Entrance', x: 461, y: 412, type: 'DOOR' },
-  { id: 'wp-tr-solar', floor: 'TERRACE', name: 'Rooftop Solar Deck', x: 539, y: 412, type: 'DOOR' },
-  { id: 'wp-tr-wth-door', floor: 'TERRACE', name: 'Weather Station Door', x: 578, y: 445, type: 'DOOR' },
-  { id: 'wp-tr-lift', floor: 'TERRACE', name: 'Terrace Lift Penthouse', x: 578, y: 475, type: 'LIFT' },
-  { id: 'wp-tr-str-e', floor: 'TERRACE', name: 'Terrace Staircase Headhouse', x: 578, y: 510, type: 'STAIRS' },
-  { id: 'wp-tr-hvac-door', floor: 'TERRACE', name: 'HVAC Plant Room Door', x: 578, y: 530, type: 'DOOR' },
+  // Terrace (Floor 3) Waypoints
+  { id: 'wp-tr-deck', floor: 'TERRACE', floorNumber: 3, name: 'Terrace Central Deck Corridor', x: 500, y: 480, type: 'HUB' },
+  { id: 'wp-tr-skydeck', floor: 'TERRACE', floorNumber: 3, name: 'Terrace Skydeck Foyer', x: 500, y: 700, type: 'CORRIDOR' },
+  { id: 'wp-tr-cr1-door', floor: 'TERRACE', floorNumber: 3, name: 'Classroom 301 Entrance Door', x: 410, y: 485, type: 'DOOR' },
+  { id: 'wp-tr-cr2-door', floor: 'TERRACE', floorNumber: 3, name: 'Classroom 302 Entrance Door', x: 450, y: 375, type: 'DOOR' },
+  { id: 'wp-tr-solar', floor: 'TERRACE', floorNumber: 3, name: 'Classroom 303 Entrance Door', x: 550, y: 375, type: 'DOOR' },
+  { id: 'wp-tr-wth-door', floor: 'TERRACE', floorNumber: 3, name: 'Classroom 304 Entrance Door', x: 600, y: 445, type: 'DOOR' },
+  { id: 'wp-tr-lift', floor: 'TERRACE', floorNumber: 3, name: 'Terrace Lift Penthouse', x: 578, y: 475, type: 'LIFT' },
+  { id: 'wp-tr-str-door', floor: 'TERRACE', floorNumber: 3, name: 'Terrace Staircase Corridor Entrance', x: 565, y: 500, type: 'DOOR' },
+  { id: 'wp-tr-str-down', floor: 'TERRACE', floorNumber: 3, name: 'Terrace Staircase Landing (from Floor 2)', x: 710, y: 515, type: 'STAIRS' },
+  { id: 'wp-tr-str-e', floor: 'TERRACE', floorNumber: 3, name: 'Terrace Staircase Headhouse', x: 710, y: 515, type: 'STAIRS' },
+  { id: 'wp-tr-hvac-door', floor: 'TERRACE', floorNumber: 3, name: 'Classroom 305 Entrance Door', x: 600, y: 535, type: 'DOOR' },
+  // Terrace Classrooms
+  { id: 'wp-room-tr-cr-301', floor: 'TERRACE', floorNumber: 3, name: 'Classroom 301', x: 275, y: 530, type: 'CLASSROOM', roomId: 'TR-CR-301' },
+  { id: 'wp-room-tr-cr-302', floor: 'TERRACE', floorNumber: 3, name: 'Classroom 302', x: 365, y: 270, type: 'CLASSROOM', roomId: 'TR-CR-302' },
+  { id: 'wp-room-tr-cr-303', floor: 'TERRACE', floorNumber: 3, name: 'Classroom 303', x: 635, y: 270, type: 'CLASSROOM', roomId: 'TR-CR-303' },
+  { id: 'wp-room-tr-cr-304', floor: 'TERRACE', floorNumber: 3, name: 'Classroom 304', x: 710, y: 425, type: 'CLASSROOM', roomId: 'TR-CR-304' },
+  { id: 'wp-room-tr-cr-305', floor: 'TERRACE', floorNumber: 3, name: 'Classroom 305', x: 645, y: 675, type: 'CLASSROOM', roomId: 'TR-CR-305' },
 ];
 
-// Multi-Floor Navigation Edges (Horizontal + Aligned Vertical Shafts)
+// Multi-Floor Navigation Edges (Corridor network + Floor-Transition Staircases)
 export const ALL_CAMPUS_EDGES: MultiFloorEdge[] = [
-  // Ground Floor Horizontal
+  // =========================================================
+  // GROUND FLOOR (Floor 0) CORRIDOR & ROOM CONNECTIONS
+  // =========================================================
   { from: 'wp-gf-entrance', to: 'wp-gf-hub', distanceMeters: 8 },
   { from: 'wp-gf-hub', to: 'wp-gf-coe-door', distanceMeters: 7 },
   { from: 'wp-gf-hub', to: 'wp-gf-ladies-door', distanceMeters: 6 },
   { from: 'wp-gf-hub', to: 'wp-gf-seminar-door', distanceMeters: 6 },
   { from: 'wp-gf-hub', to: 'wp-gf-gents-door', distanceMeters: 7 },
   { from: 'wp-gf-hub', to: 'wp-gf-lift', distanceMeters: 5 },
-  { from: 'wp-gf-hub', to: 'wp-gf-str-e', distanceMeters: 7 },
+  { from: 'wp-gf-hub', to: 'wp-gf-str-door', distanceMeters: 6 },
+  { from: 'wp-gf-str-door', to: 'wp-gf-str-e', distanceMeters: 4, isStair: true },
+  { from: 'wp-gf-hub', to: 'wp-gf-str-e', distanceMeters: 7, isStair: true },
   { from: 'wp-gf-hub', to: 'wp-gf-cctv-door', distanceMeters: 8 },
+  // Ground Floor Rooms to Doors
+  { from: 'wp-room-gf-lab-01', to: 'wp-gf-coe-door', distanceMeters: 5 },
+  { from: 'wp-room-gf-sem-01', to: 'wp-gf-seminar-door', distanceMeters: 5 },
+  { from: 'wp-room-gf-coe-01', to: 'wp-gf-coe-door', distanceMeters: 4 },
+  { from: 'wp-room-gf-gen-01', to: 'wp-gf-gents-door', distanceMeters: 4 },
+  { from: 'wp-room-gf-lad-01', to: 'wp-gf-ladies-door', distanceMeters: 4 },
+  { from: 'wp-room-gf-cct-01', to: 'wp-gf-cctv-door', distanceMeters: 4 },
 
-  // First Floor Horizontal
+  // =========================================================
+  // FIRST FLOOR (Floor 1) CORRIDOR & ROOM CONNECTIONS
+  // =========================================================
   { from: 'wp-1f-hub', to: 'wp-1f-foyer', distanceMeters: 8 },
   { from: 'wp-1f-hub', to: 'wp-1f-lab2-door', distanceMeters: 7 },
   { from: 'wp-1f-hub', to: 'wp-1f-fac-door', distanceMeters: 6 },
   { from: 'wp-1f-hub', to: 'wp-1f-theatre-door', distanceMeters: 6 },
   { from: 'wp-1f-hub', to: 'wp-1f-lib-door', distanceMeters: 7 },
   { from: 'wp-1f-hub', to: 'wp-1f-lift', distanceMeters: 5 },
-  { from: 'wp-1f-hub', to: 'wp-1f-str-e', distanceMeters: 7 },
+  { from: 'wp-1f-hub', to: 'wp-1f-str-door', distanceMeters: 6 },
+  { from: 'wp-1f-str-door', to: 'wp-1f-str-down', distanceMeters: 4, isStair: true },
+  { from: 'wp-1f-str-door', to: 'wp-1f-str-e', distanceMeters: 4, isStair: true },
+  { from: 'wp-1f-hub', to: 'wp-1f-str-e', distanceMeters: 7, isStair: true },
   { from: 'wp-1f-hub', to: 'wp-1f-cr102-door', distanceMeters: 8 },
+  // First Floor Classrooms to Corridor Doors
+  { from: 'wp-room-1f-cr-101', to: 'wp-1f-lab2-door', distanceMeters: 4 },
+  { from: 'wp-room-1f-cr-102', to: 'wp-1f-fac-door', distanceMeters: 4 },
+  { from: 'wp-room-1f-cr-103', to: 'wp-1f-theatre-door', distanceMeters: 4 },
+  { from: 'wp-room-1f-cr-104', to: 'wp-1f-lib-door', distanceMeters: 4 },
+  { from: 'wp-room-1f-cr-105', to: 'wp-1f-cr102-door', distanceMeters: 4 },
 
-  // Second Floor Horizontal
+  // =========================================================
+  // SECOND FLOOR (Floor 2) CORRIDOR & ROOM CONNECTIONS
+  // =========================================================
   { from: 'wp-2f-hub', to: 'wp-2f-foyer', distanceMeters: 8 },
   { from: 'wp-2f-hub', to: 'wp-2f-lab4-door', distanceMeters: 7 },
   { from: 'wp-2f-hub', to: 'wp-2f-inc-door', distanceMeters: 6 },
   { from: 'wp-2f-hub', to: 'wp-2f-sem-door', distanceMeters: 6 },
   { from: 'wp-2f-hub', to: 'wp-2f-res-door', distanceMeters: 7 },
   { from: 'wp-2f-hub', to: 'wp-2f-lift', distanceMeters: 5 },
-  { from: 'wp-2f-hub', to: 'wp-2f-str-e', distanceMeters: 7 },
+  // Second Floor Staircase: connects through Corridor Door to Hub
+  { from: 'wp-2f-hub', to: 'wp-2f-str-door', distanceMeters: 6 },
+  { from: 'wp-2f-str-down', to: 'wp-2f-str-door', distanceMeters: 4, isStair: true },
+  { from: 'wp-2f-hub', to: 'wp-2f-str-e', distanceMeters: 7, isStair: true },
   { from: 'wp-2f-hub', to: 'wp-2f-cr202-door', distanceMeters: 8 },
+  // Second Floor Classrooms to Corridor Doors
+  { from: 'wp-room-2f-cr-201', to: 'wp-2f-lab4-door', distanceMeters: 4 },
+  { from: 'wp-room-2f-cr-202', to: 'wp-2f-inc-door', distanceMeters: 4 },
+  { from: 'wp-room-2f-cr-203', to: 'wp-2f-sem-door', distanceMeters: 4 },
+  { from: 'wp-room-2f-cr-204', to: 'wp-2f-res-door', distanceMeters: 4 },
+  { from: 'wp-room-2f-cr-205', to: 'wp-2f-cr202-door', distanceMeters: 4 },
 
-  // Terrace Horizontal
+  // =========================================================
+  // TERRACE (Floor 3) CORRIDOR & ROOM CONNECTIONS
+  // =========================================================
   { from: 'wp-tr-deck', to: 'wp-tr-skydeck', distanceMeters: 8 },
   { from: 'wp-tr-deck', to: 'wp-tr-cr1-door', distanceMeters: 7 },
   { from: 'wp-tr-deck', to: 'wp-tr-cr2-door', distanceMeters: 6 },
   { from: 'wp-tr-deck', to: 'wp-tr-solar', distanceMeters: 6 },
   { from: 'wp-tr-deck', to: 'wp-tr-wth-door', distanceMeters: 7 },
   { from: 'wp-tr-deck', to: 'wp-tr-lift', distanceMeters: 5 },
-  { from: 'wp-tr-deck', to: 'wp-tr-str-e', distanceMeters: 7 },
+  { from: 'wp-tr-deck', to: 'wp-tr-str-door', distanceMeters: 6 },
+  { from: 'wp-tr-str-door', to: 'wp-tr-str-down', distanceMeters: 4, isStair: true },
+  { from: 'wp-tr-str-door', to: 'wp-tr-str-e', distanceMeters: 4, isStair: true },
+  { from: 'wp-tr-deck', to: 'wp-tr-str-e', distanceMeters: 7, isStair: true },
   { from: 'wp-tr-deck', to: 'wp-tr-hvac-door', distanceMeters: 8 },
+  // Terrace Classrooms to Corridor Doors
+  { from: 'wp-room-tr-cr-301', to: 'wp-tr-cr1-door', distanceMeters: 4 },
+  { from: 'wp-room-tr-cr-302', to: 'wp-tr-cr2-door', distanceMeters: 4 },
+  { from: 'wp-room-tr-cr-303', to: 'wp-tr-solar', distanceMeters: 4 },
+  { from: 'wp-room-tr-cr-304', to: 'wp-tr-wth-door', distanceMeters: 4 },
+  { from: 'wp-room-tr-cr-305', to: 'wp-tr-hvac-door', distanceMeters: 4 },
 
   // =========================================================
-  // VERTICAL SHAFT CONNECTIVITY (ELEVATOR CORE + STAIRCASE)
+  // VERTICAL SHAFT CONNECTIVITY — STAIRCASES (Floor Transitions)
+  // Floor 0 <-> Floor 1
+  // Floor 1 <-> Floor 2
+  // Floor 2 <-> Floor 3
+  // =========================================================
+  { from: 'wp-gf-str-e', to: 'wp-1f-str-down', distanceMeters: 12, isStair: true },
+  { from: 'wp-1f-str-e', to: 'wp-2f-str-down', distanceMeters: 12, isStair: true },
+  { from: 'wp-2f-str-e', to: 'wp-tr-str-down', distanceMeters: 12, isStair: true },
+  { from: 'wp-2f-str-e', to: 'wp-tr-str-e', distanceMeters: 12, isStair: true },
+
+  // =========================================================
+  // VERTICAL ELEVATOR CORE (Only used when user requests elevator)
   // =========================================================
   { from: 'wp-gf-lift', to: 'wp-1f-lift', distanceMeters: 10, isElevator: true },
   { from: 'wp-1f-lift', to: 'wp-2f-lift', distanceMeters: 10, isElevator: true },
   { from: 'wp-2f-lift', to: 'wp-tr-lift', distanceMeters: 10, isElevator: true },
-
-  { from: 'wp-gf-str-e', to: 'wp-1f-str-e', distanceMeters: 12, isStair: true },
-  { from: 'wp-1f-str-e', to: 'wp-2f-str-e', distanceMeters: 12, isStair: true },
-  { from: 'wp-2f-str-e', to: 'wp-tr-str-e', distanceMeters: 12, isStair: true },
 ];
 
-// Helper to compute shortest route between any two waypoints across any floor
-export function calculateMultiFloorRoute(
-  originWpId: string,
-  destWpId: string,
-  blockedEdgeOrNodeIds?: string[]
-): {
+export interface RouteOptions {
+  useElevator?: boolean;
+  accessibleOnly?: boolean;
+  blockedEdgeOrNodeIds?: string[];
+}
+
+export interface CalculatedRouteResult {
+  isValid: boolean;
+  error?: string;
   path: MultiFloorWaypoint[];
   distanceMeters: number;
   estimatedSeconds: number;
-  floorTransitions: { fromFloor: FloorLevel; toFloor: FloorLevel; via: 'STAIRS' | 'ELEVATOR' }[];
-  steps: { instruction: string; distance: string; floor: FloorLevel }[];
-} {
-  const blockedSet = new Set(blockedEdgeOrNodeIds || []);
-  const adj = new Map<string, { to: string; dist: number; isStair?: boolean; isElevator?: boolean }[]>();
+  floorTransitions: { fromFloor: FloorLevel; toFloor: FloorLevel; via: 'STAIRS' | 'ELEVATOR'; waypointId: string }[];
+  steps: { instruction: string; distance: string; floor: FloorLevel; level?: string; type?: 'WALK' | 'STAIR' | 'ELEVATOR' | 'DOOR' }[];
+  originName: string;
+  destinationName: string;
+  originFloor: FloorLevel;
+  destinationFloor: FloorLevel;
+}
 
+export function floorToLabel(floor: FloorLevel): string {
+  switch (floor) {
+    case 'GROUND': return 'Ground Floor';
+    case 'FIRST': return 'Floor 1';
+    case 'SECOND': return 'Floor 2';
+    case 'TERRACE': return 'Floor 3 (Terrace)';
+    default: return floor;
+  }
+}
+
+export function floorToNumber(floor: FloorLevel): number {
+  switch (floor) {
+    case 'GROUND': return 0;
+    case 'FIRST': return 1;
+    case 'SECOND': return 2;
+    case 'TERRACE': return 3;
+    default: return 0;
+  }
+}
+
+export function numberToFloor(num: number): FloorLevel {
+  switch (num) {
+    case 0: return 'GROUND';
+    case 1: return 'FIRST';
+    case 2: return 'SECOND';
+    case 3: return 'TERRACE';
+    default: return 'GROUND';
+  }
+}
+
+/**
+ * Resolves any room name, room number, entity ID, or waypoint ID into a valid waypoint node.
+ */
+export function resolveLocationNode(query: string): MultiFloorWaypoint | null {
+  if (!query) return null;
+  const q = query.trim().toLowerCase();
+
+  // 1. Direct waypoint ID match
+  const directWp = ALL_CAMPUS_WAYPOINTS.find((wp) => wp.id.toLowerCase() === q);
+  if (directWp) return directWp;
+
+  // 2. Direct entity ID match (e.g. '1F-CR-101', 'TR-CR-303')
+  const entById = ALL_CAMPUS_ENTITIES.find((e) => e.id.toLowerCase() === q);
+  if (entById) {
+    const roomWp = ALL_CAMPUS_WAYPOINTS.find((w) => w.roomId === entById.id);
+    if (roomWp) return roomWp;
+    if (entById.connectedWaypoints?.[0]) {
+      const connWp = ALL_CAMPUS_WAYPOINTS.find((w) => w.id === entById.connectedWaypoints[0]);
+      if (connWp) return connWp;
+    }
+  }
+
+  // 3. Match 3-digit classroom pattern or room code (e.g. 101, 105, 201, 303)
+  const roomPatternMatch = q.match(/(?:classroom|room|hall|cr)\s*([0-9]{3}|[0-9a-z-]+)/i) || q.match(/\b([1-3]0[1-5])\b/i);
+  const roomKey = roomPatternMatch ? roomPatternMatch[1].toLowerCase() : q;
+
+  const entByNum = ALL_CAMPUS_ENTITIES.find(
+    (e) =>
+      e.code.toLowerCase() === roomKey ||
+      e.code.toLowerCase().includes(roomKey) ||
+      e.name.toLowerCase() === q ||
+      e.name.toLowerCase().includes(q) ||
+      e.refLabel.toLowerCase() === q
+  );
+
+  if (entByNum) {
+    const roomWp = ALL_CAMPUS_WAYPOINTS.find((w) => w.roomId === entByNum.id);
+    if (roomWp) return roomWp;
+    if (entByNum.connectedWaypoints?.[0]) {
+      const connWp = ALL_CAMPUS_WAYPOINTS.find((w) => w.id === entByNum.connectedWaypoints[0]);
+      if (connWp) return connWp;
+    }
+  }
+
+  // 4. Match common landmarks
+  if (q.includes('entrance') || q === 'main entrance') {
+    return ALL_CAMPUS_WAYPOINTS.find((w) => w.id === 'wp-gf-entrance') || null;
+  }
+  if (q.includes('seminar')) {
+    return ALL_CAMPUS_WAYPOINTS.find((w) => w.roomId === 'GF-SEM-01' || w.id === 'wp-gf-seminar-door') || null;
+  }
+  if (q.includes('lift') || q.includes('elevator')) {
+    return ALL_CAMPUS_WAYPOINTS.find((w) => w.id === 'wp-1f-lift' || w.id === 'wp-gf-lift') || null;
+  }
+  if (q.includes('stair')) {
+    return ALL_CAMPUS_WAYPOINTS.find((w) => w.id === 'wp-1f-str-e' || w.id === 'wp-gf-str-e') || null;
+  }
+
+  return null;
+}
+
+/**
+ * Generates natural, accurate turn-by-turn walking instructions from the calculated route path.
+ */
+export function generateTurnByTurnSteps(
+  path: MultiFloorWaypoint[],
+  originName: string,
+  destinationName: string
+): { instruction: string; distance: string; floor: FloorLevel; level: string; type: 'WALK' | 'STAIR' | 'ELEVATOR' | 'DOOR' }[] {
+  if (path.length <= 1) {
+    const fl = path[0]?.floor || 'GROUND';
+    const lvl = floorToLabel(fl);
+    return [
+      {
+        instruction: `You are already at ${destinationName || 'your destination'}.`,
+        distance: '0m',
+        floor: fl,
+        level: lvl,
+        type: 'WALK',
+      },
+    ];
+  }
+
+  const steps: { instruction: string; distance: string; floor: FloorLevel; level: string; type: 'WALK' | 'STAIR' | 'ELEVATOR' | 'DOOR' }[] = [];
+
+  // Step 1: Start
+  const startWp = path[0];
+  steps.push({
+    instruction: `Start from ${originName || startWp.name}.`,
+    distance: '0m',
+    floor: startWp.floor,
+    level: floorToLabel(startWp.floor),
+    type: 'DOOR',
+  });
+
+  for (let i = 0; i < path.length - 1; i++) {
+    const curr = path[i];
+    const next = path[i + 1];
+    const distM = Math.max(3, Math.round(Math.hypot(next.x - curr.x, next.y - curr.y) * 0.12));
+
+    if (curr.floor !== next.floor) {
+      // Floor Transition via Stairs or Elevator
+      const isElev = curr.type === 'LIFT' || next.type === 'LIFT';
+      const currNum = floorToNumber(curr.floor);
+      const nextNum = floorToNumber(next.floor);
+      const dir = nextNum > currNum ? 'upstairs' : 'downstairs';
+      const via = isElev ? 'elevator' : 'stairs';
+
+      steps.push({
+        instruction: isElev
+          ? `Take the elevator from ${floorToLabel(curr.floor)} to ${floorToLabel(next.floor)}.`
+          : `Go ${dir} via the staircase to ${floorToLabel(next.floor)}.`,
+        distance: `${distM + 6}m`,
+        floor: curr.floor,
+        level: floorToLabel(curr.floor),
+        type: isElev ? 'ELEVATOR' : 'STAIR',
+      });
+    } else {
+      // Horizontal Corridor Walking on Same Floor
+      let instruction = '';
+
+      if (curr.type === 'CLASSROOM' || curr.type === 'ROOM_CENTER') {
+        instruction = `Exit ${originName || curr.name} and enter the ${floorToLabel(curr.floor)} corridor.`;
+      } else if (next.type === 'CLASSROOM' || (i === path.length - 2 && next.type === 'DOOR')) {
+        instruction = `Turn toward ${destinationName || next.name}.`;
+      } else if (next.type === 'STAIRS') {
+        const destNum = floorToNumber(path[path.length - 1].floor);
+        const currNum = floorToNumber(curr.floor);
+        const targetFloorLabel = destNum > currNum ? `Floor ${currNum + 1}` : `Floor ${currNum - 1}`;
+        instruction = `Continue toward the staircase to ${targetFloorLabel}.`;
+      } else if (curr.type === 'STAIRS' && next.type === 'DOOR') {
+        instruction = `Exit the staircase landing onto the ${floorToLabel(curr.floor)} corridor.`;
+      } else if (next.type === 'HUB') {
+        instruction = `Walk straight along the corridor through the central atrium.`;
+      } else if (curr.type === 'HUB') {
+        instruction = `Continue along the ${floorToLabel(curr.floor)} corridor.`;
+      } else {
+        instruction = `Continue straight along the corridor.`;
+      }
+
+      steps.push({
+        instruction,
+        distance: `${distM}m`,
+        floor: curr.floor,
+        level: floorToLabel(curr.floor),
+        type: 'WALK',
+      });
+    }
+  }
+
+  // Final Step: Destination reached
+  const lastWp = path[path.length - 1];
+  steps.push({
+    instruction: `You have reached ${destinationName || lastWp.name}.`,
+    distance: '0m',
+    floor: lastWp.floor,
+    level: floorToLabel(lastWp.floor),
+    type: 'DOOR',
+  });
+
+  return steps;
+}
+
+/**
+ * Calculates a verified, staircase-aware, corridor-only multi-floor route.
+ * Guarantees proper floor transitions:
+ * Floor 1: Classroom 101 -> Floor 1 Corridor -> Staircase
+ * Floor 2: Staircase -> Floor 2 Corridor -> Staircase
+ * Floor 3: Staircase -> Floor 3 Corridor -> Classroom 303
+ */
+export function calculateMultiFloorRoute(
+  originQuery: string,
+  destQuery: string,
+  optionsOrBlocked?: string[] | RouteOptions
+): CalculatedRouteResult {
+  const options: RouteOptions = Array.isArray(optionsOrBlocked)
+    ? { blockedEdgeOrNodeIds: optionsOrBlocked }
+    : optionsOrBlocked || {};
+
+  const blockedSet = new Set(options.blockedEdgeOrNodeIds || []);
+  const useElevator = Boolean(options.useElevator || options.accessibleOnly);
+  const accessibleOnly = Boolean(options.accessibleOnly);
+
+  // 1. ROUTE VALIDATION: Resolve origin and destination
+  const originNode = resolveLocationNode(originQuery);
+  const destNode = resolveLocationNode(destQuery);
+
+  if (!originNode) {
+    return {
+      isValid: false,
+      error: `Starting location "${originQuery}" could not be found.`,
+      path: [],
+      distanceMeters: 0,
+      estimatedSeconds: 0,
+      floorTransitions: [],
+      steps: [{ instruction: `Starting location "${originQuery}" could not be found.`, distance: '0m', floor: 'GROUND', level: 'Ground Floor', type: 'DOOR' }],
+      originName: originQuery,
+      destinationName: destQuery,
+      originFloor: 'GROUND',
+      destinationFloor: 'GROUND',
+    };
+  }
+
+  if (!destNode) {
+    return {
+      isValid: false,
+      error: `Destination "${destQuery}" could not be found.`,
+      path: [],
+      distanceMeters: 0,
+      estimatedSeconds: 0,
+      floorTransitions: [],
+      steps: [{ instruction: `Destination "${destQuery}" could not be found.`, distance: '0m', floor: originNode.floor, level: floorToLabel(originNode.floor), type: 'DOOR' }],
+      originName: originNode.name,
+      destinationName: destQuery,
+      originFloor: originNode.floor,
+      destinationFloor: originNode.floor,
+    };
+  }
+
+  // Resolve human-friendly room names
+  const originEntity = ALL_CAMPUS_ENTITIES.find((e) => e.id === originNode.roomId || e.id.toLowerCase() === originQuery.toLowerCase());
+  const destEntity = ALL_CAMPUS_ENTITIES.find((e) => e.id === destNode.roomId || e.id.toLowerCase() === destQuery.toLowerCase());
+  const originName = originEntity?.name || originNode.name;
+  const destinationName = destEntity?.name || destNode.name;
+
+  // Handle same origin and destination
+  if (originNode.id === destNode.id) {
+    return {
+      isValid: true,
+      path: [originNode],
+      distanceMeters: 0,
+      estimatedSeconds: 0,
+      floorTransitions: [],
+      steps: [{ instruction: `You are already at ${destinationName}.`, distance: '0m', floor: originNode.floor, level: floorToLabel(originNode.floor), type: 'DOOR' }],
+      originName,
+      destinationName,
+      originFloor: originNode.floor,
+      destinationFloor: destNode.floor,
+    };
+  }
+
+  // 2. BUILD GRAPH ADJACENCY
+  const adj = new Map<string, { to: string; dist: number; isStair?: boolean; isElevator?: boolean }[]>();
   ALL_CAMPUS_WAYPOINTS.forEach((wp) => adj.set(wp.id, []));
 
   ALL_CAMPUS_EDGES.forEach((edge) => {
     if (blockedSet.has(edge.from) || blockedSet.has(edge.to)) return;
 
+    // Accessibility filter
+    if (accessibleOnly && edge.isStair) return;
+
+    // Elevators are NOT used unless user specifically selects elevator route
+    let edgeCost = edge.distanceMeters;
+    if (edge.isElevator && !useElevator) {
+      edgeCost += 200; // heavy penalty so stairs are always preferred
+    }
+
     adj.get(edge.from)?.push({
       to: edge.to,
-      dist: edge.distanceMeters,
+      dist: edgeCost,
       isStair: edge.isStair,
       isElevator: edge.isElevator,
     });
     adj.get(edge.to)?.push({
       to: edge.from,
-      dist: edge.distanceMeters,
+      dist: edgeCost,
       isStair: edge.isStair,
       isElevator: edge.isElevator,
     });
   });
 
+  // 3. DIJKSTRA / A* SHORTEST WALKABLE PATH
   const distances = new Map<string, number>();
   const previous = new Map<string, string | null>();
   const unvisited = new Set<string>();
@@ -1468,7 +1845,7 @@ export function calculateMultiFloorRoute(
     }
   });
 
-  distances.set(originWpId, 0);
+  distances.set(originNode.id, 0);
 
   while (unvisited.size > 0) {
     let currentId: string | null = null;
@@ -1481,7 +1858,7 @@ export function calculateMultiFloorRoute(
       }
     });
 
-    if (currentId === null || minDist === Infinity || currentId === destWpId) {
+    if (currentId === null || minDist === Infinity || currentId === destNode.id) {
       break;
     }
 
@@ -1498,52 +1875,99 @@ export function calculateMultiFloorRoute(
     }
   }
 
+  // 4. RECONSTRUCT PATH
   const pathIds: string[] = [];
-  let curr: string | null = destWpId;
+  let curr: string | null = destNode.id;
   while (curr !== null) {
     pathIds.unshift(curr);
     curr = previous.get(curr) || null;
   }
 
-  const path = pathIds
+  // If path was not found or start was not reached
+  if (pathIds.length === 0 || pathIds[0] !== originNode.id) {
+    return {
+      isValid: false,
+      error: `No walkable route found between ${originName} and ${destinationName}. Path may be blocked or disconnected.`,
+      path: [],
+      distanceMeters: 0,
+      estimatedSeconds: 0,
+      floorTransitions: [],
+      steps: [{ instruction: `No walkable route found between ${originName} and ${destinationName}.`, distance: '0m', floor: originNode.floor, level: floorToLabel(originNode.floor), type: 'DOOR' }],
+      originName,
+      destinationName,
+      originFloor: originNode.floor,
+      destinationFloor: destNode.floor,
+    };
+  }
+
+  const rawPath = pathIds
     .map((id) => ALL_CAMPUS_WAYPOINTS.find((wp) => wp.id === id))
     .filter((wp): wp is MultiFloorWaypoint => Boolean(wp));
 
-  const totalDistance = distances.get(destWpId) ?? 24;
-  const estimatedSeconds = Math.round(totalDistance / 1.1);
-
-  // Detect floor transitions
-  const floorTransitions: { fromFloor: FloorLevel; toFloor: FloorLevel; via: 'STAIRS' | 'ELEVATOR' }[] = [];
-  for (let i = 0; i < path.length - 1; i++) {
-    if (path[i].floor !== path[i + 1].floor) {
-      const isElev = path[i].type === 'LIFT' || path[i + 1].type === 'LIFT';
+  // 5. MULTI-FLOOR VALIDATION: Validate floor transitions and staircase connections
+  const floorTransitions: { fromFloor: FloorLevel; toFloor: FloorLevel; via: 'STAIRS' | 'ELEVATOR'; waypointId: string }[] = [];
+  for (let i = 0; i < rawPath.length - 1; i++) {
+    const w1 = rawPath[i];
+    const w2 = rawPath[i + 1];
+    if (w1.floor !== w2.floor) {
+      const isElev = w1.type === 'LIFT' || w2.type === 'LIFT';
       floorTransitions.push({
-        fromFloor: path[i].floor,
-        toFloor: path[i + 1].floor,
+        fromFloor: w1.floor,
+        toFloor: w2.floor,
         via: isElev ? 'ELEVATOR' : 'STAIRS',
+        waypointId: w1.id,
       });
+
+      // Verify that floor transitions are consecutive (no teleporting)
+      const diff = Math.abs(floorToNumber(w1.floor) - floorToNumber(w2.floor));
+      if (diff > 1 && !isElev) {
+        return {
+          isValid: false,
+          error: `Invalid route: direct floor jump detected from ${floorToLabel(w1.floor)} to ${floorToLabel(w2.floor)} without consecutive stairs.`,
+          path: [],
+          distanceMeters: 0,
+          estimatedSeconds: 0,
+          floorTransitions: [],
+          steps: [],
+          originName,
+          destinationName,
+          originFloor: originNode.floor,
+          destinationFloor: destNode.floor,
+        };
+      }
     }
   }
 
-  const steps = path.slice(0, -1).map((wp, i) => {
-    const nextWp = path[i + 1];
-    let instruction = `Walk from ${wp.name} to ${nextWp.name}`;
-    if (wp.floor !== nextWp.floor) {
-      const via = wp.type === 'LIFT' ? 'Elevator' : 'Stairs';
-      instruction = `Take ${via} from ${wp.floor} Floor to ${nextWp.floor} Floor`;
+  // Compute realistic walking distance and time
+  let totalDistance = 0;
+  for (let i = 0; i < rawPath.length - 1; i++) {
+    const w1 = rawPath[i];
+    const w2 = rawPath[i + 1];
+    if (w1.floor === w2.floor) {
+      totalDistance += Math.max(3, Math.round(Math.hypot(w2.x - w1.x, w2.y - w1.y) * 0.12));
+    } else {
+      totalDistance += 12; // vertical flight
     }
-    return {
-      instruction,
-      distance: `${Math.round(Math.hypot(nextWp.x - wp.x, nextWp.y - wp.y) * 0.12 + 4)}m`,
-      floor: wp.floor,
-    };
-  });
+  }
+
+  const walkingSeconds = Math.round(totalDistance / 1.1);
+  const transitionSeconds = floorTransitions.length * 20; // 20s per stair flight
+  const estimatedSeconds = walkingSeconds + transitionSeconds;
+
+  // 6. GENERATE TURN-BY-TURN INSTRUCTIONS
+  const steps = generateTurnByTurnSteps(rawPath, originName, destinationName);
 
   return {
-    path,
+    isValid: true,
+    path: rawPath,
     distanceMeters: Math.round(totalDistance),
     estimatedSeconds,
     floorTransitions,
-    steps: steps.length > 0 ? steps : [{ instruction: 'Proceed directly to destination', distance: '12m', floor: 'GROUND' }],
+    steps,
+    originName,
+    destinationName,
+    originFloor: originNode.floor,
+    destinationFloor: destNode.floor,
   };
 }
+

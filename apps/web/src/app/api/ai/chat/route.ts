@@ -144,9 +144,14 @@ EXACT BEHAVIOR PER INTENT:
    - Provide a concise overview: location, capacity, primary use.
    - Example: "The Seminar Hall (CR-07) is on the Ground Floor, south of the Central Hexagon. It can accommodate up to 120 people and is used for seminars, presentations and campus events."
 
-6. NAVIGATION (e.g. "How do I get to the seminar hall?"):
-   - If starting point is known: provide the route.
-   - If starting point is not known: ask "Where are you starting from?" (NEVER invent a starting location).
+6. NAVIGATION (e.g. "I am at Classroom 101 and I want to go to Classroom 303. How to go?", "How do I get from Classroom 303 to Classroom 101?", "Take me from Classroom 101 to Classroom 105", "How do I reach the seminar hall?"):
+   - You MUST call the calculate_route tool!
+   - Extract both startEntityId and destinationEntityId.
+   - For "I am at X and want to go to Y", startEntityId is X and destinationEntityId is Y!
+   - For "How do I get from X to Y", startEntityId is X and destinationEntityId is Y!
+   - For "Take me from X to Y", startEntityId is X and destinationEntityId is Y!
+   - If starting point is not provided in query or context, ask "Where are you starting from?" (NEVER invent a starting location).
+   - Once calculate_route returns, provide the clear corridor and staircase step-by-step instructions.
 
 7. FLOOR AGGREGATE CAPACITY (e.g. "How many students can the first floor accommodate?"):
    - Retrieve total capacity from the floor capacity tool.
@@ -291,7 +296,7 @@ async function executeServerTool(name: string, args: any, context: any, actions:
         };
       }
 
-      const start = findRoomByIdOrName(args.startEntityId) || findRoomByIdOrName(context?.selectedEntityId);
+      const start = findRoomByIdOrName(args.startEntityId) || findRoomByIdOrName(context?.currentLocation) || findRoomByIdOrName(context?.selectedEntityId);
       const end = findRoomByIdOrName(args.destinationEntityId);
       if (!start || !end) {
         return { error: 'Origin or destination could not be identified.' };
@@ -303,6 +308,9 @@ async function executeServerTool(name: string, args: any, context: any, actions:
         entityId: end.id,
         roomName: end.name,
         floor: end.floor,
+        originId: start.id,
+        originName: start.name,
+        originFloor: start.floor,
         route,
       });
 

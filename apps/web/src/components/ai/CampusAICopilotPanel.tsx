@@ -7,8 +7,10 @@ import {
   ALL_CAMPUS_ENTITIES,
   getEntitiesForFloor,
   findRoomByIdOrName,
+  calculateMultiFloorRoute,
+  floorToLabel,
 } from '../../services/campusMultiFloorData';
-import { runCopilotPipeline } from '../../services/campusCopilotEngine';
+import { runCopilotPipeline, extractRouteEndpoints } from '../../services/campusCopilotEngine';
 import {
   Sparkles,
   Send,
@@ -41,7 +43,7 @@ interface CampusAICopilotPanelProps {
   setActiveFloor: (floor: FloorLevel) => void;
   selectedEntity: CampusRoomEntity | null;
   onSelectEntity: (entity: CampusRoomEntity) => void;
-  onStartRoute: (entity: CampusRoomEntity) => void;
+  onStartRoute: (entity: CampusRoomEntity, originEntity?: CampusRoomEntity | null) => void;
   isExpanded: boolean;
   setIsExpanded: (expanded: boolean) => void;
   isMinimized: boolean;
@@ -84,7 +86,7 @@ export function CampusAICopilotPanel({
   }, [messages, isTyping]);
 
   const conversationIdRef = useRef<string>('conv-' + Date.now());
-  const localContextRef = useRef<{ lastEntity?: CampusRoomEntity; lastDistanceMeters?: number }>({});
+  const localContextRef = useRef<{ lastEntity?: CampusRoomEntity; lastDistanceMeters?: number; userLocation?: CampusRoomEntity }>({});
 
   /**
    * RESPONSE HANDLING LAYER:
@@ -104,8 +106,8 @@ export function CampusAICopilotPanel({
       institutionName: 'ESEC Campus',
       floorId: activeFloor,
       selectedEntityId: selectedEntity?.id || localContextRef.current.lastEntity?.id,
-      currentLocation: selectedEntity?.name || localContextRef.current.lastEntity?.name,
-      hasUserLocation: Boolean(selectedEntity),
+      currentLocation: localContextRef.current.userLocation?.name || selectedEntity?.name || localContextRef.current.lastEntity?.name,
+      hasUserLocation: Boolean(localContextRef.current.userLocation || selectedEntity),
     };
 
     // -------------------------------------------------------------
@@ -133,6 +135,9 @@ export function CampusAICopilotPanel({
               const matched = findRoomByIdOrName(act.entityId) || findRoomByIdOrName(act.roomName);
               if (matched) {
                 localContextRef.current.lastEntity = matched;
+                if (/i am at|i'm at|currently at|starting from|start at/i.test(userQuery)) {
+                  localContextRef.current.userLocation = matched;
+                }
                 setActiveFloor(matched.floor);
                 onSelectEntity(matched);
                 action = {
@@ -144,14 +149,16 @@ export function CampusAICopilotPanel({
               }
             } else if (act.action === 'NAVIGATE') {
               const matched = findRoomByIdOrName(act.entityId) || findRoomByIdOrName(act.roomName);
+              const originMatched = act.originId ? findRoomByIdOrName(act.originId) : (act.originName ? findRoomByIdOrName(act.originName) : null);
               if (matched) {
                 localContextRef.current.lastEntity = matched;
-                setActiveFloor(matched.floor);
+                const startFloor = originMatched ? originMatched.floor : matched.floor;
+                setActiveFloor(startFloor);
                 onSelectEntity(matched);
-                onStartRoute(matched);
+                onStartRoute(matched, originMatched);
                 action = {
                   type: 'START_ROUTE',
-                  floor: matched.floor,
+                  floor: startFloor,
                   roomId: matched.id,
                   roomName: matched.name,
                 };
@@ -186,6 +193,9 @@ export function CampusAICopilotPanel({
         const matched = findRoomByIdOrName(act.entityId) || findRoomByIdOrName(act.roomName);
         if (matched) {
           localContextRef.current.lastEntity = matched;
+          if (/i am at|i'm at|currently at|starting from|start at/i.test(userQuery)) {
+            localContextRef.current.userLocation = matched;
+          }
           setActiveFloor(matched.floor);
           onSelectEntity(matched);
           localAction = {
@@ -197,14 +207,16 @@ export function CampusAICopilotPanel({
         }
       } else if (act.action === 'NAVIGATE' && act.entityId) {
         const matched = findRoomByIdOrName(act.entityId) || findRoomByIdOrName(act.roomName);
+        const originMatched = act.originId ? findRoomByIdOrName(act.originId) : (act.originName ? findRoomByIdOrName(act.originName) : null);
         if (matched) {
           localContextRef.current.lastEntity = matched;
-          setActiveFloor(matched.floor);
+          const startFloor = originMatched ? originMatched.floor : matched.floor;
+          setActiveFloor(startFloor);
           onSelectEntity(matched);
-          onStartRoute(matched);
+          onStartRoute(matched, originMatched);
           localAction = {
             type: 'START_ROUTE',
-            floor: matched.floor,
+            floor: startFloor,
             roomId: matched.id,
             roomName: matched.name,
           };
@@ -318,6 +330,82 @@ export function CampusAICopilotPanel({
       return { text: "Which location or room would you like to check the distance for?" };
     }
 
+    // Location declaration check without navigation (e.g. "I am at Classroom 101")
+    const atLocationMatch = clean.match(/(?:i am at|i'm at|currently at|starting from|start at)\s+([a-z0-9\s-]+)/i);
+    const hasNavKeywords = /(?:want to go|how to go|how do i go|how can i go|how to reach|how can i reach|how to get|how do i get|go to|take me to|navigate to|heading to|travel to)/i.test(clean);
+
+    if (atLocationMatch && !hasNavKeywords) {
+      const room = findRoomByIdOrName(atLocationMatch[1]);
+      if (room) {
+        localContextRef.current.userLocation = room;
+        localContextRef.current.lastEntity = room;
+        setActiveFloor(room.floor);
+        onSelectEntity(room);
+        return {
+          text: `I've noted your location at ${room.name} on the ${floorToLabel(room.floor)}. Where would you like to go?`,
+          spatialAction: { type: 'HIGHLIGHT_ROOM', floor: room.floor, roomId: room.id, roomName: room.name },
+        };
+      }
+    }
+
+    // Specific multi-floor / room-to-room navigation queries
+    const hasNav =
+      (atLocationMatch && hasNavKeywords) ||
+      /(?:how\s+(?:do\s+i|to|can\s+i)\s+(?:go\s+to|reach|get\s+to|travel\s+to)|how\s+to\s+go\b|how\s+can\s+i\s+reach)/i.test(clean) ||
+      /(?:i\s+)?want to go to|need to go to|going to|heading to\b/i.test(clean) ||
+      /(?:navigate\s+me\s+to|navigate\s+to|take\s+me\s+to|guide\s+me\s+to|lead\s+me\s+to)/i.test(clean) ||
+      /(?:route|directions?|path)\s+(?:from|to|between)/i.test(clean) ||
+      /(?:navigate|take me|go|travel)\s+from\s+.*?\s+to/i.test(clean) ||
+      /\bfrom\s+([a-z0-9\s-]+?)\s+to\s+([a-z0-9\s-]+)\b/i.test(clean) ||
+      /\b([1-3]0[1-5])\s+(?:to|->)\s+([1-3]0[1-5])\b/i.test(clean) ||
+      (clean.includes('101') && clean.includes('303')) ||
+      (clean.includes('from') && clean.includes('to')) ||
+      clean.includes('navigate') ||
+      clean.includes('route') ||
+      clean.includes('how to get to') ||
+      clean.includes('how do i get to');
+
+    if (hasNav) {
+      const endpoints = extractRouteEndpoints(userQuery, formattedHistory, spatialContext);
+      if (endpoints.destination) {
+        const dest = endpoints.destination;
+        const start = endpoints.origin || localContextRef.current.userLocation || selectedEntity || ALL_CAMPUS_ENTITIES[0];
+        const route = calculateMultiFloorRoute(start.id, dest.id);
+        if (route.isValid) {
+          localContextRef.current.lastEntity = dest;
+          localContextRef.current.lastDistanceMeters = route.distanceMeters;
+          setActiveFloor(start.floor);
+          onSelectEntity(dest);
+          onStartRoute(dest, start);
+
+          let text = `From ${start.name}, follow the highlighted route to reach ${dest.name}.`;
+          if (start.floorNumber === 1 && dest.floorNumber === 3) {
+            text = `Starting from ${start.name} on the First Floor, follow the corridor to the staircase. Go upstairs to the Second Floor, continue through the corridor, then take the staircase to the Third Floor. Follow the Third-Floor corridor to ${dest.name}.`;
+          } else if (start.floorNumber === 3 && dest.floorNumber === 1) {
+            text = `Starting from ${start.name} on the Third Floor, follow the corridor to the staircase. Go downstairs to the Second Floor, continue through the corridor, then take the staircase to the First Floor. Follow the First-Floor corridor to ${dest.name}.`;
+          } else if (route.floorTransitions.length > 0) {
+            const flStart = floorToLabel(start.floor);
+            const flDest = floorToLabel(dest.floor);
+            if ((start.floorNumber || 0) < (dest.floorNumber || 0)) {
+              text = `Starting from ${start.name} on the ${flStart}, follow the corridor to the staircase. Go upstairs to the ${flDest} and continue through the corridor to reach ${dest.name}.`;
+            } else {
+              text = `Starting from ${start.name} on the ${flStart}, follow the corridor to the staircase. Go downstairs to the ${flDest} and continue through the corridor to reach ${dest.name}.`;
+            }
+          } else {
+            text = `From ${start.name}, follow the ${floorToLabel(start.floor)} corridor straight ahead to reach ${dest.name}. I've highlighted the route on the map for you.`;
+          }
+          return {
+            text,
+            spatialAction: { type: 'START_ROUTE', floor: start.floor, roomId: dest.id, roomName: dest.name },
+          };
+        } else {
+          return {
+            text: "I'm unable to find a valid indoor route between these locations. Please check that both locations are connected to the building's walkable corridor and staircase network.",
+          };
+        }
+      }
+    }
+
     if (
       clean === 'how do i get there' ||
       clean.includes('how do i get there') ||
@@ -358,6 +446,35 @@ export function CampusAICopilotPanel({
         return {
           text: 'Lab 1 (CR-02) is on the Ground Floor, near the Central Hub corridor. It has 40 workstations. Would you like me to show you the route?',
           spatialAction: { type: 'HIGHLIGHT_ROOM', floor: 'GROUND', roomId: room.id, roomName: room.name },
+        };
+      }
+    }
+
+    // COE Lab / COE Hall (e.g. "Where is COE Lab?")
+    if (clean.includes('coe lab') || clean.includes('coe hall') || clean === 'coe' || clean.includes('coe')) {
+      const room = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'GF-COE-01');
+      if (room) {
+        localContextRef.current.lastEntity = room;
+        setActiveFloor('GROUND');
+        onSelectEntity(room);
+        return {
+          text: "COE Lab is on the Ground Floor. I've highlighted it on the map.",
+          spatialAction: { type: 'HIGHLIGHT_ROOM', floor: 'GROUND', roomId: room.id, roomName: room.name },
+        };
+      }
+    }
+
+    // Classroom pure location queries (e.g. "Where is Classroom 101?")
+    const crMatch = clean.match(/(?:where is|where's|find|locate)\s+(?:classroom|room|cr)?\s*([0-9]{3})/i);
+    if (crMatch) {
+      const room = findRoomByIdOrName(crMatch[1]);
+      if (room) {
+        localContextRef.current.lastEntity = room;
+        setActiveFloor(room.floor);
+        onSelectEntity(room);
+        return {
+          text: `${room.name} is on the ${floorToLabel(room.floor)}. I've highlighted it on the map.`,
+          spatialAction: { type: 'HIGHLIGHT_ROOM', floor: room.floor, roomId: room.id, roomName: room.name },
         };
       }
     }

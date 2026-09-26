@@ -68,23 +68,31 @@ export default function SpatialIntelligencePlatformPage() {
   const blockedWaypoints = SPATIAL_EVENTS[activeEvent].blockedWaypoints;
 
   // Start route to any entity on any floor
-  const handleStartRouteToEntity = (entity: CampusRoomEntity) => {
-    setSelectedEntity(entity);
-    setActiveFloor(entity.floor);
+  const handleStartRouteToEntity = (entity: CampusRoomEntity, originEntity?: CampusRoomEntity | null) => {
+    // If explicit origin provided, use it; otherwise if user had selected a different room, use selectedEntity as origin;
+    // otherwise fallback to current floor's entrance / atrium hub
+    const origin = originEntity || (selectedEntity && selectedEntity.id !== entity.id ? selectedEntity : null);
+    
+    const originId = origin ? origin.id : (activeFloor === 'GROUND' ? 'wp-gf-entrance' : `wp-${activeFloor.toLowerCase()}-hub`);
+    const targetWpId = entity.id;
+    const route = calculateMultiFloorRoute(originId, targetWpId, blockedWaypoints);
 
-    const originWpId = activeFloor === 'GROUND' ? 'wp-gf-entrance' : `wp-${activeFloor.toLowerCase()}-hub`;
-    const targetWpId = entity.connectedWaypoints[0] || 'wp-gf-hub';
-    const route = calculateMultiFloorRoute(originWpId, targetWpId, blockedWaypoints);
+    if (route.isValid && route.path.length > 0) {
+      setSelectedEntity(entity);
+      // Switch view to origin floor so the user starts navigation from their origin floor
+      const startFloor = origin ? origin.floor : route.path[0].floor;
+      setActiveFloor(startFloor);
 
-    setActiveRoute({
-      origin: activeFloor === 'GROUND' ? 'Main Entrance' : `${activeFloor} Floor Atrium`,
-      destination: entity.name,
-      distanceMeters: route.distanceMeters,
-      estimatedSeconds: route.estimatedSeconds,
-      waypoints: route.path,
-      floorTransitions: route.floorTransitions,
-      steps: route.steps,
-    });
+      setActiveRoute({
+        origin: origin ? origin.name : (activeFloor === 'GROUND' ? 'Main Entrance' : `${activeFloor} Floor Atrium`),
+        destination: entity.name,
+        distanceMeters: route.distanceMeters,
+        estimatedSeconds: route.estimatedSeconds,
+        waypoints: route.path,
+        floorTransitions: route.floorTransitions,
+        steps: route.steps,
+      });
+    }
   };
 
   return (
@@ -136,8 +144,14 @@ export default function SpatialIntelligencePlatformPage() {
           onOpenLayers={() => setIsMoreModalOpen(true)}
           onOpenMore={() => setIsMoreModalOpen(true)}
           onStartNavigatePrompt={() => {
-            const lab1 = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'GF-LAB-01');
-            if (lab1) handleStartRouteToEntity(lab1);
+            const cr101 = ALL_CAMPUS_ENTITIES.find((r) => r.id === '1F-CR-101');
+            const cr303 = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'TR-CR-303');
+            if (cr101 && cr303) {
+              handleStartRouteToEntity(cr303, cr101);
+            } else {
+              const lab1 = ALL_CAMPUS_ENTITIES.find((r) => r.id === 'GF-LAB-01');
+              if (lab1) handleStartRouteToEntity(lab1);
+            }
           }}
           onFocusAICopilot={() => {
             setIsCopilotMinimized(false);
