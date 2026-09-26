@@ -7,6 +7,7 @@ import {
   MultiFloorWaypoint,
   getEntitiesForFloor,
 } from '../../services/campusMultiFloorData';
+import { OUTER_PENTAGON_FOOTPRINT } from '../../services/groundFloorData';
 import { Compass, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
 
 interface MultiFloor2DViewProps {
@@ -36,6 +37,7 @@ export function MultiFloor2DView({
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const isRotating = useRef(false);
+  const hasDragged = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const startRotation = useRef(0);
   const startPan = useRef({ x: 0, y: 0 });
@@ -48,6 +50,7 @@ export function MultiFloor2DView({
 
   const handleMouseDown = (e: React.MouseEvent) => {
     dragStart.current = { x: e.clientX, y: e.clientY };
+    hasDragged.current = false;
     startPan.current = { ...panOffset };
     startRotation.current = rotationDegrees;
 
@@ -61,6 +64,10 @@ export function MultiFloor2DView({
   const handleMouseMove = (e: React.MouseEvent) => {
     const dx = e.clientX - dragStart.current.x;
     const dy = e.clientY - dragStart.current.y;
+
+    if (Math.hypot(dx, dy) > 4) {
+      hasDragged.current = true;
+    }
 
     if (isRotating.current) {
       const newDeg = (startRotation.current + dx * 0.65) % 360;
@@ -130,8 +137,8 @@ export function MultiFloor2DView({
         }}
       >
         <svg
-          viewBox="120 120 760 720"
-          className="w-full h-full max-w-[860px] max-h-[760px] transition-transform duration-75"
+          viewBox="90 90 820 780"
+          className="w-full h-full max-w-[880px] max-h-[780px] transition-transform duration-75"
           style={{
             transform: perspective === '2D' ? `rotate(${rotationDegrees}deg)` : 'none',
             transformOrigin: `${centerX}px ${centerY}px`,
@@ -154,18 +161,40 @@ export function MultiFloor2DView({
             </filter>
           </defs>
 
-          {/* Outer Perimeter Footprint */}
-          <ellipse
-            cx={centerX}
-            cy={centerY}
-            rx="370"
-            ry="330"
-            fill="none"
-            stroke="#1e293b"
-            strokeWidth="1.5"
-            strokeDasharray="4 6"
-            opacity="0.4"
-          />
+          {/* Outer Perimeter Footprint - Mandatory Architectural Outline on ALL Floors */}
+          <g pointerEvents="none">
+            <path
+              d={getPolygonPath(OUTER_PENTAGON_FOOTPRINT)}
+              fill="#090d1a"
+              stroke="#1b2538"
+              strokeWidth="7"
+              className="drop-shadow-2xl"
+            />
+            <path
+              d={getPolygonPath(OUTER_PENTAGON_FOOTPRINT)}
+              fill="none"
+              stroke="#2a3a54"
+              strokeWidth="2.5"
+              opacity="0.9"
+            />
+            {/* Outer Window Slits */}
+            <g stroke="#f8fafc" strokeWidth="3" strokeLinecap="round" opacity="0.9">
+              <line x1="300" y1="160" x2="340" y2="160" />
+              <line x1="380" y1="160" x2="420" y2="160" />
+              <line x1="580" y1="160" x2="620" y2="160" />
+              <line x1="660" y1="160" x2="700" y2="160" />
+              <line x1="790" y1="260" x2="800" y2="300" />
+              <line x1="805" y1="360" x2="810" y2="400" />
+              <line x1="775" y1="620" x2="760" y2="660" />
+              <line x1="320" y1="800" x2="360" y2="810" />
+              <line x1="450" y1="830" x2="480" y2="830" />
+              <line x1="520" y1="830" x2="550" y2="830" />
+              <line x1="640" y1="805" x2="680" y2="795" />
+              <line x1="190" y1="350" x2="210" y2="250" />
+              <line x1="175" y1="450" x2="168" y2="490" />
+              <line x1="180" y1="600" x2="210" y2="670" />
+            </g>
+          </g>
 
           {/* Rooms on this floor */}
           {floorEntities.map((entity) => {
@@ -178,7 +207,9 @@ export function MultiFloor2DView({
                 key={entity.id}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSelectEntity(entity);
+                  if (!hasDragged.current) {
+                    onSelectEntity(entity);
+                  }
                 }}
                 onMouseEnter={() => setHoveredEntity(entity)}
                 onMouseLeave={() => setHoveredEntity(null)}
@@ -201,74 +232,61 @@ export function MultiFloor2DView({
                   d={pathData}
                   fill={
                     isSelected
-                      ? 'rgba(6, 182, 212, 0.28)'
+                      ? 'rgba(6, 182, 212, 0.35)'
                       : isHovered
-                      ? 'rgba(56, 189, 248, 0.18)'
+                      ? 'rgba(56, 189, 248, 0.25)'
                       : entity.color.fill
                   }
                   stroke={isSelected ? '#06b6d4' : isHovered ? '#38bdf8' : entity.color.stroke}
-                  strokeWidth={isSelected ? '3.5' : isHovered ? '2.5' : '1.8'}
+                  strokeWidth={isSelected ? '4' : isHovered ? '3' : '2.5'}
                   filter={isSelected ? 'url(#multiSelectionGlow)' : undefined}
                   className="transition-all duration-200"
                 />
 
-                {/* Specific Architectural Geometry Enhancements */}
-                {entity.type === 'CENTRAL_HUB' && activeFloor === 'GROUND' && (
+                {/* Specific ESEC Ground Floor Architectural Features */}
+                {entity.id === 'GF-ENT-01' && (
                   <g pointerEvents="none">
-                    <polygon
-                      points="475,445 525,445 550,480 525,515 475,515 450,480"
-                      fill="#047857"
-                      stroke="#10b981"
-                      strokeWidth="2"
-                      opacity="0.8"
-                    />
-                    <circle cx="500" cy="480" r="14" fill="#10b981" opacity="0.9" />
-                    <text x="500" y="484" textAnchor="middle" fill="#ffffff" fontSize="9" fontWeight="bold">
-                      🌿
+                    <path d="M 488 740 L 500 715 L 512 740 M 500 760 L 500 715" fill="none" stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
+                    <text x="500" y="780" textAnchor="middle" fill="#10b981" fontSize="13" fontWeight="900" letterSpacing="1">
+                      IN
                     </text>
                   </g>
                 )}
 
-                {entity.type === 'SEMINAR_HALL' && (
-                  <g pointerEvents="none" opacity="0.6">
-                    <path d="M 370 680 Q 440 660 510 680" fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeDasharray="5 4" />
-                    <path d="M 360 715 Q 440 690 520 715" fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeDasharray="5 4" />
-                    <path d="M 350 750 Q 440 720 530 750" fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeDasharray="5 4" />
-                    <rect x="410" y="625" width="60" height="14" rx="3" fill="#e11d48" opacity="0.8" />
-                  </g>
-                )}
-
-                {entity.type === 'STAIRS' && (
-                  <g pointerEvents="none" opacity="0.7">
-                    {Array.from({ length: 5 }).map((_, idx) => (
+                {(entity.id === 'GF-STR-01' || entity.type === 'STAIRS') && (
+                  <g pointerEvents="none" opacity="0.85">
+                    {Array.from({ length: 6 }).map((_, idx) => (
                       <line
                         key={idx}
-                        x1={entity.polygon[0].x + idx * 12}
-                        y1={entity.polygon[0].y + idx * 8}
-                        x2={entity.polygon[1].x + idx * 12}
-                        y2={entity.polygon[1].y + idx * 8}
+                        x1={605 + idx * 24}
+                        y1={500}
+                        x2={605 + idx * 24}
+                        y2={535}
                         stroke="#f59e0b"
-                        strokeWidth="1.5"
+                        strokeWidth="2"
                       />
                     ))}
+                    <text x="755" y="522" textAnchor="middle" fill="#f59e0b" fontSize="10" fontWeight="bold">
+                      UP ↑
+                    </text>
                   </g>
                 )}
 
                 {entity.type === 'LIFT' && (
                   <g pointerEvents="none">
                     <rect
-                      x={entity.polygon[0].x + 4}
-                      y={entity.polygon[0].y + 4}
-                      width={entity.polygon[1].x - entity.polygon[0].x - 8}
-                      height={entity.polygon[2].y - entity.polygon[0].y - 8}
+                      x={Math.min(...entity.polygon.map(p => p.x)) + 4}
+                      y={Math.min(...entity.polygon.map(p => p.y)) + 4}
+                      width={Math.max(...entity.polygon.map(p => p.x)) - Math.min(...entity.polygon.map(p => p.x)) - 8}
+                      height={Math.max(...entity.polygon.map(p => p.y)) - Math.min(...entity.polygon.map(p => p.y)) - 8}
                       fill="none"
                       stroke="#06b6d4"
                       strokeWidth="1.5"
                       strokeDasharray="2 2"
                     />
                     <text
-                      x={(entity.polygon[0].x + entity.polygon[1].x) / 2}
-                      y={(entity.polygon[0].y + entity.polygon[2].y) / 2 + 3}
+                      x={(Math.min(...entity.polygon.map(p => p.x)) + Math.max(...entity.polygon.map(p => p.x))) / 2}
+                      y={(Math.min(...entity.polygon.map(p => p.y)) + Math.max(...entity.polygon.map(p => p.y))) / 2 + 3}
                       textAnchor="middle"
                       fill="#06b6d4"
                       fontSize="9"
@@ -291,27 +309,46 @@ export function MultiFloor2DView({
                     <text
                       textAnchor="middle"
                       y="-4"
-                      fill={isSelected ? '#38bdf8' : '#f8fafc'}
-                      fontSize={entity.type === 'CENTRAL_HUB' ? '12' : '10.5'}
-                      fontWeight="bold"
+                      fill={isSelected ? '#38bdf8' : '#ffffff'}
+                      fontSize={entity.type === 'CENTRAL_HUB' ? '13' : '11'}
+                      fontWeight="700"
                       className="drop-shadow-md tracking-wide"
                     >
-                      {entity.name}
+                      {entity.refLabel || entity.name}
                     </text>
                     <text
                       textAnchor="middle"
-                      y="10"
-                      fill={isSelected ? '#93c5fd' : '#94a3b8'}
-                      fontSize="8.5"
+                      y="12"
+                      fill={isSelected ? '#93c5fd' : '#cbd5e1'}
+                      fontSize="9"
                       fontWeight="500"
+                      opacity="0.9"
                     >
-                      {entity.areaM2} m² • {entity.capacity} cap
+                      ({entity.areaM2} m² · {entity.capacity} cap)
                     </text>
                   </g>
                 </g>
               </g>
             );
           })}
+
+          {/* Hexagonal Double Door Swing Arcs for Ground Floor */}
+          {activeFloor === 'GROUND' && (
+            <g pointerEvents="none" stroke="#e2e8f0" strokeWidth="2" fill="none" opacity="0.95">
+              <path d="M 475 580 A 15 15 0 0 1 490 565" />
+              <path d="M 525 580 A 15 15 0 0 0 510 565" />
+              <line x1="475" y1="580" x2="475" y2="565" strokeWidth="1.5" />
+              <line x1="525" y1="580" x2="525" y2="565" strokeWidth="1.5" />
+              <path d="M 445 410 A 12 12 0 0 1 455 398" />
+              <line x1="445" y1="410" x2="455" y2="398" />
+              <path d="M 545 410 A 12 12 0 0 0 555 422" />
+              <line x1="545" y1="410" x2="555" y2="422" />
+              <path d="M 413 460 A 15 15 0 0 1 428 475" />
+              <path d="M 413 500 A 15 15 0 0 0 428 485" />
+              <path d="M 587 450 A 12 12 0 0 0 575 460" />
+              <path d="M 565 545 A 12 12 0 0 1 555 558" />
+            </g>
+          )}
 
           {/* Spatial Node Connection Points */}
           {showSpatialNodes &&

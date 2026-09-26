@@ -201,29 +201,12 @@ export function MultiFloor3DView({
       // Interior items
       const [centerX, centerZ] = mapCoords(room.position.labelX, room.position.labelY);
 
-      if (room.type === 'CENTRAL_HUB' && room.floor === 'GROUND') {
-        const planterGeo = new THREE.CylinderGeometry(2.5, 2.5, 1.2, 16);
-        const planterMat = new THREE.MeshStandardMaterial({ color: 0x10b981 });
-        const planter = new THREE.Mesh(planterGeo, planterMat);
-        planter.position.set(centerX, elevation + 0.6, centerZ);
-        scene.add(planter);
-
-        const benchRingGeo = new THREE.TorusGeometry(5.2, 0.5, 8, 6);
-        const benchRingMat = new THREE.MeshStandardMaterial({ color: 0x64748b });
-        const benchRing = new THREE.Mesh(benchRingGeo, benchRingMat);
-        benchRing.rotation.x = -Math.PI / 2;
-        benchRing.position.set(centerX, elevation + 0.3, centerZ);
-        scene.add(benchRing);
-      } else if (room.type === 'LABORATORY') {
-        const deskGeo = new THREE.BoxGeometry(3, 0.9, 1.5);
-        const deskMat = new THREE.MeshStandardMaterial({ color: hexColor });
-        const desk = new THREE.Mesh(deskGeo, deskMat);
-        desk.position.set(centerX, elevation + 0.45, centerZ);
-        scene.add(desk);
-      }
-
       // Add 3D text sprite
-      const labelSprite = createTextSprite(room.name, `${room.areaM2} m²`, room.color.badge);
+      const labelSprite = createTextSprite(
+        room.refLabel || room.name,
+        `(${room.areaM2} m² · ${room.capacity} cap)`,
+        room.color.badge
+      );
       labelSprite.position.set(centerX, elevation + wallHeight + 2.4, centerZ);
       scene.add(labelSprite);
       roomLabelsRef.current.set(room.id, labelSprite);

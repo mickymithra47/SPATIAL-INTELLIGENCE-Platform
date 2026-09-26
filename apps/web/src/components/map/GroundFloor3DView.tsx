@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { GROUND_FLOOR_ROOMS, GroundFloorRoom, NavigationWaypoint } from '../../services/groundFloorData';
+import { GROUND_FLOOR_ROOMS, GroundFloorRoom, NavigationWaypoint, OUTER_PENTAGON_FOOTPRINT } from '../../services/groundFloorData';
 import { RotateCcw, Compass, Box, Eye, Layers } from 'lucide-react';
 
 interface GroundFloor3DViewProps {
@@ -143,6 +143,46 @@ export function GroundFloor3DView({
     const grid = new THREE.GridHelper(160, 40, 0x1e293b, 0x0f172a);
     grid.position.y = 0.01;
     scene.add(grid);
+
+    // 5b. Authoritative Irregular Pentagonal Outer Building Footprint Shell
+    const outerShape = new THREE.Shape();
+    OUTER_PENTAGON_FOOTPRINT.forEach((pt, idx) => {
+      const [x, z] = mapCoords(pt.x, pt.y);
+      if (idx === 0) outerShape.moveTo(x, z);
+      else outerShape.lineTo(x, z);
+    });
+    outerShape.closePath();
+
+    const outerFloorGeo = new THREE.ShapeGeometry(outerShape);
+    const outerFloorMat = new THREE.MeshStandardMaterial({
+      color: 0x090d1a,
+      roughness: 0.9,
+      metalness: 0.1,
+    });
+    const outerFloorMesh = new THREE.Mesh(outerFloorGeo, outerFloorMat);
+    outerFloorMesh.rotation.x = -Math.PI / 2;
+    outerFloorMesh.position.y = 0.02;
+    outerFloorMesh.receiveShadow = true;
+    scene.add(outerFloorMesh);
+
+    // Outer thick pentagonal wall outline
+    const outerWallGeo = new THREE.ExtrudeGeometry(outerShape, {
+      depth: 4.2,
+      bevelEnabled: true,
+      bevelSegments: 2,
+      bevelSize: 0.1,
+      bevelThickness: 0.1,
+    });
+    const outerWallEdges = new THREE.EdgesGeometry(outerWallGeo);
+    const outerWallLineMat = new THREE.LineBasicMaterial({
+      color: 0x38bdf8,
+      linewidth: 3,
+      transparent: true,
+      opacity: 0.9,
+    });
+    const outerWallWireframe = new THREE.LineSegments(outerWallEdges, outerWallLineMat);
+    outerWallWireframe.rotation.x = -Math.PI / 2;
+    scene.add(outerWallWireframe);
 
     // 6. Build Architectural Rooms
     GROUND_FLOOR_ROOMS.forEach((room) => {

@@ -9,7 +9,19 @@ export interface GroundFloorRoom {
   name: string;
   refLabel: string;
   floor: string;
-  type: 'LABORATORY' | 'SEMINAR_HALL' | 'OFFICE' | 'STAFF_ROOM' | 'MONITORING' | 'EXAM_CELL' | 'EMPTY_SPACE' | 'RESTROOM' | 'STAIRS' | 'CENTRAL_HUB';
+  type:
+    | 'LABORATORY'
+    | 'SEMINAR_HALL'
+    | 'OFFICE'
+    | 'STAFF_ROOM'
+    | 'MONITORING'
+    | 'EXAM_CELL'
+    | 'EMPTY_SPACE'
+    | 'RESTROOM'
+    | 'STAIRS'
+    | 'LIFT'
+    | 'CENTRAL_HUB'
+    | 'CIRCULATION';
   areaM2: number;
   capacity: number;
   operationalStatus: 'AVAILABLE' | 'OCCUPIED' | 'MAINTENANCE' | 'RESERVED';
@@ -22,7 +34,6 @@ export interface GroundFloorRoom {
     entranceX: number;
     entranceY: number;
   };
-  // 2D polygon vertices normalized around center (500, 480) on a 1000x900 canvas
   polygon: SpatialPoint[];
   color: {
     fill: string;
@@ -38,7 +49,7 @@ export interface NavigationWaypoint {
   name: string;
   x: number;
   y: number;
-  type: 'HUB' | 'CORRIDOR' | 'DOOR' | 'STAIRS' | 'ROOM_CENTER';
+  type: 'HUB' | 'CORRIDOR' | 'DOOR' | 'STAIRS' | 'ROOM_CENTER' | 'ENTRANCE';
 }
 
 export interface NavigationEdge {
@@ -47,495 +58,380 @@ export interface NavigationEdge {
   distanceMeters: number;
 }
 
-// Architectural Ground Floor Spatial Model derived directly from Reference 1 & 2
+// Authoritative Irregular Pentagonal Outer Building Footprint for ESEC Main Block
+export const OUTER_PENTAGON_FOOTPRINT: SpatialPoint[] = [
+  { x: 500, y: 830 }, // Bottom South Entrance vertex
+  { x: 740, y: 780 }, // Lower-Right CCTV Monitoring Room vertex
+  { x: 810, y: 460 }, // Right Gents Toilet & Upstairs vertex
+  { x: 770, y: 160 }, // Upper-Right Main Block Seminar Hall vertex
+  { x: 230, y: 160 }, // Upper-Left Ladies Toilet vertex
+  { x: 160, y: 550 }, // Left COE Hall vertex
+  { x: 260, y: 780 }, // Lower-Left vertex
+];
+
+// ESEC Ground Floor Spatial Model (Exact Regular Hexagon Corridor + ESEC Room Layout)
 export const GROUND_FLOOR_ROOMS: GroundFloorRoom[] = [
   {
-    id: 'GF-HUB-01',
+    id: 'GF-COR-01',
     code: 'HUB-00',
-    name: 'Central Hub / Corridor',
-    refLabel: 'Hexagon Hub',
+    name: 'Central Corridor',
+    refLabel: 'CENTRAL CORRIDOR',
     floor: 'Ground Floor',
     type: 'CENTRAL_HUB',
-    areaM2: 200,
-    capacity: 100,
-    operationalStatus: 'AVAILABLE',
-    equipment: ['Interactive Kiosk', 'Hexagonal Seating Ring', 'Biophilic Planter', 'Display Displays'],
-    department: 'Campus Central Circulation',
-    description: 'Central hexagonal atrium and circulation nexus connecting all academic labs, facilities, and entrances.',
-    position: {
-      labelX: 500,
-      labelY: 480,
-      entranceX: 500,
-      entranceY: 480,
-    },
-    polygon: [
-      { x: 450, y: 345 },
-      { x: 550, y: 345 },
-      { x: 625, y: 475 },
-      { x: 550, y: 605 },
-      { x: 450, y: 605 },
-      { x: 375, y: 475 },
-    ],
-    color: {
-      fill: 'rgba(241, 245, 249, 0.08)',
-      stroke: 'rgba(148, 163, 184, 0.5)',
-      glow: 'rgba(148, 163, 184, 0.4)',
-      badge: '#94a3b8',
-    },
-    connectedWaypoints: ['wp-hub-center', 'wp-hub-n', 'wp-hub-ne', 'wp-hub-se', 'wp-hub-s', 'wp-hub-sw', 'wp-hub-nw'],
-  },
-  {
-    id: 'GF-MON-01',
-    code: 'CR-01',
-    name: 'Monitoring Room',
-    refLabel: 'Classroom 1 (Monitor Room)',
-    floor: 'Ground Floor',
-    type: 'MONITORING',
-    areaM2: 80,
-    capacity: 20,
-    operationalStatus: 'AVAILABLE',
-    equipment: ['Campus CCTV Wall', 'IoT Sensor Gateways', 'Network Operations Consoles'],
-    department: 'Campus Security & Operations',
-    description: 'Central campus telemetry and security monitoring room with video telemetry wall and server racks.',
-    position: {
-      labelX: 300,
-      labelY: 260,
-      entranceX: 410,
-      entranceY: 340,
-    },
-    polygon: [
-      { x: 205, y: 220 },
-      { x: 405, y: 205 },
-      { x: 420, y: 340 },
-      { x: 345, y: 345 },
-      { x: 195, y: 325 },
-    ],
-    color: {
-      fill: 'rgba(56, 189, 248, 0.12)',
-      stroke: 'rgba(56, 189, 248, 0.7)',
-      glow: 'rgba(56, 189, 248, 0.5)',
-      badge: '#38bdf8',
-    },
-    connectedWaypoints: ['wp-mon-door'],
-  },
-  {
-    id: 'GF-LAB-01',
-    code: 'CR-02',
-    name: 'Lab 1',
-    refLabel: 'Classroom 2 (Lab 1)',
-    floor: 'Ground Floor',
-    type: 'LABORATORY',
-    areaM2: 70,
-    capacity: 40,
-    operationalStatus: 'AVAILABLE',
-    equipment: ['Robotics Workstations', 'GPU Computing Nodes', 'Soldering Stations', '3D Printers'],
-    department: 'Artificial Intelligence & Robotics',
-    description: 'Advanced AI and Robotics lab equipped with 40 high-performance workstations and robotics testing mats.',
-    position: {
-      labelX: 270,
-      labelY: 375,
-      entranceX: 360,
-      entranceY: 420,
-    },
-    polygon: [
-      { x: 195, y: 330 },
-      { x: 345, y: 350 },
-      { x: 370, y: 435 },
-      { x: 180, y: 435 },
-    ],
-    color: {
-      fill: 'rgba(251, 191, 36, 0.12)',
-      stroke: 'rgba(251, 191, 36, 0.7)',
-      glow: 'rgba(251, 191, 36, 0.5)',
-      badge: '#fbbf24',
-    },
-    connectedWaypoints: ['wp-lab1-door'],
-  },
-  {
-    id: 'GF-STF-01',
-    code: 'CR-03',
-    name: 'Staff Room',
-    refLabel: 'Classroom 3 (Staff Room)',
-    floor: 'Ground Floor',
-    type: 'STAFF_ROOM',
-    areaM2: 45,
-    capacity: 15,
-    operationalStatus: 'OCCUPIED',
-    equipment: ['Faculty Desks', 'Conference Table', 'Coffee Station', 'Resource Library'],
-    department: 'Computer Science Faculty',
-    description: 'Dedicated faculty office and research discussion room with conference table and secure storage.',
-    position: {
-      labelX: 255,
-      labelY: 475,
-      entranceX: 355,
-      entranceY: 480,
-    },
-    polygon: [
-      { x: 180, y: 440 },
-      { x: 370, y: 440 },
-      { x: 350, y: 525 },
-      { x: 165, y: 535 },
-    ],
-    color: {
-      fill: 'rgba(52, 211, 153, 0.12)',
-      stroke: 'rgba(52, 211, 153, 0.7)',
-      glow: 'rgba(52, 211, 153, 0.5)',
-      badge: '#34d399',
-    },
-    connectedWaypoints: ['wp-staff-door'],
-  },
-  {
-    id: 'GF-STR-01',
-    code: 'STR-W',
-    name: 'Stairs (West)',
-    refLabel: 'Stairs',
-    floor: 'Ground Floor',
-    type: 'STAIRS',
-    areaM2: 25,
-    capacity: 20,
-    operationalStatus: 'AVAILABLE',
-    equipment: ['Emergency Exit Lighting', 'Handrails', 'Fire Extinguisher'],
-    department: 'Vertical Circulation',
-    description: 'Western dual-flight concrete staircase leading to First Floor classrooms and labs.',
-    position: {
-      labelX: 245,
-      labelY: 575,
-      entranceX: 335,
-      entranceY: 555,
-    },
-    polygon: [
-      { x: 165, y: 540 },
-      { x: 345, y: 530 },
-      { x: 320, y: 610 },
-      { x: 230, y: 645 },
-      { x: 160, y: 575 },
-    ],
-    color: {
-      fill: 'rgba(245, 158, 11, 0.12)',
-      stroke: 'rgba(245, 158, 11, 0.7)',
-      glow: 'rgba(245, 158, 11, 0.5)',
-      badge: '#f59e0b',
-    },
-    connectedWaypoints: ['wp-stairs-w'],
-  },
-  {
-    id: 'GF-GEN-01',
-    code: 'RR-GEN',
-    name: 'Gents Restroom',
-    refLabel: 'Classroom 5 (Gents Restroom)',
-    floor: 'Ground Floor',
-    type: 'RESTROOM',
-    areaM2: 30,
-    capacity: 10,
-    operationalStatus: 'AVAILABLE',
-    equipment: ['Sanitary Stalls', 'Automated Sensor Faucets', 'Ventilation Fan'],
-    department: 'Public Amenities',
-    description: 'Ground floor male sanitary facility located southwest off the main circular corridor.',
-    position: {
-      labelX: 275,
-      labelY: 675,
-      entranceX: 345,
-      entranceY: 635,
-    },
-    polygon: [
-      { x: 230, y: 650 },
-      { x: 320, y: 615 },
-      { x: 350, y: 685 },
-      { x: 310, y: 735 },
-      { x: 220, y: 675 },
-    ],
-    color: {
-      fill: 'rgba(96, 165, 250, 0.12)',
-      stroke: 'rgba(96, 165, 250, 0.7)',
-      glow: 'rgba(96, 165, 250, 0.5)',
-      badge: '#60a5fa',
-    },
-    connectedWaypoints: ['wp-gents-door'],
-  },
-  {
-    id: 'GF-SEM-01',
-    code: 'CR-07',
-    name: 'Seminar Hall',
-    refLabel: 'Classroom 7 (Seminar Hall)',
-    floor: 'Ground Floor',
-    type: 'SEMINAR_HALL',
-    areaM2: 120,
+    areaM2: 250,
     capacity: 120,
     operationalStatus: 'AVAILABLE',
-    equipment: ['4K Laser Projector', 'Dolby Audio Array', 'Tiered Amphitheater Seating', 'Stage Podium'],
-    department: 'College Academic Affairs',
-    description: 'Iconic curved auditorium with tiered fan-shaped amphitheater seating and state-of-the-art audiovisual systems.',
+    equipment: ['Interactive Campus Kiosk', 'Directional Signage Array', 'Hexagonal Atrium Planter'],
+    department: 'Campus Central Circulation',
+    description: 'Central regular hexagonal atrium hub connecting to North, East, West, and South circulation corridors.',
     position: {
-      labelX: 440,
-      labelY: 690,
-      entranceX: 440,
-      entranceY: 615,
+      labelX: 500,
+      labelY: 475,
+      entranceX: 500,
+      entranceY: 475,
     },
     polygon: [
-      { x: 355, y: 615 },
-      { x: 535, y: 615 },
-      { x: 550, y: 795 },
-      { x: 340, y: 795 },
+      { x: 500, y: 400 },
+      { x: 565, y: 435 },
+      { x: 565, y: 515 },
+      { x: 500, y: 550 },
+      { x: 435, y: 515 },
+      { x: 435, y: 435 },
     ],
     color: {
-      fill: 'rgba(244, 63, 94, 0.12)',
-      stroke: 'rgba(244, 63, 94, 0.7)',
-      glow: 'rgba(244, 63, 94, 0.5)',
-      badge: '#f43f5e',
+      fill: 'rgba(59, 71, 89, 0.65)',
+      stroke: 'rgba(148, 163, 184, 0.95)',
+      glow: 'rgba(148, 163, 184, 0.5)',
+      badge: '#94a3b8',
     },
-    connectedWaypoints: ['wp-seminar-door'],
+    connectedWaypoints: ['wp-gf-corridor'],
+  },
+  {
+    id: 'GF-ENT-01',
+    code: 'ENT-00',
+    name: 'Main Entrance',
+    refLabel: 'Main Entrance',
+    floor: 'Ground Floor',
+    type: 'CIRCULATION',
+    areaM2: 85,
+    capacity: 60,
+    operationalStatus: 'AVAILABLE',
+    equipment: ['Turnstile Gateways', 'Security Desk', 'Campus Map Directory'],
+    department: 'Main Entry Security',
+    description: 'Main southern entrance gate providing entry (IN ↑) directly into the Central Hexagonal Corridor.',
+    position: {
+      labelX: 500,
+      labelY: 700,
+      entranceX: 500,
+      entranceY: 550,
+    },
+    polygon: [
+      { x: 435, y: 515 },
+      { x: 500, y: 550 },
+      { x: 565, y: 515 },
+      { x: 560, y: 810 },
+      { x: 440, y: 810 },
+    ],
+    color: {
+      fill: 'rgba(18, 76, 64, 0.65)',
+      stroke: 'rgba(30, 200, 159, 0.9)',
+      glow: 'rgba(30, 200, 159, 0.5)',
+      badge: '#10b981',
+    },
+    connectedWaypoints: ['wp-gf-entrance'],
+  },
+  {
+    id: 'GF-COE-01',
+    code: 'COE-01',
+    name: 'COE Hall',
+    refLabel: 'COE Hall',
+    floor: 'Ground Floor',
+    type: 'SEMINAR_HALL',
+    areaM2: 160,
+    capacity: 85,
+    operationalStatus: 'AVAILABLE',
+    equipment: ['Smart Telepresence Console', 'Acoustic Wall Paneling', 'Dual 4K Displays'],
+    department: 'Centre of Excellence',
+    description: 'COE Hall located on the left side of the Central Hexagonal Corridor.',
+    position: {
+      labelX: 275,
+      labelY: 530,
+      entranceX: 410,
+      entranceY: 485,
+    },
+    polygon: [
+      { x: 410, y: 440 },
+      { x: 410, y: 530 },
+      { x: 420, y: 810 },
+      { x: 250, y: 770 },
+      { x: 160, y: 550 },
+      { x: 230, y: 180 },
+      { x: 330, y: 380 },
+    ],
+    color: {
+      fill: 'rgba(70, 36, 92, 0.65)',
+      stroke: 'rgba(148, 70, 200, 0.9)',
+      glow: 'rgba(148, 70, 200, 0.5)',
+      badge: '#a855f7',
+    },
+    connectedWaypoints: ['wp-gf-coe-door', 'wp-gf-coe-center'],
   },
   {
     id: 'GF-LAD-01',
     code: 'RR-LAD',
-    name: 'Ladies Restroom',
-    refLabel: 'Classroom 6 (Ladies Restroom)',
+    name: 'Ladies Toilet',
+    refLabel: 'Ladies Toilet',
     floor: 'Ground Floor',
     type: 'RESTROOM',
-    areaM2: 30,
-    capacity: 10,
+    areaM2: 50,
+    capacity: 15,
     operationalStatus: 'AVAILABLE',
-    equipment: ['Sanitary Stalls', 'Vanity Mirror Array', 'Automated Sensor Faucets'],
+    equipment: ['Automated Sensor Faucets', 'Vanity Mirror Array', 'Ventilation System'],
     department: 'Public Amenities',
-    description: 'Ground floor female sanitary facility located southeast off the main circular corridor.',
+    description: 'Ladies Toilet located on the upper-left side connecting to the Central Hexagonal Corridor.',
     position: {
-      labelX: 605,
-      labelY: 675,
-      entranceX: 550,
-      entranceY: 635,
+      labelX: 365,
+      labelY: 270,
+      entranceX: 450,
+      entranceY: 375,
     },
     polygon: [
-      { x: 540, y: 615 },
-      { x: 645, y: 630 },
-      { x: 675, y: 695 },
-      { x: 565, y: 760 },
-      { x: 540, y: 690 },
+      { x: 490, y: 375 },
+      { x: 415, y: 415 },
+      { x: 335, y: 360 },
+      { x: 235, y: 175 },
+      { x: 490, y: 175 },
     ],
     color: {
-      fill: 'rgba(192, 132, 252, 0.12)',
-      stroke: 'rgba(192, 132, 252, 0.7)',
-      glow: 'rgba(192, 132, 252, 0.5)',
-      badge: '#c084fc',
+      fill: 'rgba(84, 45, 78, 0.65)',
+      stroke: 'rgba(168, 80, 157, 0.9)',
+      glow: 'rgba(168, 80, 157, 0.5)',
+      badge: '#ec4899',
     },
-    connectedWaypoints: ['wp-ladies-door'],
+    connectedWaypoints: ['wp-gf-ladies-door', 'wp-gf-ladies-center'],
   },
   {
-    id: 'GF-OFF-01',
-    code: 'CR-08',
-    name: 'Office',
-    refLabel: 'Classroom 8 (Office)',
+    id: 'GF-SEM-01',
+    code: 'SEM-01',
+    name: 'Main Block Seminar Hall',
+    refLabel: 'Main Block Seminar Hall',
     floor: 'Ground Floor',
-    type: 'OFFICE',
-    areaM2: 60,
-    capacity: 12,
-    operationalStatus: 'OCCUPIED',
-    equipment: ['Administrative Terminals', 'Document Archiving', 'Conference Table', 'Printer / Scanner Hub'],
-    department: 'Department Administration',
-    description: 'Departmental head and administrative coordinator office with consultation tables.',
-    position: {
-      labelX: 620,
-      labelY: 510,
-      entranceX: 575,
-      entranceY: 515,
-    },
-    polygon: [
-      { x: 555, y: 445 },
-      { x: 710, y: 445 },
-      { x: 715, y: 585 },
-      { x: 645, y: 625 },
-      { x: 570, y: 555 },
-    ],
-    color: {
-      fill: 'rgba(45, 212, 191, 0.12)',
-      stroke: 'rgba(45, 212, 191, 0.7)',
-      glow: 'rgba(45, 212, 191, 0.5)',
-      badge: '#2dd4bf',
-    },
-    connectedWaypoints: ['wp-office-door'],
-  },
-  {
-    id: 'GF-STR-02',
-    code: 'STR-E',
-    name: 'Stairs (East)',
-    refLabel: 'Stairs',
-    floor: 'Ground Floor',
-    type: 'STAIRS',
-    areaM2: 25,
-    capacity: 20,
+    type: 'SEMINAR_HALL',
+    areaM2: 220,
+    capacity: 160,
     operationalStatus: 'AVAILABLE',
-    equipment: ['Emergency Exit Signage', 'Stair Lighting', 'First Aid Kit'],
-    department: 'Vertical Circulation',
-    description: 'Eastern staircase connecting ground level directly to upper research labs and Dean suite.',
+    equipment: ['4K Laser Auditorium Projector', 'Dolby Surround Sound System', 'Tiered Amphitheater Seating', 'Stage Podium'],
+    department: 'Main Block Academic Affairs',
+    description: 'Main Block Seminar Hall positioned on the upper-right side of the Central Hexagonal Corridor.',
     position: {
       labelX: 635,
-      labelY: 395,
-      entranceX: 580,
-      entranceY: 415,
+      labelY: 270,
+      entranceX: 550,
+      entranceY: 375,
     },
     polygon: [
-      { x: 560, y: 355 },
-      { x: 690, y: 315 },
-      { x: 705, y: 435 },
-      { x: 560, y: 435 },
+      { x: 510, y: 375 },
+      { x: 585, y: 415 },
+      { x: 665, y: 360 },
+      { x: 785, y: 360 },
+      { x: 750, y: 175 },
+      { x: 510, y: 175 },
     ],
     color: {
-      fill: 'rgba(245, 158, 11, 0.12)',
-      stroke: 'rgba(245, 158, 11, 0.7)',
-      glow: 'rgba(245, 158, 11, 0.5)',
+      fill: 'rgba(97, 28, 38, 0.65)',
+      stroke: 'rgba(200, 56, 77, 0.9)',
+      glow: 'rgba(200, 56, 77, 0.5)',
+      badge: '#f43f5e',
+    },
+    connectedWaypoints: ['wp-gf-seminar-door', 'wp-gf-seminar-center'],
+  },
+  {
+    id: 'GF-GEN-01',
+    code: 'RR-GEN',
+    name: 'Gents Toilet',
+    refLabel: 'Gents Toilet',
+    floor: 'Ground Floor',
+    type: 'RESTROOM',
+    areaM2: 43,
+    capacity: 15,
+    operationalStatus: 'AVAILABLE',
+    equipment: ['Sensor Urinals & Stalls', 'Automated Soap Dispensers', 'Exhaust Ventilation'],
+    department: 'Public Amenities',
+    description: 'Gents Toilet positioned on the right side beside the Main Block Seminar Hall.',
+    position: {
+      labelX: 710,
+      labelY: 425,
+      entranceX: 600,
+      entranceY: 445,
+    },
+    polygon: [
+      { x: 600, y: 400 },
+      { x: 665, y: 365 },
+      { x: 785, y: 365 },
+      { x: 785, y: 485 },
+      { x: 650, y: 485 },
+      { x: 650, y: 445 },
+      { x: 600, y: 445 },
+    ],
+    color: {
+      fill: 'rgba(27, 58, 96, 0.65)',
+      stroke: 'rgba(59, 122, 200, 0.9)',
+      glow: 'rgba(59, 122, 200, 0.5)',
+      badge: '#3b82f6',
+    },
+    connectedWaypoints: ['wp-gf-gents-door', 'wp-gf-gents-center'],
+  },
+  {
+    id: 'GF-LFT-01',
+    code: 'LFT-01',
+    name: 'Central Lift Core',
+    refLabel: 'Elevator Core',
+    floor: 'Ground Floor',
+    type: 'LIFT',
+    areaM2: 15,
+    capacity: 8,
+    operationalStatus: 'AVAILABLE',
+    equipment: ['ADA Braille Panel', 'Emergency Call System', 'Sensor Doors'],
+    department: 'Vertical Accessibility',
+    description: 'Central elevator shaft core connecting Ground Floor, First Floor, Second Floor, and Terrace Penthouse.',
+    position: {
+      labelX: 625,
+      labelY: 468,
+      entranceX: 600,
+      entranceY: 468,
+    },
+    polygon: [
+      { x: 600, y: 445 },
+      { x: 650, y: 445 },
+      { x: 650, y: 490 },
+      { x: 600, y: 490 },
+    ],
+    color: {
+      fill: 'rgba(6, 182, 212, 0.45)',
+      stroke: 'rgba(6, 182, 212, 0.95)',
+      glow: 'rgba(6, 182, 212, 0.6)',
+      badge: '#06b6d4',
+    },
+    connectedWaypoints: ['wp-gf-lift'],
+  },
+  {
+    id: 'GF-STR-01',
+    code: 'STR-UP',
+    name: 'Upstairs Staircase',
+    refLabel: 'Upstairs',
+    floor: 'Ground Floor',
+    type: 'STAIRS',
+    areaM2: 35,
+    capacity: 30,
+    operationalStatus: 'AVAILABLE',
+    equipment: ['Emergency Lighting', 'Tactile Handrails', 'Upward Signage'],
+    department: 'Vertical Circulation',
+    description: 'Staircase positioned near CCTV Monitoring Room, connecting Ground Floor to First Floor (UP ↑).',
+    position: {
+      labelX: 690,
+      labelY: 520,
+      entranceX: 600,
+      entranceY: 512,
+    },
+    polygon: [
+      { x: 600, y: 495 },
+      { x: 785, y: 495 },
+      { x: 765, y: 545 },
+      { x: 600, y: 525 },
+    ],
+    color: {
+      fill: 'rgba(96, 75, 28, 0.65)',
+      stroke: 'rgba(192, 152, 56, 0.9)',
+      glow: 'rgba(192, 152, 56, 0.5)',
       badge: '#f59e0b',
     },
-    connectedWaypoints: ['wp-stairs-e'],
+    connectedWaypoints: ['wp-gf-stairs-door', 'wp-gf-stairs-center'],
   },
   {
-    id: 'GF-EXM-01',
-    code: 'CR-09',
-    name: 'Exam Cell',
-    refLabel: 'Classroom 9 (Exam Cell)',
+    id: 'GF-CCTV-01',
+    code: 'CCTV-01',
+    name: 'CCTV Monitoring Room',
+    refLabel: 'CCTV Monitoring Room',
     floor: 'Ground Floor',
-    type: 'EXAM_CELL',
-    areaM2: 40,
-    capacity: 10,
-    operationalStatus: 'OCCUPIED',
-    equipment: ['High-Security Locker', 'Biometric Access', 'Question Paper Vault', 'Monitoring Cam'],
-    department: 'Examination Branch',
-    description: 'Secure examination cell for confidential record keeping, evaluation coordination, and materials storage.',
-    position: {
-      labelX: 645,
-      labelY: 265,
-      entranceX: 595,
-      entranceY: 335,
-    },
-    polygon: [
-      { x: 595, y: 195 },
-      { x: 695, y: 185 },
-      { x: 700, y: 305 },
-      { x: 595, y: 345 },
-    ],
-    color: {
-      fill: 'rgba(167, 139, 250, 0.12)',
-      stroke: 'rgba(167, 139, 250, 0.7)',
-      glow: 'rgba(167, 139, 250, 0.5)',
-      badge: '#a78bfa',
-    },
-    connectedWaypoints: ['wp-exam-door'],
-  },
-  {
-    id: 'GF-EMP-01',
-    code: 'CR-10',
-    name: 'Empty Space',
-    refLabel: 'Classroom 10 (Empty Space)',
-    floor: 'Ground Floor',
-    type: 'EMPTY_SPACE',
-    areaM2: 50,
+    type: 'MONITORING',
+    areaM2: 110,
     capacity: 25,
     operationalStatus: 'AVAILABLE',
-    equipment: ['Modular Lounge Seating', 'Acoustic Wall Panels', 'Mobile Whiteboards', 'Natural Light Skylight'],
-    department: 'Innovation & Flexible Learning',
-    description: 'Open modular collaborative space for informal student hackathons, breakout meetings, and ideation.',
+    equipment: ['High-Definition CCTV Telemetry Wall', 'Security Gateway Servers', 'Emergency Command Consoles'],
+    department: 'Campus Safety & Operations',
+    description: 'CCTV Monitoring Room located on the lower-right side of the Central Hexagonal Corridor beside the Upstairs staircase.',
     position: {
-      labelX: 545,
-      labelY: 255,
-      entranceX: 535,
-      entranceY: 340,
+      labelX: 645,
+      labelY: 675,
+      entranceX: 600,
+      entranceY: 535,
     },
     polygon: [
-      { x: 500, y: 190 },
-      { x: 590, y: 195 },
-      { x: 590, y: 345 },
-      { x: 480, y: 345 },
-      { x: 480, y: 285 },
+      { x: 600, y: 535 },
+      { x: 785, y: 555 },
+      { x: 735, y: 775 },
+      { x: 510, y: 810 },
+      { x: 575, y: 810 },
     ],
     color: {
-      fill: 'rgba(14, 165, 233, 0.12)',
-      stroke: 'rgba(14, 165, 233, 0.7)',
-      glow: 'rgba(14, 165, 233, 0.5)',
-      badge: '#0ea5e9',
+      fill: 'rgba(15, 74, 77, 0.65)',
+      stroke: 'rgba(31, 184, 196, 0.9)',
+      glow: 'rgba(31, 184, 196, 0.5)',
+      badge: '#38bdf8',
     },
-    connectedWaypoints: ['wp-empty-door'],
+    connectedWaypoints: ['wp-gf-cctv-door', 'wp-gf-cctv-center'],
   },
 ];
 
-// Indoor Navigation Graph
+// Indoor Navigation Graph for ESEC Main Block Ground Floor
 export const GROUND_FLOOR_WAYPOINTS: NavigationWaypoint[] = [
-  // Hub Waypoints
-  { id: 'wp-hub-center', name: 'Central Hub Center', x: 500, y: 480, type: 'HUB' },
-  { id: 'wp-hub-n', name: 'Hub North Corridor', x: 500, y: 375, type: 'CORRIDOR' },
-  { id: 'wp-hub-ne', name: 'Hub Northeast Corridor', x: 580, y: 415, type: 'CORRIDOR' },
-  { id: 'wp-hub-se', name: 'Hub Southeast Corridor', x: 560, y: 550, type: 'CORRIDOR' },
-  { id: 'wp-hub-s', name: 'Hub South Corridor', x: 450, y: 575, type: 'CORRIDOR' },
-  { id: 'wp-hub-sw', name: 'Hub Southwest Corridor', x: 380, y: 550, type: 'CORRIDOR' },
-  { id: 'wp-hub-nw', name: 'Hub Northwest Corridor', x: 395, y: 415, type: 'CORRIDOR' },
+  { id: 'wp-gf-entrance', name: 'Main Entrance (IN ↑)', x: 500, y: 700, type: 'ENTRANCE' },
+  { id: 'wp-gf-corridor', name: 'Central Hexagonal Corridor', x: 500, y: 475, type: 'HUB' },
 
-  // Room Doors & Centers
-  { id: 'wp-mon-door', name: 'Monitoring Room Entrance', x: 395, y: 340, type: 'DOOR' },
-  { id: 'wp-mon-inside', name: 'Monitoring Room Console', x: 300, y: 260, type: 'ROOM_CENTER' },
+  { id: 'wp-gf-coe-door', name: 'COE Hall Entrance', x: 410, y: 485, type: 'DOOR' },
+  { id: 'wp-gf-coe-center', name: 'COE Hall Center', x: 275, y: 530, type: 'ROOM_CENTER' },
 
-  { id: 'wp-lab1-door', name: 'Lab 1 Entrance', x: 360, y: 395, type: 'DOOR' },
-  { id: 'wp-lab1-inside', name: 'Lab 1 Robotics Bay', x: 270, y: 380, type: 'ROOM_CENTER' },
+  { id: 'wp-gf-ladies-door', name: 'Ladies Toilet Entrance', x: 450, y: 375, type: 'DOOR' },
+  { id: 'wp-gf-ladies-center', name: 'Ladies Toilet Facility', x: 365, y: 270, type: 'ROOM_CENTER' },
 
-  { id: 'wp-staff-door', name: 'Staff Room Entrance', x: 355, y: 480, type: 'DOOR' },
-  { id: 'wp-staff-inside', name: 'Staff Room Conference', x: 255, y: 480, type: 'ROOM_CENTER' },
+  { id: 'wp-gf-seminar-door', name: 'Seminar Hall Entrance', x: 550, y: 375, type: 'DOOR' },
+  { id: 'wp-gf-seminar-center', name: 'Main Block Seminar Hall Center', x: 635, y: 270, type: 'ROOM_CENTER' },
 
-  { id: 'wp-stairs-w', name: 'West Stairs Landing', x: 325, y: 575, type: 'STAIRS' },
-  { id: 'wp-gents-door', name: 'Gents Restroom Entrance', x: 340, y: 640, type: 'DOOR' },
+  { id: 'wp-gf-gents-door', name: 'Gents Toilet Entrance', x: 600, y: 445, type: 'DOOR' },
+  { id: 'wp-gf-gents-center', name: 'Gents Toilet Facility', x: 710, y: 425, type: 'ROOM_CENTER' },
 
-  { id: 'wp-seminar-door', name: 'Seminar Hall Stage Entrance', x: 445, y: 625, type: 'DOOR' },
-  { id: 'wp-seminar-inside', name: 'Seminar Hall Amphitheater Center', x: 440, y: 710, type: 'ROOM_CENTER' },
+  { id: 'wp-gf-lift', name: 'Elevator Core Entrance', x: 600, y: 468, type: 'STAIRS' },
 
-  { id: 'wp-ladies-door', name: 'Ladies Restroom Entrance', x: 560, y: 635, type: 'DOOR' },
-  { id: 'wp-office-door', name: 'Office Entrance', x: 575, y: 515, type: 'DOOR' },
-  { id: 'wp-office-inside', name: 'Office Executive Desk', x: 630, y: 510, type: 'ROOM_CENTER' },
+  { id: 'wp-gf-stairs-door', name: 'Upstairs Staircase Entrance', x: 600, y: 512, type: 'STAIRS' },
+  { id: 'wp-gf-stairs-center', name: 'Upstairs Landing (To 1st Floor)', x: 690, y: 520, type: 'STAIRS' },
 
-  { id: 'wp-stairs-e', name: 'East Stairs Landing', x: 580, y: 385, type: 'STAIRS' },
-  { id: 'wp-exam-door', name: 'Exam Cell Entrance', x: 595, y: 335, type: 'DOOR' },
-  { id: 'wp-empty-door', name: 'Empty Space Entrance', x: 535, y: 345, type: 'DOOR' },
-  { id: 'wp-empty-inside', name: 'Empty Space Lounge', x: 545, y: 255, type: 'ROOM_CENTER' },
+  { id: 'wp-gf-cctv-door', name: 'CCTV Monitoring Room Entrance', x: 600, y: 535, type: 'DOOR' },
+  { id: 'wp-gf-cctv-center', name: 'CCTV Telemetry Wall', x: 645, y: 675, type: 'ROOM_CENTER' },
 ];
 
 export const GROUND_FLOOR_EDGES: NavigationEdge[] = [
-  // Hub connections
-  { from: 'wp-hub-center', to: 'wp-hub-n', distanceMeters: 8 },
-  { from: 'wp-hub-center', to: 'wp-hub-ne', distanceMeters: 7 },
-  { from: 'wp-hub-center', to: 'wp-hub-se', distanceMeters: 7 },
-  { from: 'wp-hub-center', to: 'wp-hub-s', distanceMeters: 8 },
-  { from: 'wp-hub-center', to: 'wp-hub-sw', distanceMeters: 7 },
-  { from: 'wp-hub-center', to: 'wp-hub-nw', distanceMeters: 7 },
+  { from: 'wp-gf-entrance', to: 'wp-gf-corridor', distanceMeters: 10 },
 
-  // Hub ring
-  { from: 'wp-hub-n', to: 'wp-hub-ne', distanceMeters: 9 },
-  { from: 'wp-hub-ne', to: 'wp-hub-se', distanceMeters: 10 },
-  { from: 'wp-hub-se', to: 'wp-hub-s', distanceMeters: 9 },
-  { from: 'wp-hub-s', to: 'wp-hub-sw', distanceMeters: 9 },
-  { from: 'wp-hub-sw', to: 'wp-hub-nw', distanceMeters: 10 },
-  { from: 'wp-hub-nw', to: 'wp-hub-n', distanceMeters: 9 },
+  { from: 'wp-gf-corridor', to: 'wp-gf-coe-door', distanceMeters: 7 },
+  { from: 'wp-gf-coe-door', to: 'wp-gf-coe-center', distanceMeters: 6 },
 
-  // Doors & Room Connections
-  { from: 'wp-hub-nw', to: 'wp-mon-door', distanceMeters: 6 },
-  { from: 'wp-mon-door', to: 'wp-mon-inside', distanceMeters: 8 },
+  { from: 'wp-gf-corridor', to: 'wp-gf-ladies-door', distanceMeters: 6 },
+  { from: 'wp-gf-ladies-door', to: 'wp-gf-ladies-center', distanceMeters: 5 },
 
-  { from: 'wp-hub-nw', to: 'wp-lab1-door', distanceMeters: 4 },
-  { from: 'wp-lab1-door', to: 'wp-lab1-inside', distanceMeters: 7 },
+  { from: 'wp-gf-corridor', to: 'wp-gf-seminar-door', distanceMeters: 6 },
+  { from: 'wp-gf-seminar-door', to: 'wp-gf-seminar-center', distanceMeters: 8 },
+  { from: 'wp-gf-seminar-door', to: 'wp-gf-gents-door', distanceMeters: 4 },
+  { from: 'wp-gf-gents-door', to: 'wp-gf-gents-center', distanceMeters: 4 },
 
-  { from: 'wp-hub-sw', to: 'wp-staff-door', distanceMeters: 5 },
-  { from: 'wp-staff-door', to: 'wp-staff-inside', distanceMeters: 7 },
+  { from: 'wp-gf-corridor', to: 'wp-gf-stairs-door', distanceMeters: 5 },
+  { from: 'wp-gf-stairs-door', to: 'wp-gf-stairs-center', distanceMeters: 5 },
 
-  { from: 'wp-hub-sw', to: 'wp-stairs-w', distanceMeters: 6 },
-  { from: 'wp-hub-s', to: 'wp-gents-door', distanceMeters: 6 },
-
-  { from: 'wp-hub-s', to: 'wp-seminar-door', distanceMeters: 4 },
-  { from: 'wp-seminar-door', to: 'wp-seminar-inside', distanceMeters: 9 },
-
-  { from: 'wp-hub-se', to: 'wp-ladies-door', distanceMeters: 6 },
-  { from: 'wp-hub-se', to: 'wp-office-door', distanceMeters: 5 },
-  { from: 'wp-office-door', to: 'wp-office-inside', distanceMeters: 6 },
-
-  { from: 'wp-hub-ne', to: 'wp-stairs-e', distanceMeters: 5 },
-  { from: 'wp-hub-ne', to: 'wp-exam-door', distanceMeters: 8 },
-  { from: 'wp-hub-n', to: 'wp-empty-door', distanceMeters: 4 },
-  { from: 'wp-empty-door', to: 'wp-empty-inside', distanceMeters: 7 },
+  { from: 'wp-gf-corridor', to: 'wp-gf-cctv-door', distanceMeters: 5 },
+  { from: 'wp-gf-cctv-door', to: 'wp-gf-cctv-center', distanceMeters: 5 },
+  { from: 'wp-gf-cctv-door', to: 'wp-gf-stairs-door', distanceMeters: 3 },
 ];
 
-// Helper to compute shortest route between two waypoints using Dijkstra / A*
+// Helper to compute shortest route between two waypoints using Dijkstra algorithm
 export function calculateIndoorRoute(originWaypointId: string, destWaypointId: string): {
   path: NavigationWaypoint[];
   distanceMeters: number;
@@ -602,8 +498,8 @@ export function calculateIndoorRoute(originWaypointId: string, destWaypointId: s
     .map((id) => GROUND_FLOOR_WAYPOINTS.find((wp) => wp.id === id))
     .filter((wp): wp is NavigationWaypoint => Boolean(wp));
 
-  const totalDistance = distances.get(destWaypointId) ?? 24;
-  const estimatedSeconds = Math.round((totalDistance / 1.2)); // average indoor walking pace 1.2 m/s
+  const totalDistance = distances.get(destWaypointId) ?? 20;
+  const estimatedSeconds = Math.round(totalDistance / 1.2);
 
   const steps = path.slice(0, -1).map((wp, i) => {
     const nextWp = path[i + 1];
@@ -617,6 +513,6 @@ export function calculateIndoorRoute(originWaypointId: string, destWaypointId: s
     path,
     distanceMeters: Math.round(totalDistance),
     estimatedSeconds,
-    steps: steps.length > 0 ? steps : [{ instruction: 'Proceed directly to destination', distance: '12m' }],
+    steps: steps.length > 0 ? steps : [{ instruction: 'Proceed directly to destination', distance: '10m' }],
   };
 }

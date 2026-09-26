@@ -619,17 +619,14 @@ export function CampusMapView() {
                 </>
               )}
 
-              {/* VERTICAL CORE (Elevator Shaft & Stair A) */}
+              {/* VERTICAL CORE (Staircase A) */}
               <g className="cursor-default">
                 <polygon points="120,280 260,280 230,410 90,410" className="fill-indigo-950/60 stroke-indigo-500/50 stroke-1.5" />
                 <text x="130" y="330" fill="#a5b4fc" fontSize="12" fontWeight="700">
                   Vertical Core
                 </text>
-                <text x="120" y="352" fill="#818cf8" fontSize="10">
-                  Elevator #1 (Operational)
-                </text>
-                <text x="120" y="370" fill="#6366f1" fontSize="10">
-                  Staircase A (Fire Exit Link)
+                <text x="120" y="360" fill="#6366f1" fontSize="10">
+                  Staircase A (Vertical Circulation)
                 </text>
                 <circle cx="210" cy="326" r="4" fill="#34d399" className="animate-ping" />
               </g>
