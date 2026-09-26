@@ -57,6 +57,8 @@ export interface Room {
   name: string;
   roomType: RoomType;
   capacity: number;
+  seatingCapacity?: number;
+  studentCapacity?: number;
   isAccessible: boolean;
   departmentId?: string;
   polygonCoordinates?: GeoPoint[];

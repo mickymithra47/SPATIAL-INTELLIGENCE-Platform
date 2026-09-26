@@ -33,12 +33,38 @@ export class SpatialController {
     return this.spatialData.getRooms(floorId);
   }
 
+  @Get('floors/:floorId/capacity')
+  async getFloorCapacity(@Param('floorId') floorId: string) {
+    const res = this.spatialData.getFloorCapacity(floorId);
+    if (!res.success) throw new NotFoundException(res.error);
+    return res;
+  }
+
+  @Get('rooms')
+  async getAllRooms() {
+    return this.spatialData.getAllRooms();
+  }
+
   @Get('rooms/search')
   async searchRooms(@Query('q') query: string) {
     if (!query) return [];
     const room = this.spatialData.findRoom(query);
     if (!room) return [];
     return [this.spatialData.getRoomDetails(room.id)];
+  }
+
+  @Get('rooms/:id/capacity')
+  async getRoomCapacity(@Param('id') id: string) {
+    const details = this.spatialData.getRoomDetails(id);
+    if (!details) throw new NotFoundException(`Room '${id}' not found`);
+    return {
+      room: details.room,
+      roomId: details.roomId,
+      floor: details.floor,
+      seatingCapacity: details.seatingCapacity,
+      studentCapacity: details.studentCapacity,
+      capacity: details.capacity,
+    };
   }
 
   @Get('rooms/:id')

@@ -254,7 +254,7 @@ export const GROUND_FLOOR_ENTITIES: CampusRoomEntity[] = [
     floorNumber: 0,
     type: 'SEMINAR_HALL',
     areaM2: 220,
-    capacity: 160,
+    capacity: 120,
     operationalStatus: 'AVAILABLE',
     equipment: ['4K Laser Auditorium Projector', 'Dolby Surround Sound System', 'Tiered Amphitheater Seating', 'Stage Podium'],
     department: 'Main Block Academic Affairs',
@@ -534,7 +534,7 @@ export const FIRST_FLOOR_ENTITIES: CampusRoomEntity[] = [
     floorNumber: 1,
     type: 'CLASSROOM',
     areaM2: 220,
-    capacity: 120,
+    capacity: 60,
     operationalStatus: 'AVAILABLE',
     equipment: ['Dual Laser Projectors', 'Tiered Seating', 'Surround Sound'],
     department: 'Computer Science & Engineering',
@@ -814,7 +814,7 @@ export const SECOND_FLOOR_ENTITIES: CampusRoomEntity[] = [
     floorNumber: 2,
     type: 'CLASSROOM',
     areaM2: 220,
-    capacity: 120,
+    capacity: 60,
     operationalStatus: 'AVAILABLE',
     equipment: ['Dual Displays', 'Surround Sound', 'Ergonomic Desks'],
     department: 'Information Technology',
@@ -1032,7 +1032,7 @@ export const TERRACE_ENTITIES: CampusRoomEntity[] = [
     floorNumber: 3,
     type: 'CLASSROOM',
     areaM2: 160,
-    capacity: 50,
+    capacity: 75,
     operationalStatus: 'AVAILABLE',
     equipment: ['Tensile Canopy Roof', 'All-Weather Desks', 'Solar Power Outlets'],
     department: 'Architectural & Open Air Learning',
@@ -1064,7 +1064,7 @@ export const TERRACE_ENTITIES: CampusRoomEntity[] = [
     floorNumber: 3,
     type: 'CLASSROOM',
     areaM2: 50,
-    capacity: 35,
+    capacity: 40,
     operationalStatus: 'AVAILABLE',
     equipment: ['Weatherproof Whiteboards', 'Breeze Circulation Fans'],
     department: 'Architectural & Open Air Learning',
@@ -1094,7 +1094,7 @@ export const TERRACE_ENTITIES: CampusRoomEntity[] = [
     floorNumber: 3,
     type: 'CLASSROOM',
     areaM2: 220,
-    capacity: 80,
+    capacity: 60,
     operationalStatus: 'AVAILABLE',
     equipment: ['Solar Powered Presentation Screen', 'Shaded Canopy'],
     department: 'Architectural & Open Air Learning',
@@ -1125,7 +1125,7 @@ export const TERRACE_ENTITIES: CampusRoomEntity[] = [
     floorNumber: 3,
     type: 'CLASSROOM',
     areaM2: 45,
-    capacity: 30,
+    capacity: 35,
     operationalStatus: 'AVAILABLE',
     equipment: ['Weather Sensors', 'Outdoor Desks'],
     department: 'Architectural & Open Air Learning',
@@ -1215,7 +1215,7 @@ export const TERRACE_ENTITIES: CampusRoomEntity[] = [
     floorNumber: 3,
     type: 'CLASSROOM',
     areaM2: 110,
-    capacity: 45,
+    capacity: 60,
     operationalStatus: 'AVAILABLE',
     equipment: ['Environmental Lab Consoles', 'Weatherproof Seating'],
     department: 'Architectural & Open Air Learning',
@@ -1263,10 +1263,60 @@ export function getEntitiesForFloor(floor: FloorLevel): CampusRoomEntity[] {
 
 export function findRoomByIdOrName(query?: string): CampusRoomEntity | undefined {
   if (!query) return undefined;
-  const q = query.toLowerCase().trim();
-  return ALL_CAMPUS_ENTITIES.find(
-    (e) => e.id.toLowerCase() === q || e.name.toLowerCase().includes(q) || (e.code && e.code.toLowerCase() === q)
+  const raw = query.toLowerCase().trim();
+  const clean = raw.replace(/^(classroom|room|hall|cr|lecture hall|lab|laboratory)\s+/i, '').trim();
+
+  // Alias special cases
+  if (raw === 'seminar' || raw === 'seminar hall' || raw === 'cr-07' || raw === 'cr07') {
+    const sem = ALL_CAMPUS_ENTITIES.find((e) => e.id === 'GF-SEM-01');
+    if (sem) return sem;
+  }
+
+  return (
+    ALL_CAMPUS_ENTITIES.find(
+      (e) =>
+        e.id.toLowerCase() === raw ||
+        (e.code && e.code.toLowerCase() === raw) ||
+        e.name.toLowerCase() === raw ||
+        (clean && e.code && e.code.toLowerCase().includes(clean)) ||
+        (clean && e.id.toLowerCase().includes(clean))
+    ) ||
+    ALL_CAMPUS_ENTITIES.find(
+      (e) =>
+        e.name.toLowerCase().includes(raw) ||
+        (e.refLabel && e.refLabel.toLowerCase().includes(raw)) ||
+        (clean && e.name.toLowerCase().includes(clean))
+    )
   );
+}
+
+export function getFloorCapacity(floorQuery: FloorLevel | string) {
+  let fl: FloorLevel = 'GROUND';
+  const q = String(floorQuery || '').toUpperCase().trim();
+  if (q.includes('1') || q.includes('FIRST') || q === '1F') fl = 'FIRST';
+  else if (q.includes('2') || q.includes('SECOND') || q === '2F') fl = 'SECOND';
+  else if (q.includes('3') || q.includes('TERRACE') || q === '3F' || q.includes('THIRD')) fl = 'TERRACE';
+  else if (q.includes('0') || q.includes('GROUND') || q === 'GF') fl = 'GROUND';
+
+  const entities = getEntitiesForFloor(fl);
+  const classrooms = entities.filter((e) => e.type === 'CLASSROOM' || e.type === 'SEMINAR_HALL');
+  const totalCapacity = classrooms.reduce((sum, c) => sum + c.capacity, 0);
+  const sorted = [...classrooms].sort((a, b) => b.capacity - a.capacity);
+
+  const floorNumber = fl === 'GROUND' ? 0 : fl === 'FIRST' ? 1 : fl === 'SECOND' ? 2 : 3;
+  const floorName = fl === 'GROUND' ? 'Ground Floor' : fl === 'FIRST' ? 'First Floor' : fl === 'SECOND' ? 'Second Floor' : 'Terrace';
+
+  return {
+    success: true,
+    floor: fl,
+    floorName,
+    floorNumber,
+    totalClassrooms: classrooms.length,
+    totalCapacity,
+    classrooms,
+    highestCapacity: sorted[0] || null,
+    lowestCapacity: sorted[sorted.length - 1] || null,
+  };
 }
 
 // -------------------------------------------------------------

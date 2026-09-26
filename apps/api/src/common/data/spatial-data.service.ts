@@ -83,13 +83,48 @@ export class SpatialDataService {
   }
 
   findRoom(query: string) {
-    const q = query.toLowerCase().trim();
-    return this.rooms.find(
-      (r) =>
-        r.roomNumber.toLowerCase() === q ||
-        r.name.toLowerCase().includes(q) ||
-        r.id === q
+    if (!query) return null;
+    const raw = query.toLowerCase().trim();
+    const clean = raw.replace(/^(classroom|room|hall|cr|lecture hall|lab|laboratory)\s+/i, '').trim();
+
+    return (
+      this.rooms.find(
+        (r) =>
+          r.id.toLowerCase() === raw ||
+          r.roomNumber.toLowerCase() === raw ||
+          r.name.toLowerCase() === raw ||
+          (clean && r.roomNumber.toLowerCase() === clean) ||
+          (clean && r.id.toLowerCase().includes(clean))
+      ) ||
+      this.rooms.find(
+        (r) =>
+          r.name.toLowerCase().includes(raw) ||
+          r.roomNumber.toLowerCase().includes(raw) ||
+          (clean && r.name.toLowerCase().includes(clean))
+      ) ||
+      null
     );
+  }
+
+  getAllRooms() {
+    return this.rooms.map((r) => {
+      const floor = this.floors.find((f) => f.id === r.floorId);
+      const cap = r.capacity;
+      const seating = (r as any).seatingCapacity ?? cap;
+      const student = (r as any).studentCapacity ?? cap;
+      return {
+        room: r.name,
+        roomId: r.roomNumber,
+        floor: floor?.name || 'Main Block',
+        capacity: cap,
+        seatingCapacity: seating,
+        studentCapacity: student,
+        roomType: r.roomType,
+        isAccessible: r.isAccessible,
+        id: r.id,
+        floorId: r.floorId,
+      };
+    });
   }
 
   findBuilding(query: string) {
@@ -103,19 +138,78 @@ export class SpatialDataService {
   }
 
   getRoomDetails(roomId: string) {
-    const room = this.rooms.find((r) => r.id === roomId || r.roomNumber === roomId);
+    const room = this.rooms.find((r) => r.id === roomId || r.roomNumber === roomId) || this.findRoom(roomId);
     if (!room) return null;
     const floor = this.floors.find((f) => f.id === room.floorId);
     const building = floor ? this.buildings.find((b) => b.id === floor.buildingId) : null;
     const campus = building ? this.campuses.find((c) => c.id === building.campusId) : null;
     const assets = this.assets.filter((a) => a.roomId === room.id);
+    const cap = room.capacity;
+    const seating = (room as any).seatingCapacity ?? cap;
+    const student = (room as any).studentCapacity ?? cap;
 
     return {
-      room,
-      floor,
-      building,
-      campus,
+      room: room.name,
+      roomId: room.roomNumber,
+      floor: floor?.name || 'Main Block',
+      floorNumber: floor?.floorNumber ?? 0,
+      roomType: room.roomType,
+      capacity: cap,
+      seatingCapacity: seating,
+      studentCapacity: student,
+      isAccessible: room.isAccessible,
+      building: building?.name || 'Computer Science & AI Block B',
+      campus: campus?.name || 'Main Technology Campus',
       assets,
+      rawRoom: room,
+    };
+  }
+
+  getFloorCapacity(floorQuery: string) {
+    const q = (floorQuery || '').toLowerCase().trim();
+    let targetFloor = this.floors.find(
+      (f) =>
+        f.id.toLowerCase() === q ||
+        f.name.toLowerCase() === q ||
+        f.name.toLowerCase().includes(q)
+    );
+
+    if (!targetFloor) {
+      if (q.includes('ground') || q === '0' || q === 'gf') targetFloor = this.floors.find((f) => f.floorNumber === 0);
+      else if (q.includes('first') || q.includes('1st') || q === '1' || q === '1f') targetFloor = this.floors.find((f) => f.floorNumber === 1);
+      else if (q.includes('second') || q.includes('2nd') || q === '2' || q === '2f') targetFloor = this.floors.find((f) => f.floorNumber === 2);
+      else if (q.includes('terrace') || q.includes('3rd') || q === '3' || q === '3f') targetFloor = this.floors.find((f) => f.floorNumber === 3);
+    }
+
+    if (!targetFloor) {
+      return {
+        success: false,
+        error: `Floor '${floorQuery}' not found`,
+      };
+    }
+
+    const floorRooms = this.rooms.filter((r) => r.floorId === targetFloor.id);
+    const classrooms = floorRooms.map((r) => ({
+      room: r.name,
+      roomId: r.roomNumber || r.id,
+      seatingCapacity: (r as any).seatingCapacity ?? r.capacity,
+      studentCapacity: (r as any).studentCapacity ?? r.capacity,
+      capacity: r.capacity,
+      roomType: r.roomType,
+    }));
+
+    const totalCapacity = classrooms.reduce((sum, c) => sum + c.seatingCapacity, 0);
+    const sorted = [...classrooms].sort((a, b) => b.seatingCapacity - a.seatingCapacity);
+
+    return {
+      success: true,
+      floor: targetFloor.name,
+      floorNumber: targetFloor.floorNumber,
+      totalClassrooms: classrooms.length,
+      totalCapacity,
+      classrooms,
+      highestCapacity: sorted[0] || null,
+      lowestCapacity: sorted[sorted.length - 1] || null,
     };
   }
 

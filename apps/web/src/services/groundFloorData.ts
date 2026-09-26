@@ -218,7 +218,7 @@ export const GROUND_FLOOR_ROOMS: GroundFloorRoom[] = [
     floor: 'Ground Floor',
     type: 'SEMINAR_HALL',
     areaM2: 220,
-    capacity: 160,
+    capacity: 120,
     operationalStatus: 'AVAILABLE',
     equipment: ['4K Laser Auditorium Projector', 'Dolby Surround Sound System', 'Tiered Amphitheater Seating', 'Stage Podium'],
     department: 'Main Block Academic Affairs',

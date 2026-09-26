@@ -86,9 +86,11 @@ model Room {
   roomNumber   String
   name         String
   roomType     String    // CLASSROOM, LAB, OFFICE, AUDITORIUM, etc.
-  capacity     Int       @default(30)
-  isAccessible Boolean   @default(true)
-  createdAt    DateTime  @default(now())
+  capacity        Int       @default(30)
+  seatingCapacity Int?
+  studentCapacity Int?
+  isAccessible    Boolean   @default(true)
+  createdAt       DateTime  @default(now())
 
   floor        Floor       @relation(fields: [floorId], references: [id], onDelete: Cascade)
   department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
