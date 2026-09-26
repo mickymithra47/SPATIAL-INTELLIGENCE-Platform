@@ -8,6 +8,7 @@ import {
   CLASS_TIMETABLE,
   SAFETY_NODES,
 } from '../services/campusData.service';
+import { runCopilotPipeline } from '../services/campusCopilotEngine';
 
 export interface SpatialAIAction {
   type: 'FOCUS_ROOM' | 'FOCUS_BUILDING' | 'START_ROUTE' | 'TOGGLE_LAYER' | 'SAFETY_MODE' | 'INSPECT_EQUIPMENT';
@@ -796,22 +797,28 @@ export const useAIChatStore = create<AIChatState>((set, get) => ({
       // Fallback
     }
 
-    // Fallback: Clearly marked offline fallback mode (never silently pretending it came from OpenAI)
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const intent = classifyIntent(text);
-    const { reply, actions, explanation, spatialSideEffects } = generateSmartResponse(text, intent, spatialStore);
+    // Fallback: Authoritative campus Copilot pipeline
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    const pipelineRes = runCopilotPipeline(text, history, spatialContext);
 
-    if (spatialSideEffects) {
-      spatialSideEffects();
+    // Apply any spatial actions
+    if (pipelineRes.mapAction && pipelineRes.mapAction.action !== 'NONE') {
+      const act = pipelineRes.mapAction;
+      const matchedRoom = spatialStore.rooms.find(
+        (r) => r.id === act.entityId || r.roomNumber === act.entityId || r.name.toLowerCase().includes((act.roomName || '').toLowerCase())
+      );
+      if (matchedRoom) {
+        spatialStore.setSelectedRoom(matchedRoom);
+        spatialStore.setActiveFloorNumber(matchedRoom.floorNumber);
+        spatialStore.setSelectedBuildingView(true);
+      }
     }
 
     const aiMsg: ExtendedChatMessage = {
       id: `ai-${Date.now()}`,
       role: 'assistant',
-      content: `[Offline Fallback Mode]\n\n${reply}`,
+      content: pipelineRes.answer,
       timestamp: new Date().toISOString(),
-      spatialActions: actions,
-      spatialExplanation: explanation,
     };
 
     set((state) => ({

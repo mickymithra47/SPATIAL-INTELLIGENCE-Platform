@@ -6,7 +6,9 @@ import {
   CampusRoomEntity,
   ALL_CAMPUS_ENTITIES,
   getEntitiesForFloor,
+  findRoomByIdOrName,
 } from '../../services/campusMultiFloorData';
+import { runCopilotPipeline } from '../../services/campusCopilotEngine';
 import {
   Sparkles,
   Send,
@@ -61,7 +63,7 @@ export function CampusAICopilotPanel({
     {
       id: 'welcome-1',
       sender: 'ai',
-      text: "Hi! 👋 I'm your Campus AI Assistant. How can I help you today? You can ask me about rooms, labs, navigation, available spaces, or campus information.",
+      text: "Hi! 👋 I'm your Campus AI Copilot. I can help you find rooms, navigate the campus, and answer questions about campus facilities.",
       timestamp: 'Just now',
     },
   ]);
@@ -70,11 +72,11 @@ export function CampusAICopilotPanel({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const suggestedQueries = [
-    'Where is Lab 1?',
-    'Find nearest restroom',
-    'Navigate to Seminar Hall',
-    'What rooms are available?',
-    'How do I reach the first floor?',
+    'Where is the seminar hall?',
+    'How many people can the seminar hall accommodate?',
+    'Where is classroom 101?',
+    'What equipment does the seminar hall have?',
+    'How many students can the first floor accommodate?',
   ];
 
   useEffect(() => {
@@ -93,67 +95,79 @@ export function CampusAICopilotPanel({
     text: string;
     spatialAction?: CopilotMessage['spatialAction'];
   }> => {
+    const formattedHistory = messages.slice(-6).map((m) => ({
+      role: (m.sender === 'ai' ? 'assistant' : 'user') as 'assistant' | 'user',
+      content: m.text,
+    }));
+
+    const spatialContext = {
+      institutionName: 'ESEC Campus',
+      floorId: activeFloor,
+      selectedEntityId: selectedEntity?.id || localContextRef.current.lastEntity?.id,
+      currentLocation: selectedEntity?.name || localContextRef.current.lastEntity?.name,
+      hasUserLocation: Boolean(selectedEntity),
+    };
+
     // -------------------------------------------------------------
-    // ATTEMPT 1: CALL REAL BACKEND API (Architecture: User -> UI -> Frontend -> Backend -> Data)
+    // ATTEMPT 1: CALL PRIMARY COPILOT ROUTE (/api/ai/chat)
     // -------------------------------------------------------------
     try {
-      const res = await fetch('http://localhost:4000/api/v1/ai/chat', {
+      const res = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userQuery,
           conversationId: conversationIdRef.current,
+          context: spatialContext,
+          history: formattedHistory,
         }),
       });
 
       if (res.ok) {
         const data = await res.json();
-        let reply = (data.reply || '').trim();
-
-        // Strip any technical internal debug phrases that might slip through
-        reply = reply
-          .replace(/Analyzing spatial graph for [^.]+\./gi, '')
-          .replace(/Running spatial query\.*/gi, '')
-          .replace(/Query classified as [^.]+\./gi, '')
-          .replace(/Graph traversal completed\.*/gi, '')
-          .replace(/Intent detected:?\s*\w+/gi, '')
-          .trim();
-
         let action: CopilotMessage['spatialAction'];
-        if (data.highlightedEntity?.id) {
-          const entityId = data.highlightedEntity.id;
-          const matchedEntity = ALL_CAMPUS_ENTITIES.find(
-            (e) =>
-              e.id.toLowerCase() === entityId.toLowerCase() ||
-              e.code.toLowerCase() === entityId.toLowerCase()
-          );
 
-          if (matchedEntity) {
-            localContextRef.current.lastEntity = matchedEntity;
-            setActiveFloor(matchedEntity.floor);
-            onSelectEntity(matchedEntity);
-
-            if (data.highlightedEntity.type === 'ROUTE') {
-              onStartRoute(matchedEntity);
+        if (Array.isArray(data.actions)) {
+          for (const act of data.actions) {
+            if (act.action === 'FOCUS_ENTITY') {
+              const matched = findRoomByIdOrName(act.entityId) || findRoomByIdOrName(act.roomName);
+              if (matched) {
+                localContextRef.current.lastEntity = matched;
+                setActiveFloor(matched.floor);
+                onSelectEntity(matched);
+                action = {
+                  type: 'HIGHLIGHT_ROOM',
+                  floor: matched.floor,
+                  roomId: matched.id,
+                  roomName: matched.name,
+                };
+              }
+            } else if (act.action === 'NAVIGATE') {
+              const matched = findRoomByIdOrName(act.entityId) || findRoomByIdOrName(act.roomName);
+              if (matched) {
+                localContextRef.current.lastEntity = matched;
+                setActiveFloor(matched.floor);
+                onSelectEntity(matched);
+                onStartRoute(matched);
+                action = {
+                  type: 'START_ROUTE',
+                  floor: matched.floor,
+                  roomId: matched.id,
+                  roomName: matched.name,
+                };
+              }
+            } else if (act.action === 'SWITCH_FLOOR' && act.floor) {
+              setActiveFloor(act.floor as FloorLevel);
               action = {
-                type: 'START_ROUTE',
-                floor: matchedEntity.floor,
-                roomId: matchedEntity.id,
-                roomName: matchedEntity.name,
-              };
-            } else {
-              action = {
-                type: 'HIGHLIGHT_ROOM',
-                floor: matchedEntity.floor,
-                roomId: matchedEntity.id,
-                roomName: matchedEntity.name,
+                type: 'CHANGE_FLOOR',
+                floor: act.floor as FloorLevel,
               };
             }
           }
         }
 
-        if (reply) {
-          return { text: reply, spatialAction: action };
+        if (data.reply) {
+          return { text: data.reply, spatialAction: action };
         }
       }
     } catch {
@@ -161,8 +175,53 @@ export function CampusAICopilotPanel({
     }
 
     // -------------------------------------------------------------
-    // ATTEMPT 2: ROBUST LOCAL CONVERSATIONAL ENGINE (Complete Context & Natural Variations)
+    // ATTEMPT 2: LOCAL 8-STEP PIPELINE EXECUTION (Offline Fallback)
     // -------------------------------------------------------------
+    const localResult = runCopilotPipeline(userQuery, formattedHistory, spatialContext);
+    let localAction: CopilotMessage['spatialAction'];
+
+    if (localResult.mapAction && localResult.mapAction.action !== 'NONE') {
+      const act = localResult.mapAction;
+      if (act.action === 'FOCUS_ENTITY' && act.entityId) {
+        const matched = findRoomByIdOrName(act.entityId) || findRoomByIdOrName(act.roomName);
+        if (matched) {
+          localContextRef.current.lastEntity = matched;
+          setActiveFloor(matched.floor);
+          onSelectEntity(matched);
+          localAction = {
+            type: 'HIGHLIGHT_ROOM',
+            floor: matched.floor,
+            roomId: matched.id,
+            roomName: matched.name,
+          };
+        }
+      } else if (act.action === 'NAVIGATE' && act.entityId) {
+        const matched = findRoomByIdOrName(act.entityId) || findRoomByIdOrName(act.roomName);
+        if (matched) {
+          localContextRef.current.lastEntity = matched;
+          setActiveFloor(matched.floor);
+          onSelectEntity(matched);
+          onStartRoute(matched);
+          localAction = {
+            type: 'START_ROUTE',
+            floor: matched.floor,
+            roomId: matched.id,
+            roomName: matched.name,
+          };
+        }
+      } else if (act.action === 'SWITCH_FLOOR' && act.floor) {
+        setActiveFloor(act.floor as FloorLevel);
+        localAction = {
+          type: 'CHANGE_FLOOR',
+          floor: act.floor as FloorLevel,
+        };
+      }
+    }
+
+    if (localResult.confidence >= 0.8) {
+      return { text: localResult.answer, spatialAction: localAction };
+    }
+
     const raw = userQuery.trim().toLowerCase();
     const clean = raw.replace(/[?!.,;:'"()]/g, '').trim();
 

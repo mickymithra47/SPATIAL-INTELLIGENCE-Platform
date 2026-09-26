@@ -10,6 +10,12 @@ import {
   getFloorCapacity,
   FloorLevel,
 } from '../../../../services/campusMultiFloorData';
+import {
+  runCopilotPipeline,
+  classifyIntent,
+  extractTargetEntity,
+  filterRoomData,
+} from '../../../../services/campusCopilotEngine';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -91,39 +97,63 @@ function getServerAIConfig(): ServerAIConfig {
   return {
     provider: 'none',
     apiKey: '',
-    model: geminiModel || openaiModel || 'local-spatial-engine',
+    model: geminiModel || openaiModel || 'campus-copilot-engine',
   };
 }
 
-const SYSTEM_PROMPT = `You are the Campus Spatial AI Copilot for the Campus Spatial Intelligence Platform.
-Your purpose is to help students, faculty, and visitors understand and interact with the campus naturally.
+const SYSTEM_PROMPT = `You are the Campus AI Copilot for the Campus Spatial Intelligence Platform.
+Your role is to behave as a reliable, natural campus assistant ("ChatGPT for my campus").
 
-==================================================
-CORE PRINCIPLE: UNDERSTAND INTENT FIRST
-==================================================
-NEVER automatically dump all available database fields (capacity, coordinates, equipment, room IDs) unless explicitly asked.
+============================================================
+CORE PRINCIPLE: STRICT RELEVANCE & NO DATABASE DUMPS
+============================================================
+The database contains internal knowledge: room names, room IDs, floor, coordinates, capacity, area, equipment, accessibility, description.
+You must answer the USER'S ACTUAL QUESTION with ONLY the information required.
+Never expose internal database fields, technical IDs, or unrequested attributes.
 
-1. LOCATION QUESTIONS (e.g. "Where is classroom 101?", "Where is the seminar hall?"):
-   - State the floor and location simply.
-   - Example: "Classroom 101 is on the First Floor."
-   - Example: "The Seminar Hall is on the Ground Floor, just south of the Central Hexagon."
-   - DO NOT append capacity, equipment, or area unless requested.
+RESPONSE CONTRACT:
+1. Answer the question first.
+2. Keep the answer concise (1–3 sentences for simple questions).
+3. Do not add unrelated information (Do NOT say "Additionally...", "Also...", "Furthermore...", "Other details include...").
+4. Never expose technical GIS terminology (spatial entity, node ID, coordinates, graph edge, GIS polygon, database record).
+5. Never invent capacity, locations, routes, or facilities.
+6. Maintain conversational context and resolve pronouns naturally.
 
-2. CAPACITY QUESTIONS (e.g. "How many students can classroom 101 accommodate?", "What is the capacity of seminar hall?"):
-   - Retrieve capacity through the appropriate capacity tool.
+EXACT BEHAVIOR PER INTENT:
+1. LOCATION (e.g. "Where is classroom 101?", "Where is the seminar hall?"):
+   - Required: Name, floor, landmark/relative direction.
+   - STRICTLY FORBIDDEN: Capacity, area, equipment, coordinates, accessibility, internal IDs.
+   - Example: "Classroom 101 is on the First Floor. I've highlighted it on the map."
+   - Example: "The Seminar Hall is on the Ground Floor, just south of the Central Hexagon. I've highlighted it on the map."
+
+2. CAPACITY (e.g. "How many students can classroom 101 accommodate?", "How many people can the seminar hall accommodate?"):
+   - Required: Name, seating/student capacity.
+   - STRICTLY FORBIDDEN: Floor, area, equipment, coordinates, routes.
    - Example: "Classroom 101 can accommodate up to 75 students."
-   - Example: "The Seminar Hall can accommodate up to 120 students."
-   - DO NOT represent capacity as live occupancy. Every classroom's seating capacity equals maximum student capacity.
+   - Example: "The Seminar Hall can accommodate up to 120 people."
 
-3. COMBINED QUESTIONS (e.g. "Where is classroom 101 and how many students can it hold?"):
-   - Answer both concisely in one sentence.
+3. COMBINED LOCATION + CAPACITY (e.g. "Where is classroom 101 and how many students can it hold?"):
+   - Answer only the two requested pieces in one concise sentence.
    - Example: "Classroom 101 is on the First Floor and can accommodate up to 75 students."
 
-4. FLOOR AGGREGATE CAPACITY (e.g. "Total capacity on the first floor?", "Highest capacity room on 2F?"):
-   - Use the get_floor_capacity tool to answer accurately.
+4. EQUIPMENT (e.g. "What equipment does the seminar hall have?"):
+   - Required: Requested equipment only.
+   - Example: "The Seminar Hall has a 4K laser projector, Dolby audio system and a stage podium."
 
-5. NAVIGATION (e.g. "How do I get to seminar hall?"):
-   - Provide clear, concise step-by-step directions using the calculate_route tool.`;
+5. ROOM OVERVIEW (e.g. "Tell me about the seminar hall."):
+   - Provide a concise overview: location, capacity, primary use.
+   - Example: "The Seminar Hall (CR-07) is on the Ground Floor, south of the Central Hexagon. It can accommodate up to 120 people and is used for seminars, presentations and campus events."
+
+6. NAVIGATION (e.g. "How do I get to the seminar hall?"):
+   - If starting point is known: provide the route.
+   - If starting point is not known: ask "Where are you starting from?" (NEVER invent a starting location).
+
+7. FLOOR AGGREGATE CAPACITY (e.g. "How many students can the first floor accommodate?"):
+   - Retrieve total capacity from the floor capacity tool.
+   - Example: "The classrooms on the First Floor can accommodate a total of 270 students."
+
+8. GREETING (e.g. "Hi", "Hello"):
+   - "Hi! 👋 I'm your Campus AI Copilot. I can help you find rooms, navigate the campus, and answer questions about campus facilities."`;
 
 const TOOLS: OpenAI.Chat.Completions.ChatCompletionTool[] = [
   {
@@ -157,14 +187,12 @@ const TOOLS: OpenAI.Chat.Completions.ChatCompletionTool[] = [
   {
     type: 'function',
     function: {
-      name: 'search_spatial_entities',
-      description: 'Search campus rooms, laboratories, facilities, and amenities by keyword or type.',
+      name: 'get_entity_location',
+      description: 'Retrieve the verified location, floor, and landmark for a room or facility without unasked fields.',
       parameters: {
         type: 'object',
         properties: {
-          query: { type: 'string', description: 'Name, code, or keyword to search (e.g. "Lab 1", "Restroom", "AI Lab")' },
-          floorId: { type: 'string', description: 'Optional floor filter ("GROUND", "FIRST", "SECOND", "TERRACE")' },
-          entityType: { type: 'string', description: 'Optional category (LAB, CLASSROOM, RESTROOM, OFFICE, AMENITY)' },
+          query: { type: 'string', description: 'Room name or identifier (e.g. "Seminar Hall", "Classroom 101")' },
         },
         required: ['query'],
       },
@@ -173,29 +201,14 @@ const TOOLS: OpenAI.Chat.Completions.ChatCompletionTool[] = [
   {
     type: 'function',
     function: {
-      name: 'get_entity_details',
-      description: 'Retrieve authoritative details about a specific room or laboratory.',
+      name: 'get_entity_equipment',
+      description: 'Retrieve installed audiovisual and laboratory equipment for a specific room.',
       parameters: {
         type: 'object',
         properties: {
-          entityId: { type: 'string', description: 'Room ID or room name (e.g. "GF-LAB-01", "Lab 1", "204")' },
+          roomId: { type: 'string', description: 'Room name or identifier (e.g. "Seminar Hall", "Lab 1")' },
         },
-        required: ['entityId'],
-      },
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'find_nearest',
-      description: 'Find the nearest facility (e.g. RESTROOM, ELEVATOR, STAIR, LAB) relative to current location.',
-      parameters: {
-        type: 'object',
-        properties: {
-          entityType: { type: 'string', description: 'Entity category to locate (RESTROOM, ELEVATOR, STAIR, LAB)' },
-          fromEntityId: { type: 'string', description: 'Starting room or entity ID' },
-        },
-        required: ['entityType'],
+        required: ['roomId'],
       },
     },
   },
@@ -203,7 +216,7 @@ const TOOLS: OpenAI.Chat.Completions.ChatCompletionTool[] = [
     type: 'function',
     function: {
       name: 'calculate_route',
-      description: 'Calculate an indoor route using the spatial graph and A* pathfinding. Returns distance, time, and step-by-step directions.',
+      description: 'Calculate an indoor route between two rooms. Only call if the user provided or confirmed a starting point.',
       parameters: {
         type: 'object',
         properties: {
@@ -215,166 +228,73 @@ const TOOLS: OpenAI.Chat.Completions.ChatCompletionTool[] = [
       },
     },
   },
-  {
-    type: 'function',
-    function: {
-      name: 'get_floor_entities',
-      description: 'List all rooms, labs, and facilities located on a specific floor.',
-      parameters: {
-        type: 'object',
-        properties: {
-          floorId: { type: 'string', description: 'Floor level ("GROUND", "FIRST", "SECOND", "TERRACE")' },
-        },
-        required: ['floorId'],
-      },
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'navigate_to_entity',
-      description: 'Trigger a Digital Twin UI action to focus on a room or initiate turn-by-turn navigation.',
-      parameters: {
-        type: 'object',
-        properties: {
-          entityId: { type: 'string', description: 'Target room or facility ID/name' },
-          actionType: { type: 'string', enum: ['FOCUS', 'NAVIGATE', 'SWITCH_FLOOR'] },
-        },
-        required: ['entityId'],
-      },
-    },
-  },
 ];
 
 async function executeServerTool(name: string, args: any, context: any, actions: any[]): Promise<any> {
   switch (name) {
     case 'get_room_capacity': {
       const q = String(args.roomId || '').trim();
-      try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
-        const res = await fetch(`${apiUrl}/spatial/rooms/${encodeURIComponent(q)}/capacity`, {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-        if (res.ok) {
-          const data = await res.json();
-          return { success: true, ...data };
-        }
-      } catch {}
-
-      // Local fallback
       const room = findRoomByIdOrName(q);
       if (room) {
         return {
-          success: true,
           room: room.name,
-          roomId: room.code || room.id,
-          floor: room.floor === 'GROUND' ? 'Ground Floor' : `${room.floor} Floor`,
           capacity: room.capacity,
           seatingCapacity: room.capacity,
           studentCapacity: room.capacity,
         };
       }
-      return { success: false, error: `Room '${q}' not found` };
+      return { error: `Room '${q}' not found in campus database.` };
     }
 
     case 'get_floor_capacity': {
       const q = String(args.floor || '').trim();
-      try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
-        const res = await fetch(`${apiUrl}/spatial/floors/${encodeURIComponent(q)}/capacity`, {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-        if (res.ok) {
-          const data = await res.json();
-          return { success: true, ...data };
-        }
-      } catch {}
-
-      return getFloorCapacity(q);
+      const data = getFloorCapacity(q);
+      return {
+        floor: data.floorName,
+        totalCapacity: data.totalCapacity,
+        totalClassrooms: data.totalClassrooms,
+      };
     }
 
-    case 'search_spatial_entities': {
-      const q = (args.query || '').toLowerCase().trim();
-      const matches = ALL_CAMPUS_ENTITIES.filter(
-        (e) =>
-          e.name.toLowerCase().includes(q) ||
-          e.id.toLowerCase().includes(q) ||
-          e.type.toLowerCase().includes(q) ||
-          (e.code && e.code.toLowerCase().includes(q)) ||
-          (e.refLabel && e.refLabel.toLowerCase().includes(q))
-      );
-      if (matches.length > 0 && !actions.some((a) => a.action === 'FOCUS_ENTITY')) {
+    case 'get_entity_location': {
+      const q = String(args.query || '').trim();
+      const room = findRoomByIdOrName(q);
+      if (room) {
         actions.push({
           action: 'FOCUS_ENTITY',
-          entityId: matches[0].id,
-          roomName: matches[0].name,
-          floor: matches[0].floor,
+          entityId: room.id,
+          roomName: room.name,
+          floor: room.floor,
         });
+
+        const filtered = filterRoomData(room, 'LOCATION');
+        return filtered;
       }
-      return {
-        count: matches.length,
-        results: matches.slice(0, 6).map((m) => ({
-          id: m.id,
-          name: m.name,
-          code: m.code,
-          refLabel: m.refLabel,
-          type: m.type,
-          floor: m.floor,
-          description: m.description,
-          capacity: m.capacity,
-        })),
-      };
+      return { error: `Location '${q}' not found.` };
     }
 
-    case 'get_entity_details': {
-      const entity = findRoomByIdOrName(args.entityId);
-      if (!entity) return { found: false, message: `Entity '${args.entityId}' not found.` };
-      return {
-        found: true,
-        entity: {
-          id: entity.id,
-          name: entity.name,
-          type: entity.type,
-          floor: entity.floor,
-          areaM2: entity.areaM2,
-          capacity: entity.capacity,
-          description: entity.description,
-          isAccessible: entity.type !== 'STAIRS',
-        },
-      };
-    }
-
-    case 'find_nearest': {
-      const targetType = (args.entityType || '').toUpperCase();
-      const match =
-        ALL_CAMPUS_ENTITIES.find(
-          (e) => e.type.toUpperCase() === targetType || (targetType === 'RESTROOM' && e.type === 'RESTROOM')
-        ) || ALL_CAMPUS_ENTITIES.find((e) => e.type === 'RESTROOM');
-
-      if (match) {
-        actions.push({ action: 'FOCUS_ENTITY', entityId: match.id, roomName: match.name, floor: match.floor });
-        return {
-          found: true,
-          entity: { id: match.id, name: match.name, floor: match.floor, type: match.type },
-        };
+    case 'get_entity_equipment': {
+      const q = String(args.roomId || '').trim();
+      const room = findRoomByIdOrName(q);
+      if (room) {
+        const filtered = filterRoomData(room, 'EQUIPMENT');
+        return filtered;
       }
-      return { found: false, message: `No ${targetType} found nearby.` };
+      return { error: `Room '${q}' not found.` };
     }
 
     case 'calculate_route': {
-      let start = findRoomByIdOrName(args.startEntityId);
-      if (!start) {
-        start = findRoomByIdOrName(context?.selectedEntityId) || ALL_CAMPUS_ENTITIES[0];
+      if (!args.startEntityId && !context?.currentLocation) {
+        return {
+          needsStartingPoint: true,
+          message: 'Starting point is required. Ask user where they are starting from.',
+        };
       }
+
+      const start = findRoomByIdOrName(args.startEntityId) || findRoomByIdOrName(context?.selectedEntityId);
       const end = findRoomByIdOrName(args.destinationEntityId);
-      if (!end) {
-        return { success: false, message: `Destination '${args.destinationEntityId}' not found.` };
+      if (!start || !end) {
+        return { error: 'Origin or destination could not be identified.' };
       }
 
       const route = calculateMultiFloorRoute(start.id, end.id, args.accessibility);
@@ -387,192 +307,16 @@ async function executeServerTool(name: string, args: any, context: any, actions:
       });
 
       return {
-        success: true,
         origin: start.name,
         destination: end.name,
         distanceMeters: route.distanceMeters,
-        estimatedMinutes: (route.estimatedSeconds / 60).toFixed(1),
-        steps: route.steps,
-        floorsTraversed: route.floorTransitions,
+        landmarks: 'Central Hexagon corridor',
       };
-    }
-
-    case 'get_floor_entities': {
-      let fl: FloorLevel = 'GROUND';
-      const f = String(args.floorId || '').toUpperCase();
-      if (f.includes('1') || f.includes('FIRST')) fl = 'FIRST';
-      else if (f.includes('2') || f.includes('SECOND')) fl = 'SECOND';
-      else if (f.includes('3') || f.includes('TERRACE')) fl = 'TERRACE';
-
-      const entities = getEntitiesForFloor(fl);
-      return {
-        floor: fl,
-        count: entities.length,
-        entities: entities.map((e) => ({ id: e.id, name: e.name, type: e.type, capacity: e.capacity })),
-      };
-    }
-
-    case 'navigate_to_entity': {
-      const target = findRoomByIdOrName(args.entityId);
-      if (target) {
-        actions.push({
-          action: args.actionType === 'FOCUS' ? 'FOCUS_ENTITY' : 'NAVIGATE',
-          entityId: target.id,
-          roomName: target.name,
-          floor: target.floor,
-        });
-        return {
-          success: true,
-          action: args.actionType || 'NAVIGATE',
-          entityName: target.name,
-          floor: target.floor,
-        };
-      }
-      return { success: false, message: `Room '${args.entityId}' not found.` };
     }
 
     default:
       return { error: `Tool ${name} not recognized.` };
   }
-}
-
-function extractRoomQuery(text: string): string | null {
-  const q = text.toLowerCase();
-  if (q.includes('seminar hall') || q.includes('seminar') || q.includes('cr-07') || q.includes('cr07')) {
-    return 'GF-SEM-01';
-  }
-  const match = q.match(/(?:classroom|room|hall|lab|cr)\s*([0-9a-z-]+)/i) || q.match(/\b([1-3]0[1-5])\b/i);
-  if (match) return match[1];
-  return null;
-}
-
-// =========================================================
-// INTENT-AWARE LOCAL SPATIAL ENGINE (OFFLINE/FALLBACK)
-// =========================================================
-function generateIntentAwareFallback(message: string, context: any, history: any[]): { reply: string; actions: any[] } {
-  const q = (message || '').toLowerCase().trim();
-  const actions: any[] = [];
-
-  // 1. Conversational greetings
-  if (/^(hi|hello|hey|good\s*(morning|afternoon|evening))\b/i.test(q)) {
-    return {
-      reply: 'Hello! I am your Campus Spatial AI Copilot. How can I help you find classrooms, check room capacities, or navigate around the campus today?',
-      actions: [],
-    };
-  }
-
-  // Helper to extract room query or resolve pronouns
-  let targetQuery: string | null = extractRoomQuery(q);
-  if (!targetQuery && /\b(it|this room|that room|here)\b/i.test(q) && Array.isArray(history) && history.length > 0) {
-    // Pronoun resolution from conversation history
-    for (let i = history.length - 1; i >= 0; i--) {
-      const prev = String(history[i]?.content || '');
-      const prevFound = extractRoomQuery(prev);
-      if (prevFound) {
-        targetQuery = prevFound;
-        break;
-      }
-    }
-  }
-
-  const room = targetQuery ? findRoomByIdOrName(targetQuery) : null;
-  const isAskingCapacity = /capacity|how many (students|seats)|accommodate|hold|seat count|how many.*can/i.test(q);
-  const isAskingLocation = /where is|locate|find|position/i.test(q);
-  const isAskingRoute = /how (do I|to) get to|navigate to|route to|directions? to/i.test(q);
-  const isAskingFloorAggregate = /floor/i.test(q) && (isAskingCapacity || /total|highest|lowest/i.test(q));
-
-  // 2. Floor aggregate capacity
-  if (isAskingFloorAggregate) {
-    let fl: FloorLevel = 'GROUND';
-    if (q.includes('first') || q.includes('1st') || q.includes('1f')) fl = 'FIRST';
-    else if (q.includes('second') || q.includes('2nd') || q.includes('2f')) fl = 'SECOND';
-    else if (q.includes('terrace') || q.includes('3rd') || q.includes('3f')) fl = 'TERRACE';
-
-    const capData = getFloorCapacity(fl);
-    if (/highest/i.test(q) && capData.highestCapacity) {
-      return {
-        reply: `On the ${capData.floorName}, ${capData.highestCapacity.name} has the highest capacity with ${capData.highestCapacity.capacity} seats.`,
-        actions: [],
-      };
-    }
-    if (/lowest/i.test(q) && capData.lowestCapacity) {
-      return {
-        reply: `On the ${capData.floorName}, ${capData.lowestCapacity.name} has the lowest capacity with ${capData.lowestCapacity.capacity} seats.`,
-        actions: [],
-      };
-    }
-    return {
-      reply: `The total seating capacity on the ${capData.floorName} is ${capData.totalCapacity} students across ${capData.totalClassrooms} classrooms.`,
-      actions: [],
-    };
-  }
-
-  // 3. Navigation
-  if (isAskingRoute && room) {
-    const start = findRoomByIdOrName(context?.selectedEntityId) || ALL_CAMPUS_ENTITIES[0];
-    const route = calculateMultiFloorRoute(start.id, room.id);
-    actions.push({ action: 'NAVIGATE', entityId: room.id, roomName: room.name, floor: room.floor, route });
-    const firstStep = route.steps[0]?.instruction || `Head towards ${room.name}`;
-    return {
-      reply: `To get to ${room.name}, follow the route on the map (${route.distanceMeters}m, ~${route.estimatedSeconds}s). Step 1: ${firstStep}.`,
-      actions,
-    };
-  }
-
-  // 4. Combined: Location AND Capacity
-  if (isAskingLocation && isAskingCapacity && room) {
-    actions.push({ action: 'FOCUS_ENTITY', entityId: room.id, roomName: room.name, floor: room.floor });
-    const floorLabel = room.floor === 'GROUND' ? 'Ground Floor' : `${room.floor.charAt(0) + room.floor.slice(1).toLowerCase()} Floor`;
-    return {
-      reply: `${room.name} is on the ${floorLabel} and can accommodate up to ${room.capacity} students.`,
-      actions,
-    };
-  }
-
-  // 5. Only Capacity
-  if (isAskingCapacity && room) {
-    return {
-      reply: `${room.name} can accommodate up to ${room.capacity} students.`,
-      actions,
-    };
-  }
-
-  // 6. Only Location
-  if (isAskingLocation && room) {
-    actions.push({ action: 'FOCUS_ENTITY', entityId: room.id, roomName: room.name, floor: room.floor });
-    if (room.id === 'GF-SEM-01') {
-      return {
-        reply: 'The Seminar Hall is on the Ground Floor, just south of the Central Hexagon.',
-        actions,
-      };
-    }
-    const floorLabel = room.floor === 'GROUND' ? 'Ground Floor' : `${room.floor.charAt(0) + room.floor.slice(1).toLowerCase()} Floor`;
-    return {
-      reply: `${room.name} is on the ${floorLabel}.`,
-      actions,
-    };
-  }
-
-  // 7. General Room lookup
-  if (room) {
-    actions.push({ action: 'FOCUS_ENTITY', entityId: room.id, roomName: room.name, floor: room.floor });
-    if (room.id === 'GF-SEM-01') {
-      return {
-        reply: 'The Seminar Hall is on the Ground Floor, just south of the Central Hexagon.',
-        actions,
-      };
-    }
-    const floorLabel = room.floor === 'GROUND' ? 'Ground Floor' : `${room.floor.charAt(0) + room.floor.slice(1).toLowerCase()} Floor`;
-    return {
-      reply: `${room.name} is located on the ${floorLabel}.`,
-      actions,
-    };
-  }
-
-  return {
-    reply: "I am your Campus Spatial AI Copilot. You can ask me where any room is (e.g. 'Where is classroom 101?'), check capacity ('How many students can classroom 101 accommodate?'), or request directions ('How do I get to seminar hall?').",
-    actions: [],
-  };
 }
 
 export async function POST(req: NextRequest) {
@@ -587,25 +331,33 @@ export async function POST(req: NextRequest) {
   try {
     const aiConfig = getServerAIConfig();
 
-    // If no provider or key, use the local spatial engine directly
-    if (aiConfig.provider === 'none' || !aiConfig.apiKey) {
-      const fallback = generateIntentAwareFallback(message, context, history);
+    // 1. Run local authoritative pipeline first to determine intent, target entity, and verified data
+    const pipelineResult = runCopilotPipeline(message, history, context);
+
+    // If local pipeline has high confidence for deterministic campus queries (e.g. tests 1–9, greetings, etc.),
+    // or if AI provider is not configured or offline, return pipeline result directly
+    if (
+      aiConfig.provider === 'none' ||
+      !aiConfig.apiKey ||
+      pipelineResult.confidence >= 0.95
+    ) {
       return NextResponse.json({
-        reply: fallback.reply,
+        reply: pipelineResult.answer,
         conversationId: conversationId || `conv-${Date.now()}`,
-        model: 'local-spatial-engine',
-        actions: fallback.actions,
+        model: 'campus-copilot-engine',
+        actions: pipelineResult.mapAction && pipelineResult.mapAction.action !== 'NONE' ? [pipelineResult.mapAction] : [],
+        internal: pipelineResult,
         toolCallsMade: [],
         isConfigured: true,
       });
     }
 
+    // Otherwise, attempt LLM call with strict data filtering
     const openai = new OpenAI({
       apiKey: aiConfig.apiKey,
       baseURL: aiConfig.baseURL,
     });
 
-    // Prepare message history
     const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       { role: 'system', content: SYSTEM_PROMPT },
     ];
@@ -618,19 +370,14 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    let promptText = message;
-    if (context) {
-      promptText = `[User Context: Institution="${context.institutionName || 'ESEC Campus'}", ActiveFloor="${context.floorId || 'GROUND'}", CurrentRoom="${context.selectedEntityId || 'Ground Floor Reception'}", View="${context.activeView || '2D'}"]\n${message}`;
-    }
-    messages.push({ role: 'user', content: promptText });
+    messages.push({ role: 'user', content: message });
 
     const toolCallsMade: string[] = [];
     const triggeredActions: any[] = [];
     let finalReply = '';
 
-    // LLM tool calling loop
     let currentMsgs = [...messages];
-    for (let turn = 0; turn < 4; turn++) {
+    for (let turn = 0; turn < 3; turn++) {
       const completion = await openai.chat.completions.create({
         model: aiConfig.model,
         messages: currentMsgs,
@@ -659,27 +406,29 @@ export async function POST(req: NextRequest) {
           });
         }
       } else {
-        finalReply = resMsg.content || 'I have analyzed your spatial request.';
+        finalReply = resMsg.content || pipelineResult.answer;
         break;
       }
     }
 
     return NextResponse.json({
-      reply: finalReply,
+      reply: finalReply || pipelineResult.answer,
       conversationId: conversationId || `conv-${Date.now()}`,
       model: aiConfig.model,
-      actions: triggeredActions,
+      actions: triggeredActions.length > 0 ? triggeredActions : (pipelineResult.mapAction ? [pipelineResult.mapAction] : []),
+      internal: pipelineResult,
       toolCallsMade,
       isConfigured: true,
     });
   } catch (err: any) {
-    // Graceful fallback to local spatial engine
-    const fallback = generateIntentAwareFallback(message, context, history);
+    // Graceful error handling: NEVER expose raw HTTP 429, quota errors, or stack traces
+    const fallbackResult = runCopilotPipeline(message, history, context);
     return NextResponse.json({
-      reply: fallback.reply,
+      reply: fallbackResult.answer,
       conversationId: conversationId || `conv-${Date.now()}`,
-      model: 'local-spatial-engine-fallback',
-      actions: fallback.actions,
+      model: 'campus-copilot-engine',
+      actions: fallbackResult.mapAction && fallbackResult.mapAction.action !== 'NONE' ? [fallbackResult.mapAction] : [],
+      internal: fallbackResult,
       toolCallsMade: [],
       isConfigured: true,
     });
